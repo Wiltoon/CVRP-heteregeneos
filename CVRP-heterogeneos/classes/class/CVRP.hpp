@@ -1,10 +1,14 @@
 #pragma once
+#include <iostream>
+#include <vector>
+#include "Packet.hpp"
+#include "Vehicle.hpp"
 
 class CVRP{
-    List<Packet> packets;
-    List<Vehicle> vehicles;
-    int[][] matrix_distance;
-    int[][] matrix_price;
+    std::vector<Packet> packets;
+    std::vector<Vehicle> vehicles;
+    std::vector<std::vector< double >> matrix_distance;
+    std::vector<std::vector< double >> matrix_price;
 
     
 }
