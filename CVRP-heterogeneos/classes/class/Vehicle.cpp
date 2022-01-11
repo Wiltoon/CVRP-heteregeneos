@@ -5,5 +5,5 @@ void Vehicle::addPacket(Packet packet){
 }
 
 void Vehicle::useVehicle(bool use){
-    this.used = true;
+    used = true;
 }
