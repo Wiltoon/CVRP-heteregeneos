@@ -145,6 +145,9 @@
   <ItemGroup>
     <ClCompile Include="CVRP-heterogeneos.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CVRP-heterogeneos.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

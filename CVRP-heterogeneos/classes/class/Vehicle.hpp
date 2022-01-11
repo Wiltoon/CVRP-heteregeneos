@@ -1,8 +1,16 @@
 #pragma once
+#include <iostream>
+#include <vector>
+#include "Packet.hpp"
 
-class Vehicle{
-    int id;
-    int charge_max;
-    bool used;
-    list packets_order;
-}
+struct Vehicle
+{
+    int id = 0;
+    int charge_max = 200;
+    std::vector<Packet> packets_order;
+    bool used = false;
+
+    void addPacket(Packet packet);
+
+    void useVehicle(bool use);
+};

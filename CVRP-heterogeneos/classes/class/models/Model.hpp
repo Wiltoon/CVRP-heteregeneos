@@ -5,6 +5,7 @@ class Model{
     Variables vars;
     virtual createParams();
     virtual createVariables();
+    virtual createFunctionObjetive();
     virtual createConstraints();
     virtual solve()->CVRPSolution;
 }

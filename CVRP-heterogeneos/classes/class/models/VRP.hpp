@@ -1,3 +1,5 @@
 #pragma once
 
-class VRP final : public Model
+class VRP final : public Model{
+    
+}
