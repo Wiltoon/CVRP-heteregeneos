@@ -10,9 +10,10 @@ class CVRP{
 public:
     std::vector<Packet> packets;
     std::vector<Vehicle> vehicles;
-    std::vector<std::vector< double >> matrix_distance;
-    std::vector<std::vector< double >> matrix_price;
+    double **matrix_distance;
+    double **matrix_price;
 
+    CVRP(int num_pedidos);
     void calculate_matrix_distance();
     void calculate_matrix_price();
     double distance_euclidian(Packet origin, Packet destiny);

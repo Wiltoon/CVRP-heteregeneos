@@ -1,11 +1,7 @@
-﻿  CVRP-heterogeneos.cpp
-C:\Users\Wilton\Documents\Mestrado\CVRP-heteregeneos\CVRP-heterogeneos\utils\SolomonInstance.hpp(38,25): warning C4101: 'cap': variável local não referenciada
-C:\Users\Wilton\Documents\Mestrado\CVRP-heteregeneos\CVRP-heterogeneos\utils\SolomonInstance.hpp(37,25): warning C4101: 'loc_y': variável local não referenciada
-C:\Users\Wilton\Documents\Mestrado\CVRP-heteregeneos\CVRP-heterogeneos\utils\SolomonInstance.hpp(35,25): warning C4101: 'id': variável local não referenciada
-C:\Users\Wilton\Documents\Mestrado\CVRP-heteregeneos\CVRP-heterogeneos\utils\SolomonInstance.hpp(36,25): warning C4101: 'loc_x': variável local não referenciada
+﻿  SolomonInstance.cpp
   Gerando código
-  2 of 284 functions ( 0.7%) were compiled, the rest were copied from previous compilation.
+  4 of 350 functions ( 1.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
+    2 functions had inline decision re-evaluated but remain unchanged
   Finalizada a geração de código
-  CVRP-heterogeneos.vcxproj -> C:\Users\Wilton\Documents\Mestrado\CVRP-heteregeneos\CVRP-heterogeneos\x64\Release\CVRP-heterogeneos.exe
+  CVRP-heterogeneos.vcxproj -> C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\x64\Release\CVRP-heterogeneos.exe

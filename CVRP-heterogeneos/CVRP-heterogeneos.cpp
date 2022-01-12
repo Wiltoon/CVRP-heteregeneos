@@ -1,6 +1,6 @@
 #include <iostream>
 #include "utils\SolomonInstance.hpp"
-#include "classes\class\CVRP.hpp"
+#include "classes/class/CVRP.hpp"
 #include "src\CVRPSolution.hpp"
 #include "CVRP-heterogeneos.h"
 #include <string>

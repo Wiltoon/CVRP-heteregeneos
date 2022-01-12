@@ -143,10 +143,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="classes\class\CVRP.cpp" />
+    <ClCompile Include="classes\class\Packet.cpp" />
     <ClCompile Include="CVRP-heterogeneos.cpp" />
+    <ClCompile Include="utils\SolomonInstance.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="classes\class\CVRP.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="classes\class\models\Model.hpp" />
+    <ClInclude Include="classes\class\models\Order.hpp" />
+    <ClInclude Include="classes\class\models\VRP.hpp" />
+    <ClInclude Include="classes\class\Packet.hpp" />
+    <ClInclude Include="classes\class\Vehicle.hpp" />
     <ClInclude Include="CVRP-heterogeneos.h" />
+    <ClInclude Include="src\CVRPSolution.hpp" />
+    <ClInclude Include="utils\LoggibudInstance.hpp" />
+    <ClInclude Include="utils\SolomonInstance.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
