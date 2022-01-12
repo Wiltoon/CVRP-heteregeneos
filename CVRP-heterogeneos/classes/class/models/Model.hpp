@@ -1,11 +1,12 @@
 #pragma once
 
+#include <ilcplex/ilocplex.h>
+#include "../class/CVRPSolution.hpp"
 class Model{
-    Parameters params;
-    Variables vars;
-    virtual createParams();
-    virtual createVariables();
-    virtual createFunctionObjetive();
-    virtual createConstraints();
-    virtual solve()->CVRPSolution;
-}
+public:
+    virtual void createParams() = 0;
+    virtual void createVariables() = 0;
+    virtual void createFunctionObjetive() = 0;
+    virtual void createConstraints() = 0;
+    virtual CVRPSolution solve() = 0;
+};

@@ -159,6 +159,7 @@
     <ClInclude Include="classes\class\Vehicle.hpp" />
     <ClInclude Include="CVRP-heterogeneos.h" />
     <ClInclude Include="src\CVRPSolution.hpp" />
+    <ClInclude Include="utils\Instance.hpp" />
     <ClInclude Include="utils\LoggibudInstance.hpp" />
     <ClInclude Include="utils\SolomonInstance.hpp" />
   </ItemGroup>

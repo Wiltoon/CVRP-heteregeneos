@@ -7,6 +7,7 @@ struct Vehicle
 {
     int id = 0;
     int charge_max = 200;
+    int cust = 20;
     std::vector<Packet> packets_order;
     bool used = false;
 

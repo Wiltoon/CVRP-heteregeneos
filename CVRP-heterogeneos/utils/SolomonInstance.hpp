@@ -6,12 +6,12 @@
 #include <fstream>
 #include "..\classes\class\CVRP.hpp"
 #include "..\classes\class\Packet.hpp"
+#include "Instance.hpp"
 
 
-class SolomonInstance{
-private:
-    std::vector<Packet> packets;
+class SolomonInstance final : public Instance{
 public:
+    std::vector<Packet> packets;
     SolomonInstance();
     CVRP readInput(std::string filename);
     void parse(std::ifstream* arquivo, CVRP* problem);
