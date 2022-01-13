@@ -13,9 +13,14 @@ public:
     double **matrix_distance;
     double **matrix_price;
 
-    CVRP(int num_pedidos);
+    CVRP(int num_pedidos, int num_vehicles);
     void calculate_matrix_distance();
     void calculate_matrix_price();
     double distance_euclidian(Packet origin, Packet destiny);
     CVRPSolution solve();
+
+    double price_packet_per_vehicle(Packet& packet, Vehicle& vehicle);
+    void collectPacketsAround(Vehicle vehicle);
+    Packet decrescentePackets(Packet p1, Packet p2);
+    std::vector<Packet> sortPacketsAroundPacket(Packet pac);
 };

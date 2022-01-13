@@ -4,6 +4,8 @@
 #include "../class/CVRPSolution.hpp"
 class Model{
 public:
+    IloEnv env;
+    IloModel model(env);
     virtual void createParams() = 0;
     virtual void createVariables() = 0;
     virtual void createFunctionObjetive() = 0;

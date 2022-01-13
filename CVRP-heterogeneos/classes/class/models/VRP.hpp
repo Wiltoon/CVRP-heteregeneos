@@ -3,8 +3,6 @@
 #include "Model.hpp"
 class VRP final : public Model{
 public:
-    IloEnv env;
-    IloModel model(env);
     IloNumArray p;                  // pedidos
     IloArray <IloBoolVarArray> x;   // variavel de decisao
     IloArray <IloNumArray> d;       // matrix_distance
