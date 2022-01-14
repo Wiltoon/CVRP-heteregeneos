@@ -1,3 +1,6 @@
+#ifndef INSTANCE_H_INCLUDED
+#define INSTANCE_H_INCLUDED
+
 #pragma once
 
 #include <iostream>
@@ -8,6 +11,9 @@
 
 
 class Instance{
-    virtual CVRP readInput(std::string filename);
-    virtual void parse(std::ifstream* arquivo, CVRP* problem);
+public:
+    virtual CVRP readInput(std::string filename, double alpha) = 0;
+    virtual void parse(std::ifstream& arquivo, CVRP& problem) = 0;
 };
+
+#endif // INSTANCE_H_INCLUDED

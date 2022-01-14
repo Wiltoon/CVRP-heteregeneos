@@ -2,6 +2,7 @@
 
 void Vehicle::addPacket(Packet packet){
     packets_order.push_back(packet);
+    this->current_charge += packet.charge;
 }
 
 void Vehicle::useVehicle(bool use){

@@ -5,11 +5,23 @@
 #include "CVRP-heterogeneos.h"
 #include <string>
 
+using namespace std;
+// ALPHA é a porcentagem da capacidade maxima de um veiculo que será ativada 
+// para o calculo do preço de um pedido
+
 int main()
 {
-    std::string filename("resource\\Solomon\\c101-0.0.txt");
-    SolomonInstance reader = SolomonInstance();
-    reader.readInput(filename);
+    double ALPHA = 0.85; // deve ser entre 0 e 1
+    string filename("resource\\Solomon\\c101-0.0.txt");
+    SolomonInstance reader;
+    CVRP problem = reader.readInput(filename, ALPHA);
+    for(int i = 0; i < problem.packets.size(); i++){
+        cout << "Total de veiculos: " << problem.vehicles.size();
+        for(int k = 0; k < problem.vehicles.size(); k++){
+            cout << problem.matrix_price[i][k] << ", ";
+        }
+        cout << endl;
+    }
     //CVRPSolution solution = problem.solve();
     return 0;
 }

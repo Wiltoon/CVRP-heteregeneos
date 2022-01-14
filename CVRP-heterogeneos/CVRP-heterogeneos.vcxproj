@@ -144,7 +144,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="classes\class\CVRP.cpp" />
+    <ClCompile Include="classes\class\CVRPSolution.cpp" />
+    <ClCompile Include="classes\class\NeighborPacket.cpp" />
     <ClCompile Include="classes\class\Packet.cpp" />
+    <ClCompile Include="classes\class\Vehicle.cpp" />
     <ClCompile Include="CVRP-heterogeneos.cpp" />
     <ClCompile Include="utils\SolomonInstance.cpp" />
   </ItemGroup>
@@ -155,6 +158,7 @@
     <ClInclude Include="classes\class\models\Model.hpp" />
     <ClInclude Include="classes\class\models\Order.hpp" />
     <ClInclude Include="classes\class\models\VRP.hpp" />
+    <ClInclude Include="classes\class\NeighborPacket.hpp" />
     <ClInclude Include="classes\class\Packet.hpp" />
     <ClInclude Include="classes\class\Vehicle.hpp" />
     <ClInclude Include="CVRP-heterogeneos.h" />

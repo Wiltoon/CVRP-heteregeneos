@@ -8,38 +8,38 @@
 SolomonInstance::SolomonInstance(){
 }
 
-CVRP SolomonInstance::readInput(std::string filename) {
+CVRP SolomonInstance::readInput(std::string filename, double alpha) {
     std::ifstream arquivo;
-    CVRP problem = CVRP(102);
+    CVRP problem = CVRP(102,25);
     arquivo.open(filename);
     if (!arquivo.is_open()) {
         std::cout << "arquivo de entrada inválido" << std::endl;
         exit(0);
     }
     else {
-        this->parse(&arquivo, &problem);
+        this->parse(arquivo, problem);
         problem.calculate_matrix_distance();
+        problem.calculate_matrix_price(alpha);
         /*for (int i = 0; i < problem.packets.size(); i++) {
             for (int j = 0; j < problem.packets.size(); j++) {
                 std::cout << problem.matrix_distance[i][j] << " ";
             }
             std::cout << std::endl;
         }*/
-        // problem.calculate_matrix_price();
         // arquivo.close();
     }
     return problem;
 }
 
-void SolomonInstance::parse(std::ifstream* arquivo, CVRP* problem) {
+void SolomonInstance::parse(std::ifstream& arquivo, CVRP& problem) {
     std::string line;
     int num_lim = 0;
     int id = 0;
     int loc_x = 0;
     int loc_y = 0;
     int cap = 0;
-    while (!(*arquivo).eof()) {
-        getline((*arquivo), line);
+    while (!(arquivo).eof()) {
+        getline((arquivo), line);
         if (num_lim != 0) {
             std::vector<std::string> values = split(line, ',');
             int element = 0;
@@ -69,10 +69,9 @@ void SolomonInstance::parse(std::ifstream* arquivo, CVRP* problem) {
                 element++;
             }
             Packet packet = Packet(id, loc_x, loc_y, cap);
-            (problem)->packets.push_back(packet);
+            problem.packets.push_back(packet);
         }
         num_lim++;
-        //std::cout << "size: " << (problem)->packets.size() << std::endl;
     }
 }
 std::vector<std::string> SolomonInstance::split(const std::string& text, char sep)
@@ -88,4 +87,12 @@ std::vector<std::string> SolomonInstance::split(const std::string& text, char se
 
     tokens.push_back(text.substr(start));
     return tokens;
+}
+
+std::vector<Packet> SolomonInstance::getPackets(){
+    return this->packets;
+}
+
+void SolomonInstance::setPackets(std::vector<Packet> packets){
+    this->packets = packets;
 }
