@@ -1,3 +1,6 @@
+#ifndef ORDER_H_INCLUDED
+#define ORDER_H_INCLUDED
+
 #pragma once
 
 #include "Model.hpp"
@@ -12,3 +15,5 @@ public:
     void createConstraints() override;
     CVRPSolution solve() override;
 };
+
+#endif // ORDER_H_INCLUDED

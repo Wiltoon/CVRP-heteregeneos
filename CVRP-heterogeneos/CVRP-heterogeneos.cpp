@@ -15,13 +15,7 @@ int main()
     string filename("resource\\Solomon\\c101-0.0.txt");
     SolomonInstance reader;
     CVRP problem = reader.readInput(filename, ALPHA);
-    for(int i = 0; i < problem.packets.size(); i++){
-        cout << "Total de veiculos: " << problem.vehicles.size();
-        for(int k = 0; k < problem.vehicles.size(); k++){
-            cout << problem.matrix_price[i][k] << ", ";
-        }
-        cout << endl;
-    }
+
     //CVRPSolution solution = problem.solve();
     return 0;
 }

@@ -21,6 +21,7 @@ public:
     SolomonInstance();
     CVRP readInput(std::string filename, double alpha);
     void parse(std::ifstream& arquivo, CVRP& problem);
+    void parseVehicles(CVRP& problem);
     std::vector<std::string> split(const std::string& text, char sep);
     std::vector<Packet> getPackets();
     void setPackets(std::vector<Packet> packets);

@@ -1,7 +1,11 @@
-﻿  CVRP-heterogeneos.cpp
+﻿  CVRP.cpp
+C:\Users\Wilton\Documents\Mestrado\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\CVRP.cpp(83,27): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
+  Vehicle.cpp
+  CVRP-heterogeneos.cpp
+  SolomonInstance.cpp
   Gerando código
-  1 of 443 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    8 functions had inline decision re-evaluated but remain unchanged
+  135 of 487 functions (27.7%) were compiled, the rest were copied from previous compilation.
+    57 functions were new in current compilation
+    50 functions had inline decision re-evaluated but remain unchanged
   Finalizada a geração de código
   CVRP-heterogeneos.vcxproj -> C:\Users\Wilton\Documents\Mestrado\CVRP-heteregeneos\CVRP-heterogeneos\x64\Release\CVRP-heterogeneos.exe

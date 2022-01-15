@@ -73,7 +73,51 @@ void SolomonInstance::parse(std::ifstream& arquivo, CVRP& problem) {
         }
         num_lim++;
     }
+    parseVehicles(problem);
 }
+
+void SolomonInstance::parseVehicles(CVRP& problem){
+    std::string line;
+    int num_lim = 0;
+    int id = 0;
+    int cap = 0;
+    int custo = 0;
+    std::ifstream arquivo;
+    arquivo.open("resource\\Solomon\\veiculos.txt");
+    while (!(arquivo).eof()) {
+        getline((arquivo), line);
+        if (num_lim != 0) {
+            std::vector<std::string> values = split(line, ',');
+            int element = 0;
+            for (std::string str : values) {
+                str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+                str.erase(std::remove(str.begin(), str.end(), '\t'), str.end());
+                str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
+                switch (element) {
+                case 0:
+                    //std::cout << "str: " << str << std::endl;
+                    if (str.size() != 0) {
+                        id = stoi(str);
+                    }
+                    break;
+                case 1:
+                    cap = stoi(str);
+                    break;
+                case 2:
+                    custo = stoi(str);
+                    break;
+                default:
+                    break;
+                }
+                element++;
+            }
+            Vehicle vehicle = Vehicle(id, cap, custo);
+            problem.vehicles.push_back(vehicle);
+        }
+        num_lim++;
+    }
+}
+
 std::vector<std::string> SolomonInstance::split(const std::string& text, char sep)
 {
     std::vector<std::string> tokens;
