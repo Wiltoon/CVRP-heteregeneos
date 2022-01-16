@@ -31,5 +31,16 @@ public:
     void createFunctionObjetive() override;
     void createConstraints() override;
     Solution solve() override;
+
     void relax_and_fix();
+    void constraintDestiny();
+    void constraintDriverGoToDestiny();
+    void constraintBecame();
+    void constraintDriverBecame();
+    void constraintPacketSendByVehicle();
+    void constraintPacketSolvedByVehicle();
+    void constraintUseVehicles();
+    void constraintWarrantOutflowDeposit();
+    void constraintWarrantNoReturnDeposit();
+    void constraintTotalVehicles();
 };

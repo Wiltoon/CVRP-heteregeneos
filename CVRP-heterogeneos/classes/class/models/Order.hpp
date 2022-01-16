@@ -20,6 +20,9 @@ public:
     void createFunctionObjetive() override;
     void createConstraints() override;
     Solution solve() override;
+
+    void constraintDestiny();
+    void constraintCapacitedVehicle();
 };
 
 #endif // ORDER_H_INCLUDED
