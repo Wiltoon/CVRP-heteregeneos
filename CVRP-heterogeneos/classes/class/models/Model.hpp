@@ -10,5 +10,5 @@ public:
     virtual void createVariables() = 0;
     virtual void createFunctionObjetive() = 0;
     virtual void createConstraints() = 0;
-    virtual CVRPSolution solve() = 0;
+    virtual Solution solve() = 0;
 };

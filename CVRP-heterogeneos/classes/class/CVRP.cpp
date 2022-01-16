@@ -42,10 +42,11 @@ void CVRP::calculate_matrix_price(double alpha){
     }
 }
 
-CVRPSolution CVRP::solve(){
+Solution CVRP::solve(){
     //solving
     CVRPSolution problem;
     //criar o problema da "mochila multipla"
+    Order organizePackets;
     //resolver o problema da "mochila multipla"
     //passar dados para o VRP
     //por fim resolver o VRP de cada veiculo 

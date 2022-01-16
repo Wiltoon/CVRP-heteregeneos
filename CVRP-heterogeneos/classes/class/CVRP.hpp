@@ -7,7 +7,7 @@
 
 #include "Packet.hpp"
 #include "Vehicle.hpp"
-#include "..\..\src\CVRPSolution.hpp"
+#include "..\..\src\Solution.hpp"
 #include "NeighborPacket.hpp"
 
 class CVRP {
