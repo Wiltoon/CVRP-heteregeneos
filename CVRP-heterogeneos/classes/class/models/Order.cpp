@@ -71,6 +71,7 @@ Solution Order::solve(int tempoLimite){
     IloBool result = cplex.solve();
     if(result){
         objFO = cplex.getObjValue();
+        
         // preciso retornar w_k_j
     } else {
         // resolver pq nao teve solução
@@ -112,3 +113,16 @@ void Order::constraintCapacitedVehicle(){
         restSaida.end();
     }
 }
+
+OrderSolution Order::output(){
+    std::string message("Sucess!")
+    IloArray <IloNumArray> output(env, K);
+    for(int k = 0; k < K; k++){
+        output[k] = IloNumArray(env, N);
+    }
+    for(int k = 0; k < K; k++){
+        cplex.getValues(w[k], output[k]);
+    }
+    OrderSolution solution = OrderSolution(output, message);
+    return solution;
+} 

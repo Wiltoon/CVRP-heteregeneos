@@ -27,6 +27,8 @@ public:
     void renameVars();
     void constraintDestiny();
     void constraintCapacitedVehicle();
+
+    OrderSolution output();
 };
 
 #endif // ORDER_H_INCLUDED

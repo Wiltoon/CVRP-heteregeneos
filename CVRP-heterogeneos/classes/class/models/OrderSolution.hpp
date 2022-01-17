@@ -3,11 +3,17 @@
 
 #pragma once 
 
-class OrderSolution : public Solution{
+#include <stdio.h>
+#include <iostream>
+#include <string>
+#include <ilcplex/ilocplex.h>
+
+class OrderSolution{
 public:
     IloArray <IloNumArray> output;
+    std::string message;
 
-    Solution getOutput() override; 
+    OrderSolution(IloArray <IloNumArray> output, std::string message);
 }
 
 #endif // ORDERSOLUTION_H_INCLUDED

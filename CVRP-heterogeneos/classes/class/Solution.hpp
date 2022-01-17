@@ -3,12 +3,12 @@
 
 #pragma once
 
+#include <ilcplex/ilocplex.h>
+
 #include "Vehicle.hpp"
 
 class Solution{
-public:
-    Vehicle** vehicles;
-    virtual Solution getOutput() = 0;
+
 };
 
 #endif // SOLUTION_H_INCLUDED

@@ -1,5 +1,5 @@
-#ifndef SOLOMONINSTANCE_H_INCLUDED
-#define SOLOMONINSTANCE_H_INCLUDED
+#ifndef SOLOMON_INSTANCE_H_INCLUDED
+#define SOLOMON_INSTANCE_H_INCLUDED
 
 #pragma once
 
@@ -13,10 +13,9 @@
 #include "Instance.hpp"
 
 
-class SolomonInstance : Instance{
+class SolomonInstance : public Instance{
 private:
     std::vector<Packet> packets;
-
 public:
     SolomonInstance();
     CVRP readInput(std::string filename, double alpha);
@@ -27,4 +26,4 @@ public:
     void setPackets(std::vector<Packet> packets);
 };
 
-#endif // SOLOMONINSTANCE_H_INCLUDED
+#endif // SOLOMON_INSTANCE_H_INCLUDED

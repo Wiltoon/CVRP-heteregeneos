@@ -46,10 +46,13 @@ Solution CVRP::solve(){
     //solving
     CVRPSolution problem;
     //criar o problema da "mochila multipla"
-    Order organizePackets;
-    //resolver o problema da "mochila multipla"
-    //passar dados para o VRP
-    //por fim resolver o VRP de cada veiculo 
+    // Order organizePackets = Order(problem);
+    // //resolver o problema da "mochila multipla"
+    // OrderSolution partial = organizePackets.solve();
+    // //passar dados para o VRP
+    // VRP routing = VRP(partial);
+    // //por fim resolver o VRP de cada veiculo 
+    // routing.solve();
     return problem;
 }
 

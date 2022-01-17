@@ -1,8 +1,3 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-
-#include "..\classes\class\CVRP.hpp"
 #include "SolomonInstance.hpp"
 
 SolomonInstance::SolomonInstance(){
