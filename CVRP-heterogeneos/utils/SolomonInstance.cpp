@@ -20,13 +20,7 @@ CVRP SolomonInstance::readInput(std::string filename, double alpha) {
         this->parse(arquivo, problem);
         problem.calculate_matrix_distance();
         problem.calculate_matrix_price(alpha);
-        /*for (int i = 0; i < problem.packets.size(); i++) {
-            for (int j = 0; j < problem.packets.size(); j++) {
-                std::cout << problem.matrix_distance[i][j] << " ";
-            }
-            std::cout << std::endl;
-        }*/
-        // arquivo.close();
+        arquivo.close();
     }
     return problem;
 }

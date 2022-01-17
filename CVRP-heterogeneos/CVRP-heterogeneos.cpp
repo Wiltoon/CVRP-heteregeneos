@@ -15,7 +15,6 @@ int main()
     string filename("resource\\Solomon\\c101-0.0.txt");
     SolomonInstance reader;
     CVRP problem = reader.readInput(filename, ALPHA);
-    
-    //CVRPSolution solution = problem.solve();
+    Solution solution = problem.solve();
     return 0;
 }

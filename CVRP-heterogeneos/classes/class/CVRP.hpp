@@ -24,7 +24,7 @@ public:
     void calculate_matrix_distance();
     void calculate_matrix_price(double alpha);
     double distance_euclidian(Packet origin, Packet destiny);
-    CVRPSolution solve();
+    Solution solve();
 
     double price_packet_per_vehicle(
         Packet& packet, Vehicle& vehicle, double alpha
