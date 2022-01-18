@@ -11,10 +11,15 @@ using namespace std;
 
 int main()
 {
-    double ALPHA = 0.85; // deve ser entre 0 e 1
+    double ALPHA = 0.85;    // deve ser entre 0 e 1
+    int N = 101;            // Número de Packets
+    int K = 22;             // Número de veículos
+    int timeOrder = 20;     // Tempo para resolver ORDER
+    int timeVRP = 20;       // Tempo para resolver o VRP
     string filename("resource\\Solomon\\c101-0.0.txt");
     SolomonInstance reader;
-    CVRP problem = reader.readInput(filename, ALPHA);
-    Solution solution = problem.solve();
+    CVRP problem = reader.readInput(filename, ALPHA, N, K);
+    Solution solution = problem.solve(timeOrder,timeVRP);
+    solution.partial.printerOrderSolution(N,K);
     return 0;
 }

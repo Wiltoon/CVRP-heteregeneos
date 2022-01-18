@@ -1,5 +1,15 @@
 #include "Order.hpp"
 
+Order::Order(
+    std::vector<Packet> packets_order_,
+    std::vector<Vehicle> vehicles_,
+    double** matrix_price_
+) {
+    this->packets_order = packets_order_;
+    this->vehicles = vehicles_;
+    this->matrix_prices = matrix_prices_;
+}
+
 void Order::createParams(){
     // Aqui tem os parametros:
     // - matrix_price, packets, vehicles, matrix custo, qi
@@ -53,7 +63,7 @@ void Order::createConstraints(){
     constraintDestiny();
     constraintCapacitedVehicle();
 }
-Solution Order::solve(int tempoLimite){
+OrderSolution Order::solve(int tempoLimite){
     // determinar um tempo, a Solution desse modelo
     // - w_k_j : sera a matrix de destinos do prox model
     IloCplex cplex(model);
@@ -71,11 +81,11 @@ Solution Order::solve(int tempoLimite){
     IloBool result = cplex.solve();
     if(result){
         objFO = cplex.getObjValue();
-        
-        // preciso retornar w_k_j
+        OrderSolution sol = outputOrder(cplex);
+        return sol
     } else {
-        // resolver pq nao teve solução
-        // rever como retornar uma saida alternativa
+        OrderSolution sol = OrderSolution("Not found results factiveis");
+        return sol
     }
 }
 
@@ -114,8 +124,8 @@ void Order::constraintCapacitedVehicle(){
     }
 }
 
-OrderSolution Order::output(){
-    std::string message("Sucess!")
+OrderSolution Order::outputOrder(IloCplex cplex){
+    std::string message("Sucess!");
     IloArray <IloNumArray> output(env, K);
     for(int k = 0; k < K; k++){
         output[k] = IloNumArray(env, N);

@@ -3,9 +3,9 @@
 SolomonInstance::SolomonInstance(){
 }
 
-CVRP SolomonInstance::readInput(std::string filename, double alpha) {
+CVRP SolomonInstance::readInput(std::string filename, double alpha, int N, int K) {
     std::ifstream arquivo;
-    CVRP problem = CVRP(102,25);
+    CVRP problem = CVRP(N,K);
     arquivo.open(filename);
     if (!arquivo.is_open()) {
         std::cout << "arquivo de entrada inválido" << std::endl;

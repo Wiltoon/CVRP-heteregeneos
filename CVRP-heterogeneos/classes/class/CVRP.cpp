@@ -1,5 +1,7 @@
 #include "CVRP.hpp"
 
+#include "../class/models/Order.hpp"
+
 CVRP::CVRP(int N, int K){
     matrix_distance = (double**) malloc(N * sizeof(double*));
     for (int i = 0; i < N; i++) {
@@ -42,18 +44,23 @@ void CVRP::calculate_matrix_price(double alpha){
     }
 }
 
-Solution CVRP::solve(){
-    //solving
-    CVRPSolution problem;
+Solution CVRP::solve(int timeOrder, int timeVRP){
     //criar o problema da "mochila multipla"
-    // Order organizePackets = Order(problem);
-    // //resolver o problema da "mochila multipla"
-    // OrderSolution partial = organizePackets.solve();
+    Order organizePackets = Order(
+        packets,
+        vehicles,
+        matrix_price
+    );
+    // resolver o problema da "mochila multipla"
+    OrderSolution partial = organizePackets.solve(timeOrder);
+    int time = timeOrder+timeVRP;
+    std::cout << "Time Total: " << time << std::endl;
     // //passar dados para o VRP
     // VRP routing = VRP(partial);
     // //por fim resolver o VRP de cada veiculo 
     // routing.solve();
-    return problem;
+    Solution sol = Solution(partial);
+    return sol;
 }
 
 double CVRP::price_packet_per_vehicle(

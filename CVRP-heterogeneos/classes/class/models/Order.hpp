@@ -18,11 +18,17 @@ public:
     
     IloArray <IloBoolVarArray> w;   // variavel booleana indica se o packet j foi entregue pelo veicul k
 
+    Order(
+        std::vector<Packet> packets_order, 
+        std::vector<Vehicle> vehicles,
+        double** matrix_price
+    );
+
     void createParams() override;
     void createVariables() override;
     void createFunctionObjetive() override;
     void createConstraints() override;
-    Solution solve() override;
+    OrderSolution solve() override;
 
     void renameVars();
     void constraintDestiny();

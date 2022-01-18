@@ -1,11 +1,48 @@
 ﻿  CVRP.cpp
-C:\Users\Wilton\Documents\Mestrado\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\CVRP.cpp(83,27): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
-  Vehicle.cpp
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\CVRP.cpp(47,5): error C2065: 'Order': identificador não declarado
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\CVRP.cpp(47,11): error C2146: erro de sintaxe: ';' ausente antes do identificador 'organizePackets'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\CVRP.cpp(47,11): error C2065: 'organizePackets': identificador não declarado
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\CVRP.cpp(47,29): error C3861: 'Order': identificador não encontrado
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\CVRP.cpp(53,29): error C2065: 'organizePackets': identificador não declarado
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\CVRP.cpp(53,27): error C2512: 'OrderSolution': nenhum construtor padrão apropriado disponível
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\models\OrderSolution.hpp(11,7): message : consulte a declaração de 'OrderSolution'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\CVRP.cpp(54,10): error C2659: '=': função como operando esquerdo
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\CVRP.cpp(61,12): error C2065: 'problem': identificador não declarado
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\CVRP.cpp(92,27): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
+  CVRPSolution.cpp
+c1xx : fatal error C1083: Não é possível abrir arquivo fonte: 'classes\class\CVRPSolution.cpp': No such file or directory
+  Order.cpp
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\models\Model.hpp(7,10): fatal error C1083: Não é possível abrir arquivo incluir: '../class/CVRPSolution.hpp': No such file or directory
+  OrderSolution.cpp
+  VRP.cpp
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\models\Model.hpp(7,10): fatal error C1083: Não é possível abrir arquivo incluir: '../class/CVRPSolution.hpp': No such file or directory
+  Solution.cpp
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(3,24): error C2146: erro de sintaxe: ')' ausente antes do identificador 'partial_'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(3,10): error C2512: 'Solution': nenhum construtor padrão apropriado disponível
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.hpp(12,7): message : consulte a declaração de 'Solution'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(3,24): error C2146: erro de sintaxe: ';' ausente antes do identificador 'partial_'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(3,32): error C4430: faltando especificador de tipo - int assumido. Observação: C++ não suporta default-int
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(3,53): error C4430: faltando especificador de tipo - int assumido. Observação: C++ não suporta default-int
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(3,46): error C2146: erro de sintaxe: ';' ausente antes do identificador 'result_'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(3,53): error C2059: erro de sintaxe: ')'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(3,54): error C2143: erro de sintaxe: ';' ausente antes de '{'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(3,54): error C2447: '{': faltando cabeçalho de função (lista formal de estilo antigo?)
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(8,24): error C2146: erro de sintaxe: ')' ausente antes do identificador 'partail'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(8,10): error C2086: 'Solution OrderSolution': redefinição
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(3): message : consulte a declaração de 'OrderSolution'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(8,24): error C2146: erro de sintaxe: ';' ausente antes do identificador 'partail'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(8,31): error C2059: erro de sintaxe: ')'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(8,32): error C4430: faltando especificador de tipo - int assumido. Observação: C++ não suporta default-int
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(9,5): error C2355: 'this': é possível referenciar apenas dentro de funções de membro não estáticas ou inicializadores de membros de dados não estáticos
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(9,28): error C2059: erro de sintaxe: ';'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(10,1): error C2059: erro de sintaxe: '}'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\Solution.cpp(10,1): error C2143: erro de sintaxe: ';' ausente antes de '}'
   CVRP-heterogeneos.cpp
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\CVRP-heterogeneos.cpp(21,58): error C2660: 'SolomonInstance::readInput': função não recebe 4 argumentos
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\utils\SolomonInstance.hpp(21,10): message : consulte a declaração de 'SolomonInstance::readInput'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\CVRP-heterogeneos.cpp(21,18): error C2512: 'CVRP': nenhum construtor padrão apropriado disponível
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\classes\class\CVRP.hpp(16,7): message : consulte a declaração de 'CVRP'
   SolomonInstance.cpp
-  Gerando código
-  135 of 487 functions (27.7%) were compiled, the rest were copied from previous compilation.
-    57 functions were new in current compilation
-    50 functions had inline decision re-evaluated but remain unchanged
-  Finalizada a geração de código
-  CVRP-heterogeneos.vcxproj -> C:\Users\Wilton\Documents\Mestrado\CVRP-heteregeneos\CVRP-heterogeneos\x64\Release\CVRP-heterogeneos.exe
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\utils\SolomonInstance.cpp(6,83): error C2511: 'CVRP SolomonInstance::readInput(std::string,double,int,int)': função membro sobrecarregada não encontrada em 'SolomonInstance'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\utils\SolomonInstance.hpp(16): message : consulte a declaração de 'SolomonInstance'
+C:\Users\wilto\Documents\MESTRADO\OTIMIZACAO\CVRP-heteregeneos\CVRP-heterogeneos\utils\SolomonInstance.cpp(15,9): error C2671: 'SolomonInstance::readInput': funções membro static não possuem ponteiros 'this'

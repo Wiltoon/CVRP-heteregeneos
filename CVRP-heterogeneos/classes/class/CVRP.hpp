@@ -1,3 +1,6 @@
+#ifndef CVRP_H_INCLUDED
+#define CVRP_H_INCLUDED
+
 #pragma once
 #include <iostream>
 #include <vector>
@@ -7,7 +10,7 @@
 
 #include "Packet.hpp"
 #include "Vehicle.hpp"
-#include "..\..\src\Solution.hpp"
+#include "../class/Solution.hpp"
 #include "NeighborPacket.hpp"
 
 class CVRP {
@@ -24,7 +27,7 @@ public:
     void calculate_matrix_distance();
     void calculate_matrix_price(double alpha);
     double distance_euclidian(Packet origin, Packet destiny);
-    Solution solve();
+    Solution solve(int timeOrder, int timeVRP);
 
     double price_packet_per_vehicle(
         Packet& packet, Vehicle& vehicle, double alpha
@@ -32,3 +35,5 @@ public:
     void collectPacketsAround(Vehicle vehicle);
     std::vector<NeighborPacket> sortPacketsAroundPacket(Packet pac);
 };
+
+#endif // CVRP_H_INCLUDED

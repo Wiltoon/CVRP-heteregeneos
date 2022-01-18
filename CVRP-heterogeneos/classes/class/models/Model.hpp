@@ -1,3 +1,6 @@
+#ifndef MODEL_H_INCLUDED
+#define MODEL_H_INCLUDED
+
 #pragma once
 
 #include <ilcplex/ilocplex.h>
@@ -12,3 +15,5 @@ public:
     virtual void createConstraints() = 0;
     virtual Solution solve() = 0;
 };
+
+#endif // MODEL_H_INCLUDED

@@ -1,3 +1,6 @@
+#ifndef NEIGHBOR_PACKET_H_INCLUDED
+#define NEIGHBOR_PACKET_H_INCLUDED
+
 #pragma once
 
 #include "Packet.hpp"
@@ -25,3 +28,5 @@ public:
         return destination;
     }
 };
+
+#endif // NEIGHBOR_PACKET_H_INCLUDED

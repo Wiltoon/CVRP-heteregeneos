@@ -1,3 +1,6 @@
+#ifndef VRP_H_INCLUDED
+#define VRP_H_INCLUDED
+
 #pragma once
 
 #include "Model.hpp"
@@ -44,3 +47,5 @@ public:
     void constraintWarrantNoReturnDeposit();
     void constraintTotalVehicles();
 };
+
+#endif // VRP_H_INCLUDED
