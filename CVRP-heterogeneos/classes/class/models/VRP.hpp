@@ -33,7 +33,7 @@ public:
     void createVariables() override;
     void createFunctionObjetive() override;
     void createConstraints() override;
-    Solution solve() override;
+    Solution solve(int timeLimite) override;
 
     void relax_and_fix();
     void constraintDestiny();

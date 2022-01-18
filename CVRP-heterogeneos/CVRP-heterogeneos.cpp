@@ -1,9 +1,10 @@
+#include <stdio.h>
 #include <iostream>
-#include "utils\SolomonInstance.hpp"
-#include "classes/class/CVRP.hpp"
-#include "src\CVRPSolution.hpp"
-#include "CVRP-heterogeneos.h"
 #include <string>
+#include <vector>
+
+#include "CVRP-heterogeneos.h"
+#include "utils/SolomonInstance.hpp"
 
 using namespace std;
 // ALPHA é a porcentagem da capacidade maxima de um veiculo que será ativada 
@@ -17,9 +18,9 @@ int main()
     int timeOrder = 20;     // Tempo para resolver ORDER
     int timeVRP = 20;       // Tempo para resolver o VRP
     string filename("resource\\Solomon\\c101-0.0.txt");
-    SolomonInstance reader;
+    SolomonInstance reader = SolomonInstance();
     CVRP problem = reader.readInput(filename, ALPHA, N, K);
-    Solution solution = problem.solve(timeOrder,timeVRP);
-    solution.partial.printerOrderSolution(N,K);
+    Solution solution = problem.solve(timeOrder,timeVRP, N, K);
+    solution.partial.printerOrderSolution(N, K);
     return 0;
 }

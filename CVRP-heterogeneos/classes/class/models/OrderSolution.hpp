@@ -13,6 +13,9 @@ public:
     IloArray <IloNumArray> output;
     std::string message;
 
+    OrderSolution() {
+
+    }
     OrderSolution(IloArray <IloNumArray> output, std::string message);
     OrderSolution(std::string messageFail);
     void printerOrderSolution(int N, int K);

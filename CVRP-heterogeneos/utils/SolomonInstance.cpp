@@ -12,9 +12,13 @@ CVRP SolomonInstance::readInput(std::string filename, double alpha, int N, int K
         exit(0);
     }
     else {
+        std::cout << "Reading parser" << std::endl;
         this->parse(arquivo, problem);
-        problem.calculate_matrix_distance();
-        problem.calculate_matrix_price(alpha);
+        std::cout << "Calculate matrix distance" << std::endl;
+        problem.calculate_matrix_distance(N);
+        std::cout << "Calculte matrix price..." << std::endl;
+        problem.calculate_matrix_price(alpha, N, K);
+        std::cout << "Fechar arquivo" << std::endl;
         arquivo.close();
     }
     return problem;

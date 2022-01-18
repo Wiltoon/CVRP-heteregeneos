@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <ilcplex/ilocplex.h>
-
 #include "../class/models/OrderSolution.hpp"
 #include "../class/models/VRPSolution.hpp"
 #include "Vehicle.hpp"
@@ -12,9 +10,9 @@
 class Solution{
 public:
     OrderSolution partial;
-    // VRPSolution result;
+    VRPSolution result;
     
-    // Solution(OrderSolution partial, VRPSolution result);
+    Solution(OrderSolution partial, VRPSolution result);
     Solution(OrderSolution partail);
 };
 

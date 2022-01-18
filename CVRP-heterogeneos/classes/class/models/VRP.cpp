@@ -18,7 +18,7 @@ VRP::VRP(
     this->K = K;
 }
 
-void VRP::createParams() override{
+void VRP::createParams() {
     // nomear todas os parametros de entrada
     IloArray <IloNumArray> d(env, N);					// Matrizes de distancia e tempo entre pedido i ate j
     for (int i = 0; i < N; i++) {
@@ -38,7 +38,7 @@ void VRP::createParams() override{
     }
 }   
 
-void VRP::createVariables() override{
+void VRP::createVariables() {
     // nomear as variaveis de decisao
     IloArray <IloArray <IloBoolVarArray>> x(env, K);
     for (int k = 0; k < K; k++) {
@@ -60,7 +60,7 @@ void VRP::createVariables() override{
     }
 }
 
-void VRP::createFunctionObjetive() override{
+void VRP::createFunctionObjetive() {
     // criar a funcao objetivo no ambiente env
     IloExpr fo(env);
     for (int k = 0; k < K; k++) {
@@ -71,12 +71,12 @@ void VRP::createFunctionObjetive() override{
         }
         fo += e[k] * v[k];
     }
-    modelo.add(IloMinimize(env, fo));
+    model.add(IloMinimize(env, fo));
     fo.end();
 }
 
 
-void VRP::createConstraints() override{
+void VRP::createConstraints() {
     // criar as constraints
     constraintDestiny();
     constraintDriverGoToDestiny();
@@ -90,8 +90,12 @@ void VRP::createConstraints() override{
     constraintTotalVehicles();
 }
 
-Solution solve() override{
+Solution VRP::solve(int timeLimite) {
     // aqui deve resolver o problema VRP
+    OrderSolution in = OrderSolution();
+    VRPSolution o = VRPSolution();
+    Solution sol = Solution(in, o);
+    return sol;
 }
 
 void VRP::relax_and_fix(){
@@ -103,14 +107,14 @@ void VRP::constraintDestiny(){
     for (int j = 1; j < N; j++) {
         IloExpr restDest(env);
         char* namevar;
-        string name("alguemChegaAoCliente_" + to_string(j));
+        std::string name("alguemChegaAoCliente_" + std::to_string(j));
         namevar = &name[0];
         for (int k = 0; k < K; k++) {
             restDest += w[k][j];
         }
         IloConstraint consRestDest = (restDest == 1);
         consRestDest.setName(namevar);
-        modelo.add(consRestDest);
+        model.add(consRestDest);
         cons_destino.add(consRestDest);
         restDest.end();
     }
@@ -121,14 +125,14 @@ void VRP::constraintDriverGoToDestiny(){
     for (int k = 0; k < K; k++) {
         IloExpr restDestDriver(env);
         char* namevarDD;
-        string name("veiculo_dest_" + to_string(k));
+        std::string name("veiculo_dest_" + std::to_string(k));
         namevarDD = &name[0];
         for (int i = 0; i < N; i++) {
             restDestDriver += w[k][i];
         }
         IloConstraint consRestOriginDriver = (restDestDriver <= v[k] * N);
         consRestOriginDriver.setName(namevarDD);
-        modelo.add(consRestOriginDriver);
+        model.add(consRestOriginDriver);
         cons_destino_veiculo.add(consRestOriginDriver);
         restDestDriver.end();
     }
@@ -139,14 +143,14 @@ void VRP::constraintBecame(){
     for (int i = 1; i < N; i++) {
         IloExpr restOrig(env);
         char* namevar;
-        string name("alguemSaiDoCliente[" + to_string(i) + "]");
+        std::string name("alguemSaiDoCliente[" + std::to_string(i) + "]");
         namevar = &name[0];
         for (int k = 0; k < K; k++) {
             restOrig += z[k][i];
         }
         IloConstraint consRestOrigin = (restOrig + y[i] == 1);
         consRestOrigin.setName(namevar);
-        modelo.add(consRestOrigin);
+        model.add(consRestOrigin);
         cons_chegada.add(consRestOrigin);
         restOrig.end();
     }
@@ -157,15 +161,15 @@ void VRP::constraintDriverBecame(){
     for (int k = 0; k < K; k++) {
         IloExpr restOrigDriver(env);
         char* namevarD;
-        string name("veiculo_origin_" + to_string(k));
+        std::string name("veiculo_origin_" + std::to_string(k));
         namevarD = &name[0];
         for (int i = 0; i < N; i++) {
             restOrigDriver += z[k][i];
         }
         IloConstraint consRestOriginDriver = (restOrigDriver <= v[k] * N);
         consRestOriginDriver.setName(namevarD);
-        modelo.add(consRestOriginDriver);
-        cons_chegada.add(consRestOriginDriver);
+        model.add(consRestOriginDriver);
+        cons_chegada_veiculo.add(consRestOriginDriver);
         restOrigDriver.end();
     }
 }
@@ -176,7 +180,7 @@ void VRP::constraintPacketSendByVehicle(){
         for (int j = 1; j < N; j++) {
             IloExpr restChegada(env); 
             char* namevar;
-            string name("chegadaNoCliente_" + to_string(j) + "_peloVehicle_" + to_string(k));
+            std::string name("chegadaNoCliente_" + std::to_string(j) + "_peloVehicle_" + std::to_string(k));
             namevar = &name[0];
             for (int i = 0; i < N; i++) {
                 if (i != j) {
@@ -185,7 +189,7 @@ void VRP::constraintPacketSendByVehicle(){
             }
             IloConstraint consRestChegada = (restChegada == w[k][j]);
             consRestChegada.setName(namevar);
-            modelo.add(consRestChegada);
+            model.add(consRestChegada);
             cons_array_chegada.add(consRestChegada);
             restChegada.end();
         }
@@ -198,7 +202,7 @@ void VRP::constraintPacketSolvedByVehicle(){
         for (int i = 0; i < N; i++) {
             IloExpr restSaida(env);
             char* namevar;
-            string name("saidaDoCliente_" + to_string(i) + "_peloVehicle_" + to_string(k));
+            std::string name("saidaDoCliente_" + std::to_string(i) + "_peloVehicle_" + std::to_string(k));
             namevar = &name[0];
             for (int j = 0; j < N; j++) {
                 if (j != i) {
@@ -207,7 +211,7 @@ void VRP::constraintPacketSolvedByVehicle(){
             }
             IloConstraint consRestSaida = (restSaida == z[k][i]);
             consRestSaida.setName(namevar);
-            modelo.add(consRestSaida);
+            model.add(consRestSaida);
             cons_array_saida.add(consRestSaida);
             restSaida.end();
         }
@@ -219,7 +223,7 @@ void VRP::constraintUseVehicles(){
     for (int k = 0; k < K; k++) {
         IloExpr restVeiX(env);
         char* namevar;
-        string name("veiculo_" + to_string(k) + "_utilizado");
+        std::string name("veiculo_" + std::to_string(k) + "_utilizado");
         namevar = &name[0];
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
@@ -228,7 +232,7 @@ void VRP::constraintUseVehicles(){
         }
         IloConstraint consRestVei = (restVeiX <= v[k]*N);
         consRestVei.setName(namevar);
-        modelo.add(consRestVei);
+        model.add(consRestVei);
         cons_array_veiculos3.add(consRestVei);
         restVeiX.end();
     }
@@ -276,13 +280,13 @@ void VRP::constraintTotalVehicles(){
     IloExpr sumVeiculos(env);
     for (int k = 0; k < K; k++) {
         char* namevarV;
-        string nameV("v_" + to_string(k));
+        std::string nameV("v_" + std::to_string(k));
         namevarV = &nameV[0];
         v[k].setName(namevarV);
         sumVeiculos += v[k];
     }
-    IloConstraint sumDrivers = (sumVeiculos >= qntMinVei);
+    IloConstraint sumDrivers = (sumVeiculos >= 0); // total de veiculos utilizado?
     sumDrivers.setName("SumDrivers");
-    modelo.add(sumDrivers);
+    model.add(sumDrivers);
     sumVeiculos.end();
 }

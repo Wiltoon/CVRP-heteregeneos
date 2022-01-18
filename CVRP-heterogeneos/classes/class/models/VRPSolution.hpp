@@ -6,6 +6,9 @@
 class VRPSolution {
 public:
 	int N = 0;
+	VRPSolution() {
+
+	}
 	void printerSolution();
 };
 

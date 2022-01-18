@@ -7,15 +7,15 @@ CVRP::CVRP(int N, int K){
     for (int i = 0; i < N; i++) {
         matrix_distance[i] = (double*)malloc(N * sizeof(double));
     }
-    matrix_price = (double**) malloc(N * sizeof(double));
-    for (int i = 0; i < N; i++){
-        matrix_price[i] = (double*)malloc(K * sizeof(double));
+    matrix_price = (double**) malloc(K * sizeof(double));
+    for (int k = 0; k < K; k++){
+        matrix_price[k] = (double*)malloc(N * sizeof(double));
     }
 }
 
-void CVRP::calculate_matrix_distance(){
-    for(int i = 0; i < this->packets.size(); i++){
-        for(int j = 0; j < this->packets.size(); j++){
+void CVRP::calculate_matrix_distance(int N){
+    for(int i = 0; i < N; i++){
+        for(int j = 0; j < N; j++){
             if (i == j) {
                 matrix_distance[i][j] = 999999.0;
             }
@@ -32,34 +32,33 @@ double CVRP::distance_euclidian(Packet origin, Packet destiny){
     double dy = (double)destiny.loc_y - (double)origin.loc_y;
     return sqrt(dx * dx + dy * dy);
 }
-void CVRP::calculate_matrix_price(double alpha){
+void CVRP::calculate_matrix_price(double alpha, int N, int K){
     //matrix de preço para cada veiculo
     //O preço a se pagar para entregar o packet pelo veiculo K
-    for(int i = 0; i < this->packets.size(); i++){
-        for(int k = 0; k < this->vehicles.size(); k++){
-            matrix_price[i][k] = price_packet_per_vehicle(
+    for(int i = 0; i < N; i++){
+        for(int k = 0; k < K; k++){
+            matrix_price[k][i] = price_packet_per_vehicle(
                 this->packets[i], this->vehicles[k], alpha
             );
         }
     }
 }
 
-Solution CVRP::solve(int timeOrder, int timeVRP){
+Solution CVRP::solve(int timeOrder, int timeVRP, int N, int K){
     //criar o problema da "mochila multipla"
     Order organizePackets = Order(
         packets,
         vehicles,
-        matrix_price
+        matrix_price,
+        N,
+        K
     );
     // resolver o problema da "mochila multipla"
-    OrderSolution partial = organizePackets.solve(timeOrder);
-    int time = timeOrder+timeVRP;
-    std::cout << "Time Total: " << time << std::endl;
+    Solution sol = organizePackets.solve(timeOrder);
     // //passar dados para o VRP
     // VRP routing = VRP(partial);
     // //por fim resolver o VRP de cada veiculo 
     // routing.solve();
-    Solution sol = Solution(partial);
     return sol;
 }
 

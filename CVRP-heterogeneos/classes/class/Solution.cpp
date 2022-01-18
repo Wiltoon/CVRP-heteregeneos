@@ -1,10 +1,10 @@
 #include "Solution.hpp"
 
-Solution(OrderSolution partial_, VRPSolution result_){
+Solution::Solution(OrderSolution partial_, VRPSolution result_){
     this->partial = partial_;
     this->result = result_;
 }
 
-Solution(OrderSolution partail){
+Solution::Solution(OrderSolution partail){
     this->partial = partail;
 }

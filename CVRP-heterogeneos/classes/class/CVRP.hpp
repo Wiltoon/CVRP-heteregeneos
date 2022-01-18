@@ -6,7 +6,6 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
-#include "math.h"
 
 #include "Packet.hpp"
 #include "Vehicle.hpp"
@@ -24,10 +23,10 @@ public:
     double** matrix_price;
 
     CVRP(int num_pedidos, int num_vehicles);
-    void calculate_matrix_distance();
-    void calculate_matrix_price(double alpha);
+    void calculate_matrix_distance(int N);
+    void calculate_matrix_price(double alpha, int N, int K);
     double distance_euclidian(Packet origin, Packet destiny);
-    Solution solve(int timeOrder, int timeVRP);
+    Solution solve(int timeOrder, int timeVRP, int N, int K);
 
     double price_packet_per_vehicle(
         Packet& packet, Vehicle& vehicle, double alpha

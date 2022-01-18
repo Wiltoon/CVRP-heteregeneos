@@ -12,7 +12,10 @@
 
 class Instance{
 public:
-    virtual CVRP readInput(std::string filename, double alpha) = 0;
+    Instance() {
+
+    }
+    virtual CVRP readInput(std::string filename, double alpha, int N, int K) = 0;
     virtual void parse(std::ifstream& arquivo, CVRP& problem) = 0;
 };
 
