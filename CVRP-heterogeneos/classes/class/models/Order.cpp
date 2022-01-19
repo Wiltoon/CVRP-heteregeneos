@@ -155,6 +155,6 @@ OrderSolution Order::outputOrder(IloCplex& cplex){
         cplex.getValues(w[k], output[k]);
     }
     std::cout << message << std::endl;
-    OrderSolution solution = OrderSolution(output, message);
+    OrderSolution solution = OrderSolution(output, message, packets_order, vehicles);
     return solution;
 } 

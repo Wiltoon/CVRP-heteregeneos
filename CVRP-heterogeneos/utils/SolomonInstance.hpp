@@ -18,9 +18,21 @@ private:
     std::vector<Packet> packets;
 public:
     SolomonInstance();
-    CVRP readInput(std::string filename, double alpha, int N, int K) override;
-    void parse(std::ifstream& arquivo, CVRP& problem) override;
-    void parseVehicles(CVRP& problem);
+    CVRP readInput(
+        std::string filename, 
+        std::string filevehicle, 
+        double alpha, 
+        int N, 
+        int K) override;
+    void parse(
+        std::ifstream& arquivo, 
+        std::string filevehicle, 
+        CVRP& problem
+        ) override;
+    void parseVehicles(
+        CVRP& problem,
+        std::string filevehicle
+        );
     std::vector<std::string> split(const std::string& text, char sep);
     std::vector<Packet> getPackets();
     void setPackets(std::vector<Packet> packets);

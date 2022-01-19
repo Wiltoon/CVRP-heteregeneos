@@ -3,7 +3,12 @@
 SolomonInstance::SolomonInstance(){
 }
 
-CVRP SolomonInstance::readInput(std::string filename, double alpha, int N, int K) {
+CVRP SolomonInstance::readInput(
+    std::string filename, 
+    std::string filevehicle, 
+    double alpha, 
+    int N, int K
+) {
     std::ifstream arquivo;
     CVRP problem = CVRP(N,K);
     arquivo.open(filename);
@@ -12,19 +17,19 @@ CVRP SolomonInstance::readInput(std::string filename, double alpha, int N, int K
         exit(0);
     }
     else {
-        std::cout << "Reading parser" << std::endl;
-        this->parse(arquivo, problem);
-        std::cout << "Calculate matrix distance" << std::endl;
+        // std::cout << "Reading parser" << std::endl;
+        this->parse(arquivo, filevehicle, problem);
+        // std::cout << "Calculate matrix distance" << std::endl;
         problem.calculate_matrix_distance(N);
-        std::cout << "Calculte matrix price..." << std::endl;
+        // std::cout << "Calculte matrix price..." << std::endl;
         problem.calculate_matrix_price(alpha, N, K);
-        std::cout << "Fechar arquivo" << std::endl;
+        // std::cout << "Fechar arquivo" << std::endl;
         arquivo.close();
     }
     return problem;
 }
 
-void SolomonInstance::parse(std::ifstream& arquivo, CVRP& problem) {
+void SolomonInstance::parse(std::ifstream& arquivo, std::string filevehicles, CVRP& problem) {
     std::string line;
     int num_lim = 0;
     int id = 0;
@@ -66,17 +71,17 @@ void SolomonInstance::parse(std::ifstream& arquivo, CVRP& problem) {
         }
         num_lim++;
     }
-    parseVehicles(problem);
+    parseVehicles(problem, filevehicles);
 }
 
-void SolomonInstance::parseVehicles(CVRP& problem){
+void SolomonInstance::parseVehicles(CVRP& problem, std::string filevehicles){
     std::string line;
     int num_lim = 0;
     int id = 0;
     int cap = 0;
     int custo = 0;
     std::ifstream arquivo;
-    arquivo.open("resource\\Solomon\\veiculos.txt");
+    arquivo.open(filevehicles);
     while (!(arquivo).eof()) {
         getline((arquivo), line);
         if (num_lim != 0) {
