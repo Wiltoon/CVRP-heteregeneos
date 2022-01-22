@@ -44,8 +44,25 @@ void CVRP::calculate_matrix_price(double alpha, int N, int K){
     }
 }
 
+Solution CVRP::solveWithKmeans(int timeOrder, int timeVRP, int N, int K){
+    // Aplicar o KMeans retornara um vector de clusteres.
+    // 
+    // Cada cluster será um ORDER+VRP diferente:
+    //      - Quantos veículos poderei usar para cada cluster?
+    //      - Quais veículos usar em cada cluster?
+    //        => Possibilidades:
+    //           -> Cada cluster se torna um 
+    //              Packet(
+    //                  id_centroid,
+    //                  sum_charges_packets, 
+    //                  loc_x_centroid, 
+    //                  loc_y_centroid)
+    //           -> Permitir que mais de um veículo atenda o PacketCentroid
+    // NOVO MODELO DE OTIMIZAÇÃO       
+}
+
 Solution CVRP::solve(int timeOrder, int timeVRP, int N, int K){
-    //criar o problema da "mochila multipla"
+    //A resolução desse problema retorna os packets organizados por veículos
     Order organizePackets = Order(
         packets,
         vehicles,

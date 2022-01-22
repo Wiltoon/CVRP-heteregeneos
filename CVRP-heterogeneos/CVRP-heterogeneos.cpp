@@ -14,7 +14,7 @@ int main()
 {
     double ALPHA = 0.20;    // deve ser entre 0 e 1
     int N = 101;            // Número de Packets
-    int K = 11;             // Número de veículos
+    int K = 10;             // Número de veículos
     int timeOrder = 20;     // Tempo para resolver ORDER
     int timeVRP = 20;       // Tempo para resolver o VRP
     string filename("resource\\Solomon\\c101-0.0.txt");

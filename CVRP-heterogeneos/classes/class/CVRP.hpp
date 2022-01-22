@@ -26,6 +26,7 @@ public:
     void calculate_matrix_distance(int N);
     void calculate_matrix_price(double alpha, int N, int K);
     double distance_euclidian(Packet origin, Packet destiny);
+    Solution solveWithKmeans(int timeOrder, int timeVRP, int N, int K);
     Solution solve(int timeOrder, int timeVRP, int N, int K);
 
     double price_packet_per_vehicle(
