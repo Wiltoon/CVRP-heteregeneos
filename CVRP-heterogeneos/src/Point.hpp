@@ -1,13 +1,14 @@
 #ifndef POINT_H_INCLUDED
 #define POINT_H_INCLUDED
 
+#pragma once
+
 #include <iostream>
 #include <string>
 #include <stdlib.h>
 #include <vector>
 
-class Point
-{
+class Point {
 private:
 	int id_point;
     int id_cluster;

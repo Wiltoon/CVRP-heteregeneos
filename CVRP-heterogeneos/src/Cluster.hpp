@@ -1,6 +1,8 @@
 #ifndef CLUSTER_H_INCLUDED
 #define CLUSTER_H_INCLUDED
 
+#pragma once
+
 #include <iostream>
 #include <vector>
 

@@ -8,9 +8,9 @@
 #include <string>
 #include <fstream>
 
-#include "..\classes\class\CVRP.hpp"
-#include "..\classes\class\Packet.hpp"
 #include "Instance.hpp"
+#include "..\src\classes\class\Vehicle.hpp"
+#include "..\src\classes\class\Packet.hpp"
 
 
 class SolomonInstance : public Instance{

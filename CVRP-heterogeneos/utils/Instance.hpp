@@ -7,7 +7,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include "..\classes\class\CVRP.hpp"
+#include "..\src\classes\class\CVRP.hpp"
 
 
 class Instance{
