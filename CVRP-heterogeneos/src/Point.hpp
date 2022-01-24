@@ -14,8 +14,9 @@ private:
     int id_cluster;
 	std::vector<double> values;
 	int total_values;
-	std::string name;
 public:
+	std::string name;
+	Point();
 	Point(int id_point, std::vector<double>& values, std::string name = "");
 	int getID();
 	void setCluster(int id_cluster);
@@ -23,7 +24,6 @@ public:
 	double getValue(int index);
 	int getTotalValues();
 	void addValue(double value);
-	std::string getName();
 };
 
 #endif // POINT_H_INCLUDED

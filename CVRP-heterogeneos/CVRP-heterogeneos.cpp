@@ -3,10 +3,14 @@
 #include <string>
 #include <vector>
 
+// #include "libs/matplotlibcpp.h"
+
 #include "CVRP-heterogeneos.h"
+#include "src/KMeans.hpp"
 #include "utils/SolomonInstance.hpp"
 
 using namespace std;
+// namespace plt = matplotlibcpp;
 // ALPHA é a porcentagem da capacidade maxima de um veiculo que será ativada 
 // para o calculo do preço de um pedido
 
@@ -21,7 +25,8 @@ int main()
     string filevehicle("resource\\Solomon\\vei-homo.txt");
     SolomonInstance reader = SolomonInstance();
     CVRP problem = reader.readInput(filename, filevehicle, ALPHA, N, K);
-    Solution solution = problem.solve(timeOrder,timeVRP, N, K);
-    solution.partial.printerOrderSolution(N, K);
+
+    Solution solution = problem.solveWithKmeans(timeOrder,timeVRP, N, K);
+    // solution.partial.printerOrderSolution(N, K);
     return 0;
 }

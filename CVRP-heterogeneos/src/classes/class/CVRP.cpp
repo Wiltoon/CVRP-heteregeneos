@@ -44,7 +44,28 @@ void CVRP::calculate_matrix_price(double alpha, int N, int K){
 
 Solution CVRP::solveWithKmeans(int timeOrder, int timeVRP, int N, int K){
     // Aplicar o KMeans retornara um vector de clusteres.
-    // 
+    std::vector<Point> coordinates_packets;
+    std::vector<Solution> clusters_solved;
+
+    for(int i = 0; i < N; i++){
+        coordinates_packets.push_back(packets[i].pt);
+    }
+    // How to choose the best "k" clusters
+    for (int i = K/2; i <= K; i++){
+        KMeans kmeans(i, N, 2, K);
+        bestK = kmeans.run(coordinates_packets);
+    }
+    for(int k = 0; k < bestK.getClusters().size(); k++){
+        // Quais veículos utilizar para o cluster?
+        std::vector<Vehicle> vehicles_selected = optimizeVehicles();
+        Solution sol = solve(
+            timeOrder,
+            timeVRP,
+            vehicles_selected,
+            bestK.getCluster(k).getPackets(packets);
+        );
+        clusters_solved.push_back(sol);
+    }
     // Cada cluster será um ORDER+VRP diferente:
     //      - Quantos veículos poderei usar para cada cluster?
     //      - Quais veículos usar em cada cluster?
@@ -59,14 +80,18 @@ Solution CVRP::solveWithKmeans(int timeOrder, int timeVRP, int N, int K){
     // NOVO MODELO DE OTIMIZAÇÃO       
 }
 
-Solution CVRP::solve(int timeOrder, int timeVRP, int N, int K){
+Solution CVRP::solve(
+    int timeOrder, int timeVRP, 
+    std::vector<Vehicle> vehicles_used, std::vector<Packet> packs
+){
+    int N = packs.size();
+    int K = vehicles_used.size();    
     //A resolução desse problema retorna os packets organizados por veículos
     Order organizePackets = Order(
-        packets,
-        vehicles,
+        packs,
+        vehicles_used,
         matrix_price,
-        N,
-        K
+        N, K
     );
     // resolver o problema da "mochila multipla"
     Solution sol = organizePackets.solve(timeOrder);
@@ -114,4 +139,9 @@ std::vector<NeighborPacket> CVRP::sortPacketsAroundPacket(Packet pac){
     }
     std::sort(pkts_bor.begin(), pkts_bor.end(), crescentePackets);
     return pkts_bor;
+}
+
+std::vector<Vehicle> CVRP::optimizeVehicles(){
+    // Construir uma lista de PacketCentroid
+    WhichVehicleProblem pk = WhichVehicleProblem(packetsCentroids);
 }

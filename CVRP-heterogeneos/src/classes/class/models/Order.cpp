@@ -43,7 +43,7 @@ void Order::createParams(){
     this->mp = mp;
     this->q = q;
     this->Qmax = Qmax;
-    this->e = e;
+    //this->e = e;
 }
 
 void Order::createVariables(){

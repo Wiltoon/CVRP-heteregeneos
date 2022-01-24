@@ -143,33 +143,40 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="classes\class\CVRP.cpp" />
-    <ClCompile Include="classes\class\models\Model.cpp" />
-    <ClCompile Include="classes\class\models\Order.cpp" />
-    <ClCompile Include="classes\class\models\OrderSolution.cpp" />
-    <ClCompile Include="classes\class\models\VRP.cpp" />
-    <ClCompile Include="classes\class\models\VRPSolution.cpp" />
-    <ClCompile Include="classes\class\NeighborPacket.cpp" />
-    <ClCompile Include="classes\class\Packet.cpp" />
-    <ClCompile Include="classes\class\Solution.cpp" />
-    <ClCompile Include="classes\class\Vehicle.cpp" />
+    <ClCompile Include="src\classes\class\CVRP.cpp" />
+    <ClCompile Include="src\classes\class\models\Model.cpp" />
+    <ClCompile Include="src\classes\class\models\Order.cpp" />
+    <ClCompile Include="src\classes\class\models\OrderSolution.cpp" />
+    <ClCompile Include="src\classes\class\models\VRP.cpp" />
+    <ClCompile Include="src\classes\class\models\VRPSolution.cpp" />
+    <ClCompile Include="src\classes\class\NeighborPacket.cpp" />
+    <ClCompile Include="src\classes\class\Packet.cpp" />
+    <ClCompile Include="src\classes\class\Solution.cpp" />
+    <ClCompile Include="src\classes\class\Vehicle.cpp" />
     <ClCompile Include="CVRP-heterogeneos.cpp" />
+    <ClCompile Include="src\Cluster.cpp" />
+    <ClCompile Include="src\KMeans.cpp" />
+    <ClCompile Include="src\Point.cpp" />
     <ClCompile Include="utils\SolomonInstance.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="classes\class\CVRP.hpp">
+    <ClInclude Include="libs\matplotlibcpp.h" />
+    <ClInclude Include="src\classes\class\CVRP.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="classes\class\models\Model.hpp" />
-    <ClInclude Include="classes\class\models\Order.hpp" />
-    <ClInclude Include="classes\class\models\OrderSolution.hpp" />
-    <ClInclude Include="classes\class\models\VRP.hpp" />
-    <ClInclude Include="classes\class\models\VRPSolution.hpp" />
-    <ClInclude Include="classes\class\NeighborPacket.hpp" />
-    <ClInclude Include="classes\class\Packet.hpp" />
-    <ClInclude Include="classes\class\Solution.hpp" />
+    <ClInclude Include="src\classes\class\models\Model.hpp" />
+    <ClInclude Include="src\classes\class\models\Order.hpp" />
+    <ClInclude Include="src\classes\class\models\OrderSolution.hpp" />
+    <ClInclude Include="src\classes\class\models\VRP.hpp" />
+    <ClInclude Include="src\classes\class\models\VRPSolution.hpp" />
+    <ClInclude Include="src\classes\class\NeighborPacket.hpp" />
+    <ClInclude Include="src\classes\class\Packet.hpp" />
+    <ClInclude Include="src\classes\class\Solution.hpp" />
     <ClInclude Include="classes\class\Vehicle.hpp" />
     <ClInclude Include="CVRP-heterogeneos.h" />
+    <ClInclude Include="src\Cluster.hpp" />
+    <ClInclude Include="src\KMeans.hpp" />
+    <ClInclude Include="src\Point.hpp" />
     <ClInclude Include="utils\Instance.hpp" />
     <ClInclude Include="utils\LoggibudInstance.hpp" />
     <ClInclude Include="utils\SolomonInstance.hpp" />

@@ -24,6 +24,9 @@ private:
 public:
     KMeans(int K, int total_points, int total_values, int max_iterations);
 	void run(std::vector<Point> & points);
+    
+    std::vector<Cluster> getClusters();
+    Cluster getCluster(int index);
 };
 
 #endif // KMEANS_H_INCLUDED

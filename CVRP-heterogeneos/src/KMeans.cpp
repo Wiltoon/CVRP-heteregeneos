@@ -110,7 +110,7 @@ void KMeans::run(std::vector<Point> & points) {
             for(int p = 0; p < total_values; p++) {
                 std::cout << clusters[i].getPoint(j).getValue(p) << " ";
             }
-            std::string point_name = clusters[i].getPoint(j).getName();
+            std::string point_name = clusters[i].getPoint(j).name;
             if(point_name != ""){
                 std::cout << "- " << point_name;
             }
@@ -122,4 +122,12 @@ void KMeans::run(std::vector<Point> & points) {
         }
         std::cout << "\n\n";
     }
+}
+
+std::vector<Cluster> KMeans::getClusters(){
+    return this->clusters;
+}
+
+Cluster KMeans::getCluster(int index){
+    return this->clusters[index];
 }

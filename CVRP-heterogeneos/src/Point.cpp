@@ -1,6 +1,13 @@
 #include "Point.hpp"
 
-Point::Point(int id_point, std::vector<double>& values, std::string name = ""){
+Point::Point(){
+    this->id_cluster = -1;
+    this->total_values = -1;
+    this->name = "dot";
+    this->id_point = -1;
+}
+
+Point::Point(int id_point, std::vector<double>& values, std::string name){
     this->id_point = id_point;
     total_values = values.size();
     for(int i = 0; i < total_values; i++)
@@ -32,8 +39,4 @@ int Point::getTotalValues(){
 
 void Point::addValue(double value){
     values.push_back(value);
-}
-
-std::string Point::getName(){
-    return name;
 }

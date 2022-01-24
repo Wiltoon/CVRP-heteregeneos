@@ -7,7 +7,7 @@
 #include <vector>
 #include <string>
 
-#include "../src/Point.hpp"
+#include "../../../src/Point.hpp"
 
 class Packet{
 public:

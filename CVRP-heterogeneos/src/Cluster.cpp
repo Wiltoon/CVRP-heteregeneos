@@ -48,3 +48,11 @@ int Cluster::getTotalPoints(){
 int Cluster::getID(){
     return id_cluster;
 }
+
+std::vector<Packet> Cluster::getPackets(std::vector<Packet> packets){
+    std::vector<Packet> packets_cluster;
+    for(Point pack_coord : points){
+        packets_cluster.push_back(packets[packet_coord.getID()]);
+    }
+    return packets_cluster;
+}
