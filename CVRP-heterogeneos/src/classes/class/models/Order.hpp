@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include <iostream>
 #include <vector>
 #include "Model.hpp"
 #include "../Vehicle.hpp"

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <iostream>
 #include <ilcplex/ilocplex.h>
 #include <stdlib.h>
 #include "../Solution.hpp"
