@@ -17,9 +17,13 @@ VehiclePerRegionSolution::VehiclePerRegionSolution(
         for(int v = 0; v < vehicles.size(); v++){
             if(output[r][v] >= 0.9){
                 //ver funcionamento do map
-                vehiclePerRegion[i].insert(vehicles[v]);
+                vehiclePerRegion[r].push_back(vehicles[v]);
             }
         }
     }
+}
+
+VehiclePerRegion::VehiclePerRegionSolution(std::string message){
+    this->message = message;
 }
 

@@ -97,8 +97,14 @@ Solution WhichVehicleProblem::solve(int timeLimite){
     IloBool result = cplex.solve();
     if(result){
         // Criar o vetor de vehicles per region
+        VehiclePerRegionSolution out = vehiclesPerRegion(cplex);
+        Solution sol = Solution(out);
+        return sol;
     } else {
         // Retornar ERRO INFACTIBILIDADE?
+        VehiclePerRegionSolution out = VehiclePerRegionSolution("Not results feasible Vehicle Per Region");
+        Solution sol = Solution(out);
+        return sol;
     }
 }
 
@@ -169,7 +175,7 @@ double WhichVehicleProblem::distanceRegion(Cluster region){
     return sqrt(dx * dx + dy * dy);
 }
 
-VehiclePerRegionSolution WhichVehicleProblem::vehiclesPerRegion(){
+VehiclePerRegionSolution WhichVehicleProblem::vehiclesPerRegion(IloCplex& cplex){
     int regions = getKmeans().getClusters().size();
     int K = getVehicles().size();
     std::string message("Vehicle Per Region Sucess!");

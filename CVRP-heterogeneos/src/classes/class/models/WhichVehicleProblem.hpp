@@ -8,6 +8,7 @@
 
 #include "Model.hpp"
 #include "../../KMeans.hpp"
+#include "VehiclePerRegionSolution.hpp"
 #include "../Vehicle.hpp"
 #include "../Packet.hpp"
 

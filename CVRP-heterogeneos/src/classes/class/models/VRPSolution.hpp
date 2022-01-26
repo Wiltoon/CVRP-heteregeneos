@@ -8,9 +8,7 @@
 class VRPSolution {
 public:
 	int N = 0;
-	VRPSolution() {
-
-	}
+	VRPSolution();
 	void printerSolution();
 };
 

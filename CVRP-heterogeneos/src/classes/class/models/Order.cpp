@@ -121,7 +121,7 @@ Solution Order::solve(int tempoLimite){
         Solution sol = Solution(out);
         return sol;
     } else {
-        OrderSolution out = OrderSolution("Not found results factiveis");
+        OrderSolution out = OrderSolution("NOT Results feasible Order Solution");
         Solution sol = Solution(out);
         return sol;
     }

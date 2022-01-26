@@ -92,6 +92,12 @@ void VRP::createConstraints() {
 
 Solution VRP::solve(int timeLimite) {
     // aqui deve resolver o problema VRP
+    IloCplex cplex(model);
+    IloNum objFO = IloInfinity;
+    createParams();
+    createVariables();
+    createFunctionObjetive();
+    createConstraints();
     OrderSolution in = OrderSolution();
     VRPSolution o = VRPSolution();
     Solution sol = Solution(in, o);

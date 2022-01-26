@@ -1,5 +1,9 @@
 #include "Cluster.hpp"
 
+Cluster::Cluster(){
+    id_cluster = -1;
+}
+
 Cluster::Cluster(int id_cluster, Point point){
     this->id_cluster = id_cluster;
 
@@ -31,6 +35,10 @@ bool Cluster::removePoint(int id_point){
 
 double Cluster::getCentralValue(int index){
     return central_values[index];
+}
+
+std::vector<double> Cluster::getCentralValues(){
+    return central_values;
 }
 
 void Cluster::setCentralValue(int index, double value){

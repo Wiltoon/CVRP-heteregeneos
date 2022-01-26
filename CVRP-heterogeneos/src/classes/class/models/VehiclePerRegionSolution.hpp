@@ -5,7 +5,9 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 #include <string>
+
 #include <ilcplex/ilocplex.h>
 
 #include "../Packet.hpp"
@@ -28,6 +30,9 @@ public:
         std::vector<Vehicle> vehicles,
         int total_regions
     );
-}   
+    VehiclePerRegionSolution(
+        std::string message
+    );
+};
 
 #endif // VEHICLEPERREGION_H_INCLUDED

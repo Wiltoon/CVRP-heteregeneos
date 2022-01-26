@@ -47,37 +47,53 @@ Solution CVRP::solveWithKmeans(int timeOrder, int timeVRP, int N, int K){
     std::vector<Point> coordinates_packets;
     std::vector<Solution> clusters_solved;
 
-    for(int i = 0; i < N; i++){
+    for(int i = 1; i < N; i++){
         coordinates_packets.push_back(packets[i].pt);
     }
     // How to choose the best "k" clusters
+    double bestSolutionK = 0.0;
+    std::vector<KMeans> possiblesKs;
     for (int i = K/2; i <= K; i++){
         KMeans kmeans(i, N, 2, K);
-        bestK = kmeans.run(coordinates_packets);
+        kmeans.run(coordinates_packets);
+        possiblesKs.push_back(kmeans);
     }
-    for(int k = 0; k < bestK.getClusters().size(); k++){
-        // Quais veículos utilizar para o cluster?
-        std::vector<Vehicle> vehicles_selected = optimizeVehicles();
+    this->bestK = avaliateBestKmeans(possiblesKs);
+    // Quais veículos utilizar para o cluster?
+    VehiclePerRegionSolution mapRegion = optimizeVehicles(bestK);
+    for(int k = 0; k < this->bestK.getClusters().size(); k++){
+        std::vector<Vehicle> vehicles_used = mapRegion.vehiclePerRegion.at(k);
         Solution sol = solve(
             timeOrder,
             timeVRP,
-            vehicles_selected,
-            bestK.getCluster(k).getPackets(packets);
+            vehicles_used,
+            this->bestKbestK.getCluster(k).getPackets(packets);
         );
         clusters_solved.push_back(sol);
     }
-    // Cada cluster será um ORDER+VRP diferente:
-    //      - Quantos veículos poderei usar para cada cluster?
-    //      - Quais veículos usar em cada cluster?
-    //        => Possibilidades:
-    //           -> Cada cluster se torna um 
-    //              Packet(
-    //                  id_centroid,
-    //                  sum_charges_packets, 
-    //                  loc_x_centroid, 
-    //                  loc_y_centroid)
-    //           -> Permitir que mais de um veículo atenda o PacketCentroid
-    // NOVO MODELO DE OTIMIZAÇÃO       
+    // A cada cluster a gente tem que resolver um VRP com/sem RF
+    for(Solution s : clusters_solved){
+        // output é o W_{kj} do CVRP a ser resolvido
+        // nova lista de solution
+    }
+    // Devera unir todas as solutions obtidas para printar corretamente
+    // cada veiculo possui sua rota determinada em ordem {JSON?}
+}
+
+KMeans CVRP::avaliateBestKmeans(std::vector<KMeans> possiblesKs){
+    double s;
+    double f;
+    double metric = 0.0;
+    KMeans bestSolutionK;
+    for(KMeans km : possiblesKs){
+        s = km.avarageSilhouetteValue();
+        f = km.fractionPointClustering();
+        result = s*f;
+        if(result > metric){
+            bestSolutionK = km;
+        }
+    }
+    return km;
 }
 
 Solution CVRP::solve(
@@ -141,7 +157,11 @@ std::vector<NeighborPacket> CVRP::sortPacketsAroundPacket(Packet pac){
     return pkts_bor;
 }
 
-std::vector<Vehicle> CVRP::optimizeVehicles(){
+std::vector<Vehicle> CVRP::optimizeVehicles(KMeans kmeans){
     // Construir uma lista de PacketCentroid
-    WhichVehicleProblem pk = WhichVehicleProblem(packetsCentroids);
+    WhichVehicleProblem pk = WhichVehicleProblem(
+        kmeans, packets, vehicles
+    );
+    Solution optimize = pk.solve();
+
 }

@@ -8,11 +8,13 @@
 #include <cmath>
 #include <algorithm>
 
+#include "../KMeans.hpp"
 #include "Packet.hpp"
 #include "Vehicle.hpp"
 #include "NeighborPacket.hpp"
-#include "../KMeans.hpp"
 #include "Solution.hpp"
+#include "models/WhichVehicleProblem.hpp"
+#include "models/VehiclePerRegionSolution.hpp"
 #include "models/Order.hpp"
 
 class CVRP {
@@ -40,6 +42,7 @@ public:
         Packet& packet, Vehicle& vehicle, double alpha
     );
     void collectPacketsAround(Vehicle vehicle);
+    KMeans avaliateBestKmeans(std::vector<KMeans> possiblesKs);
     std::vector<NeighborPacket> sortPacketsAroundPacket(Packet pac);
     std::vector<Vehicle> optimizeVehicles();
 };
