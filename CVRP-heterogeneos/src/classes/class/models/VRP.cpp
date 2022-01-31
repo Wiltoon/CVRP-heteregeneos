@@ -163,7 +163,7 @@ Solution VRP::solve(int timeLimite) {
 void VRP::relax_and_fix(){
     // construção do modelo relax and fix para resolver
     IloArray <IloArray<IloExtractableArray>> relaxa = relaxAll();
-
+    
 }
 
 IloArray <IloArray<IloExtractableArray>> VRP::relaxAll(){
