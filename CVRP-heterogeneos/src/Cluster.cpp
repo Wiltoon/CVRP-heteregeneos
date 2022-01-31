@@ -60,7 +60,12 @@ int Cluster::getID(){
 std::vector<Packet> Cluster::getPackets(std::vector<Packet> packets){
     std::vector<Packet> packets_cluster;
     for(Point pack_coord : points){
-        packets_cluster.push_back(packets[packet_coord.getID()]);
+        packets_cluster.push_back(packets[pack_coord.getID()]);
     }
+    packets_cluster.insert(packets_cluster.begin(),packets[0]); // readicionar deposito
     return packets_cluster;
+}
+
+std::vector<Point> Cluster::getPoints(){
+    return this->points;
 }

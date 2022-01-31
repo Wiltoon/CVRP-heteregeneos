@@ -5,24 +5,32 @@
 #include "../Vehicle.hpp"
 
 VRP::VRP(
-    IloEnv env, 
+    IloArray <IloNumArray> output,
     std::vector<Packet> packets, 
-    int N, 
-    std::vector<Vehicle> vehicles, 
-    int K
+    std::vector<Vehicle> vehicles
 ){
-    this->env = env;
     this->packets = packets;
     this->vehicles = vehicles;
-    this->N = N;
-    this->K = K;
+    this->N = packets.size();
+    this->K = vehicles.size();
+    IloModel model(env);
+    this->model = model;
 }
 
 void VRP::createParams() {
     // nomear todas os parametros de entrada
-    IloArray <IloNumArray> d(env, N);					// Matrizes de distancia e tempo entre pedido i ate j
+    IloArray <IloNumArray> d(env, N); // Matrizes de distancia do pedido i->j
     for (int i = 0; i < N; i++) {
         d[i] = IloNumArray(env, N);
+    }
+    for(int i = 0; i < N; i++) {
+        for(int j = 0; j < N; j++){
+            if(i == j){
+                d[i][j] = 999999.0;
+            } else {
+                d[i][j] = distance_euclidian(packets[i], packets[j]);
+            }
+        }
     }
     IloNumArray p(env, N);
     for(int i=0; i<N; i++){
@@ -36,6 +44,17 @@ void VRP::createParams() {
     for (int k = 0; k < K; k++) {
         w[k] = IloBoolArray(env, N);
     }
+    IloBoolArray v(env, K);
+    this->d = d;
+    this->p = p;
+    this->e = e;
+    this->v = v;
+    this->w = w;
+    for(int k = 0; k < K; k++){
+        for (int j = 0; j < N; j++){
+            this->w[k][j] = (output[k][j] > 0.9);
+        }
+    }
 }   
 
 void VRP::createVariables() {
@@ -47,9 +66,7 @@ void VRP::createVariables() {
             x[k][i] = IloBoolVarArray(env, N);
         }
     }
-    IloBoolVarArray v(env, K);
     IloBoolVarArray y(env, N);
-    
     IloArray<IloBoolVarArray> z(env, K); // ORIGENS (index i)
     for (int k = 0; k < K; k++) {
         z[k] = IloBoolVarArray(env, N);
@@ -57,6 +74,45 @@ void VRP::createVariables() {
     IloArray<IloNumVarArray> u(env, K);
     for (int k = 0; k < K; k++) {
         u[k] = IloNumVarArray(env, N, 0, vehicles[k].charge_max);// Variavel auxiliar para eliminicao de rota
+    }
+    renameVars();
+}
+
+void VRP::renameVars(){
+    char* char_u;
+    for(int k = 0; k < K; k++){
+        for(int i = 0; i < N; i++) {
+            std::string nameu("u_" + std::to_string(k) + "_" + std::to_string(i));
+            char_u = &nameu[0];
+            u[k][i].setName(char_u);
+        }
+    }
+
+    char* char_y;
+    for(int i = 0; i < N; i++){
+        std::string namey("y_" + std::to_string(i));
+        char_y = &namey[0];
+        y[i].setName(char_y);
+    }
+
+    char* char_z;
+    for(int k = 0; k < K; k++){
+        for(int i = 0; i < N; i++) {
+            std::string namez("z_" + std::to_string(k) + "_" + std::to_string(i));
+            char_z = &namez[0];
+            z[k][i].setName(char_z);
+        }
+    }
+
+    char* char_x;
+    for(int k = 0; k < K; k++){
+        for(int i = 0; i < N; i++) {
+            for(int j = 0; j < N; j++) {
+                std::string namex("x_" + std::to_string(k) + "_" + std::to_string(i) + "_" + std::to_string(j));
+                char_x = &namex[0];
+                x[k][i][j].setName(char_x);
+            }
+        }
     }
 }
 
@@ -106,6 +162,33 @@ Solution VRP::solve(int timeLimite) {
 
 void VRP::relax_and_fix(){
     // construção do modelo relax and fix para resolver
+    IloArray <IloArray<IloExtractableArray>> relaxa = relaxAll();
+
+}
+
+IloArray <IloArray<IloExtractableArray>> VRP::relaxAll(){
+    IloArray <IloArray<IloExtractableArray>> relaxa(env, K);
+    for (int k = 0; k < K; k++) {
+        relaxa[k] = IloArray<IloExtractableArray>(env, N);
+        for (int i = 0; i < N; i++) {
+            relaxa[k][i] = IloExtractableArray(env, N);
+        }
+    }
+    for (int k = 0; k < K; k++) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (i == j) {
+                    x[k][i][j].setBounds(0, 0);
+                }
+                else {
+                    x[k][i][j].setBounds(0, 1);
+                }
+                relaxa[k][i][j] = IloConversion(env, x[k][i][j], ILOFLOAT);
+                model.add(relaxa[k][i][j]);
+            }
+        }
+    }
+    return relaxa;
 }
 
 void VRP::constraintDestiny(){
@@ -295,4 +378,10 @@ void VRP::constraintTotalVehicles(){
     sumDrivers.setName("SumDrivers");
     model.add(sumDrivers);
     sumVeiculos.end();
+}
+
+double VRP::distance_euclidian(Packet origin, Packet destiny){
+    double dx = (double)destiny.loc_x - (double)origin.loc_x;
+    double dy = (double)destiny.loc_y - (double)origin.loc_y;
+    return sqrt(dx * dx + dy * dy);
 }

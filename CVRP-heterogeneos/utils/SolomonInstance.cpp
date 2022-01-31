@@ -6,11 +6,10 @@ SolomonInstance::SolomonInstance(){
 CVRP SolomonInstance::readInput(
     std::string filename, 
     std::string filevehicle, 
-    double alpha, 
     int N, int K
 ) {
     std::ifstream arquivo;
-    CVRP problem = CVRP(N,K);
+    CVRP problem = CVRP(N);
     arquivo.open(filename);
     if (!arquivo.is_open()) {
         std::cout << "arquivo de entrada inválido" << std::endl;
@@ -21,8 +20,6 @@ CVRP SolomonInstance::readInput(
         this->parse(arquivo, filevehicle, problem);
         // std::cout << "Calculate matrix distance" << std::endl;
         problem.calculate_matrix_distance(N);
-        // std::cout << "Calculte matrix price..." << std::endl;
-        problem.calculate_matrix_price(alpha, N, K);
         // std::cout << "Fechar arquivo" << std::endl;
         arquivo.close();
     }

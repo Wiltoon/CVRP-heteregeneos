@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "Point.hpp"
-#include "../classes/class/Packet.hpp"
+#include "classes/class/Packet.hpp"
 
 class Cluster{
 private:
@@ -27,6 +27,7 @@ public:
 	int getID();
 
 	std::vector<Packet> getPackets(std::vector<Packet> packets);
+	std::vector<Point> getPoints();
 };
 
 #endif // CLUSTER_H_INCLUDED

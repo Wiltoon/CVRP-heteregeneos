@@ -8,19 +8,19 @@
 #include <cmath>
 #include <algorithm>
 
-#include "../KMeans.hpp"
+#include <ilcplex/ilocplex.h>
+
+#include "../../KMeans.hpp"
 #include "Packet.hpp"
 #include "Vehicle.hpp"
-#include "NeighborPacket.hpp"
 #include "Solution.hpp"
 #include "models/WhichVehicleProblem.hpp"
 #include "models/VehiclePerRegionSolution.hpp"
 #include "models/Order.hpp"
+#include "models/VRP.hpp"
 
 class CVRP {
 private:
-    static bool crescentePackets(
-        const NeighborPacket& p1,const NeighborPacket& p2);
 public:
     KMeans bestK;
     std::vector<Packet> packets;
@@ -28,23 +28,23 @@ public:
     double** matrix_distance;
     double** matrix_price;
 
-    CVRP(int num_pedidos, int num_vehicles);
+    CVRP();
+    CVRP(int N);
     void calculate_matrix_distance(int N);
-    void calculate_matrix_price(double alpha, int N, int K);
     double distance_euclidian(Packet origin, Packet destiny);
-    Solution solveWithKmeans(int timeOrder, int timeVRP, int N, int K);
+    Solution solveWithKmeans(
+        int timeOrder, int timeVRP, int N, int K, double alpha);
     Solution solve(
         int timeOrder, int timeVRP, 
         std::vector<Vehicle> vehicles_used, 
-        std::vector<Packet> packs
+        std::vector<Packet> packs, double alpha
     );
     double price_packet_per_vehicle(
         Packet& packet, Vehicle& vehicle, double alpha
     );
-    void collectPacketsAround(Vehicle vehicle);
+    void printerPackets(std::vector<Packet> packs);
     KMeans avaliateBestKmeans(std::vector<KMeans> possiblesKs);
-    std::vector<NeighborPacket> sortPacketsAroundPacket(Packet pac);
-    std::vector<Vehicle> optimizeVehicles();
+    VehiclePerRegionSolution optimizeVehicles(KMeans kmeans);
 };
 
 #endif // CVRP_H_INCLUDED

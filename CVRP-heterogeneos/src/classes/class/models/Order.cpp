@@ -3,17 +3,90 @@
 Order::Order(
     std::vector<Packet> packets_order_,
     std::vector<Vehicle> vehicles_,
-    double** matrix_price_,
-    int N_,
-    int K_
-) {
+    double alpha
+) {  
     this->packets_order = packets_order_;
     this->vehicles = vehicles_;
-    this->matrix_prices = matrix_price_;
-    this->N = N_;
-    this->K = K_;
+    this->N = packets_order_.size();
+    this->K = vehicles_.size();
+    this->matrix_prices = calculate_matrix_price(alpha, N, K);
     IloModel model(env);
     this->model = model;
+}
+
+double** Order::calculate_matrix_price(double alpha, int N, int K){
+    double** matrixPrice;
+    //matrix de preço para cada veiculo
+    //O preço a se pagar para entregar o packet pelo veiculo Kmatrix_price = (double**) malloc(K * sizeof(double));
+    matrixPrice = (double**) malloc(K * sizeof(double*));
+    for (int k = 0; k < K; k++){
+        matrixPrice[k] = (double*)malloc(N * sizeof(double));
+    }
+    // std::cout << "K, N = " << K << "\t" << N << std::endl;
+    for(int k = 0; k < K; k++){
+        for(int i = 0; i < N; i++){
+            matrixPrice[k][i] = price_packet_per_vehicle(
+                this->packets_order[i], this->vehicles[k], alpha
+            );
+            // std::cout << "WHERE  k:" << k << std::endl;
+            // std::cout << "matrixPrice[" << k << "][" << i << "] => " << matrixPrice[k][i] << std::endl; 
+            // std::cout << "[k][i] => " << k << "\t" << i << std::endl;  
+        }
+    }
+    
+    return matrixPrice;
+}
+
+bool Order::crescentePackets(const NeighborPacket& p1, const NeighborPacket& p2){
+    return (p1.distance < p2.distance);
+}
+
+std::vector<NeighborPacket> Order::sortPacketsAroundPacket(Packet pac){
+    // ordenar dos pacotes mais proximos do pacote "pac"
+    // armazenar em um vetor em ordem crescente as distancias
+    int N = packets_order.size();
+    std::vector<NeighborPacket> pkts_bor;
+    //somente os pedidos devem aparecer aqui
+    for(int i = 0; i < N; i++){
+        if(packets_order[i].id != 0){
+            NeighborPacket nbp = NeighborPacket(pac,packets_order[i]);
+            pkts_bor.push_back(nbp);
+        }
+    }
+    std::sort(pkts_bor.begin(), pkts_bor.end(), crescentePackets);
+    return pkts_bor;
+}
+
+double Order::distance_euclidian(Packet origin, Packet destiny){
+    double dx = (double)destiny.loc_x - (double)origin.loc_x;
+    double dy = (double)destiny.loc_y - (double)origin.loc_y;
+    return sqrt(dx * dx + dy * dy);
+}
+
+double Order::price_packet_per_vehicle(
+    Packet& packet, Vehicle& vehicle, double alpha
+){
+    // distancia a percorrer do deposito ate ele, e os K mais proximos
+    // ordenar os pacotes mais proximos do packet
+    std::vector<NeighborPacket> sorted = sortPacketsAroundPacket(packet);
+    double CAP_PROBABILITY = alpha * vehicle.charge_max;
+    double price_dist = 0.0;
+    for(Packet& p : packets_order){
+        if(p.id == 0){
+            price_dist = distance_euclidian(p, packet);
+        }
+    }
+    vehicle.addPacket(packet);
+    int cap = vehicle.current_charge;
+    for(NeighborPacket nbp : sorted){
+        cap += nbp.getDestination().charge;
+        if(cap < CAP_PROBABILITY){
+            vehicle.addPacket(nbp.getDestination());
+            price_dist += distance_euclidian(
+                nbp.getOrigin(), nbp.getDestination());
+        } 
+    }  
+    return (price_dist * vehicle.cust);
 }
 
 void Order::createParams(){

@@ -31,6 +31,9 @@ public:
     OrderSolution(IloArray <IloNumArray> output, std::string message);
     OrderSolution(std::string messageFail);
     void printerOrderSolution(int N, int K);
+    void printerOrderSolutionGlobal(
+        std::vector<Vehicle> g_vehicles, std::vector<Packet> g_packets_k
+    );
 };
 
 #endif // ORDERSOLUTION_H_INCLUDED

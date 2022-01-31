@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 // #include "libs/matplotlibcpp.h"
 
@@ -16,7 +17,7 @@ using namespace std;
 
 int main()
 {
-    double ALPHA = 0.20;    // deve ser entre 0 e 1
+    double ALPHA = 0.5;    // deve ser entre 0 e 1
     int N = 101;            // Número de Packets
     int K = 10;             // Número de veículos
     int timeOrder = 20;     // Tempo para resolver ORDER
@@ -24,9 +25,10 @@ int main()
     string filename("resource\\Solomon\\c101-0.0.txt");
     string filevehicle("resource\\Solomon\\vei-homo.txt");
     SolomonInstance reader = SolomonInstance();
-    CVRP problem = reader.readInput(filename, filevehicle, ALPHA, N, K);
+    CVRP problem = reader.readInput(filename, filevehicle, N, K);
 
-    Solution solution = problem.solveWithKmeans(timeOrder,timeVRP, N, K);
+    Solution solution = problem.solveWithKmeans(
+        timeOrder,timeVRP, N, K, ALPHA);
     // solution.partial.printerOrderSolution(N, K);
     return 0;
 }

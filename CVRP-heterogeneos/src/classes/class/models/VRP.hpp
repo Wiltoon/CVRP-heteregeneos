@@ -12,28 +12,28 @@ public:
     std::vector<Vehicle> vehicles;
     
     IloNumArray p;                              // pedidos
-    IloArray <IloArray <IloBoolVarArray>> x;    // variavel de decisao
     IloArray <IloNumArray> d;                   // matrix_distance
-    IloNumVarArray u;                           // aux_carga
-    IloNumArray e;
-    IloBoolVarArray v;
-    IloBoolVarArray y;
-    IloArray<IloBoolVarArray> z;
-    IloArray<IloBoolArray> w;
+    IloNumArray e;                              // custo veiculo
+    IloBoolArray v;                             // veiculo ativado
+    IloArray<IloBoolArray> w;                   // packet visited per vehicle
     IloNumArray Q;                              // carga maxima de um veiculo
+    IloNumVarArray u;                           // aux_carga
+    IloBoolVarArray y;                          // aux_dont return
+    IloArray<IloBoolVarArray> z;                // vehicle leave packet
+    IloArray <IloArray <IloBoolVarArray>> x;    // variavel de decisao
     
     VRP(
-        IloEnv env, 
+        IloArray <IloNumArray> output,
         std::vector<Packet> packets, 
-        int N, 
-        std::vector<Vehicle> vehicles, 
-        int K
+        std::vector<Vehicle> vehicles
     );
     void createParams() override;
     void createVariables() override;
     void createFunctionObjetive() override;
     void createConstraints() override;
     Solution solve(int timeLimite) override;
+
+    void renameVars();
 
     void relax_and_fix();
     void constraintDestiny();
@@ -46,6 +46,8 @@ public:
     void constraintWarrantOutflowDeposit();
     void constraintWarrantNoReturnDeposit();
     void constraintTotalVehicles();
+
+    double distance_euclidian(Packet origin, Packet destiny);
 };
 
 #endif // VRP_H_INCLUDED

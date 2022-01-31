@@ -33,6 +33,10 @@ double Point::getValue(int index){
     return values[index];
 }
 
+std::vector<double> Point::getValues() {
+    return this->values;
+}
+
 int Point::getTotalValues(){
     return total_values;
 }

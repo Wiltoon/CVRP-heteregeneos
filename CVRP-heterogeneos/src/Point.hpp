@@ -22,6 +22,7 @@ public:
 	void setCluster(int id_cluster);
 	int getCluster();
 	double getValue(int index);
+	std::vector<double> getValues();
 	int getTotalValues();
 	void addValue(double value);
 };

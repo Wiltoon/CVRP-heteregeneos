@@ -16,11 +16,11 @@ KMeans WhichVehicleProblem::getKmeans(){
     return this->kmeans;
 }
 
-std::vector<Packet> getPacketsTotal(){
+std::vector<Packet> WhichVehicleProblem::getPacketsTotal(){
     return this->packet_total;
 }
 
-std::vector<Vehicles> getVehicles(){
+std::vector<Vehicle> WhichVehicleProblem::getVehicles(){
     return this->vehicles;
 }
 
@@ -69,7 +69,6 @@ void WhichVehicleProblem::createFunctionObjetive(){
         for (int v = 0; v < K; v++) {
             fo += c[v] * d[r] * x[r][v];
         }
-        // fo += e[k]*z[k]
     }
     model.add(IloMinimize(env, fo));
     fo.end();
@@ -88,13 +87,14 @@ Solution WhichVehicleProblem::solve(int timeLimite){
     createFunctionObjetive();
     createConstraints();
     std::cout << "Solution WhichVehicleProblem::solved" << std::endl;
-    cplex.setParam(IloCplex::TiLim, tempoLimite);
+    cplex.setParam(IloCplex::TiLim, timeLimite);
     cplex.extract(model);
     char* output;
     std::string saida("saida_veiculos_qntd_per_region.lp");
     output = &saida[0];
     cplex.exportModel(output);
     IloBool result = cplex.solve();
+    std::cout << "result: " << result << std::endl;
     if(result){
         // Criar o vetor de vehicles per region
         VehiclePerRegionSolution out = vehiclesPerRegion(cplex);
@@ -102,6 +102,7 @@ Solution WhichVehicleProblem::solve(int timeLimite){
         return sol;
     } else {
         // Retornar ERRO INFACTIBILIDADE?
+        std::cout << "ERRO ";
         VehiclePerRegionSolution out = VehiclePerRegionSolution("Not results feasible Vehicle Per Region");
         Solution sol = Solution(out);
         return sol;
@@ -111,6 +112,7 @@ Solution WhichVehicleProblem::solve(int timeLimite){
 void WhichVehicleProblem::renameVars(){
     int N = getKmeans().getClusters().size();
     int K = getVehicles().size();
+    
     char* char_x;
     for(int r = 0; r < N; r++) {
         for(int v = 0; v < K; v++){
@@ -124,6 +126,7 @@ void WhichVehicleProblem::renameVars(){
 void WhichVehicleProblem::constraintRegionCapacity(){
     int regions = getKmeans().getClusters().size();
     int K = getVehicles().size();
+    
     IloConstraintArray cons_array_cap(env);
     for (int r = 0; r < regions; r++) {
         IloExpr restCap(env);
@@ -144,6 +147,7 @@ void WhichVehicleProblem::constraintRegionCapacity(){
 void WhichVehicleProblem::constraintJustAVehicleIntoRegion(){
     int regions = getKmeans().getClusters().size();
     int K = getVehicles().size();
+
     IloConstraintArray cons_array_vei(env);
     for (int v = 0; v < K; v++) {
         IloExpr restVeiCap(env);
@@ -151,9 +155,9 @@ void WhichVehicleProblem::constraintJustAVehicleIntoRegion(){
         std::string name("vehicleRegion" + std::to_string(v));
         namevar = &name[0];
         for (int r = 0; r < regions; r++) {
-            RestVeiCap += x[r][v];
+            restVeiCap += x[r][v];
         }
-        IloConstraint consRestVeiCap = (restVeiCap >= R[r]);
+        IloConstraint consRestVeiCap = (restVeiCap <= 1);
         consRestVeiCap.setName(namevar);
         model.add(consRestVeiCap);
         cons_array_vei.add(consRestVeiCap);

@@ -9,7 +9,7 @@
 #include "Packet.hpp"
 #include "Vehicle.hpp"
 
-class PacketCentroid{
+class PacketCentroid {
 private:
     int id_cluster;
     std::vector<Packet> packets_local;
@@ -18,14 +18,15 @@ public:
     std::vector<double> center;
     std::vector<Vehicle> vehicles;
 
+    PacketCentroid();
     PacketCentroid(
-        int id_cluster, 
-        std::vector<double> center_, 
-        std::vector<Packet> packets_local 
+        int id_cluster,
+        std::vector<double> center_,
+        std::vector<Packet> packets_local
     );
     double getCenterX();
     double getCenterY();
 
-}
+};
 
 #endif // PACKETCENTROID_H_INCLUDED

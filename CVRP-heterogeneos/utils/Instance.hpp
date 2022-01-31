@@ -18,7 +18,6 @@ public:
     virtual CVRP readInput(
         std::string filename,
         std::string filevehicle,
-        double alpha, 
         int N, int K) = 0;
     virtual void parse(
         std::ifstream& arquivo,

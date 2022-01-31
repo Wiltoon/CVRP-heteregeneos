@@ -25,9 +25,11 @@ private:
 public:
     double silhouette = 0.0;
 
+    KMeans();
     KMeans(int K, int total_points, int total_values, int max_iterations);
     std::vector<Cluster> getClusters();
     Cluster getCluster(int index);
+    int getK();
     
 	void run(std::vector<Point> & points);
     double fractionPointClustering();

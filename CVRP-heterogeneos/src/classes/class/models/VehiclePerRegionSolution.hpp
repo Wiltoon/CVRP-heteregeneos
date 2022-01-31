@@ -23,6 +23,7 @@ public:
 
     std::map<int,std::vector<Vehicle>> vehiclePerRegion;
 
+    VehiclePerRegionSolution();
     VehiclePerRegionSolution(
         IloArray <IloNumArray> output,
         std::string message,

@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "Model.hpp"
-#include "../../KMeans.hpp"
+#include "../../../KMeans.hpp"
 #include "VehiclePerRegionSolution.hpp"
 #include "../Vehicle.hpp"
 #include "../Packet.hpp"
@@ -32,7 +32,7 @@ public: // os parametros e variaveis criados
     );
     KMeans getKmeans();
     std::vector<Packet> getPacketsTotal();
-    std::vector<Vehicles> getVehicles();
+    std::vector<Vehicle> getVehicles();
 
     void createParams() override;
     void createVariables() override;
@@ -46,7 +46,7 @@ public: // os parametros e variaveis criados
     int capacityTotalRegion(Cluster region);
     double distanceRegion(Cluster region);
 
-    std::vector<Vehicle> vehiclesPerRegion();
+    VehiclePerRegionSolution vehiclesPerRegion(IloCplex& cplex);
 };
 
 #endif // WHICHVEHICLEPROBLEM_H_INCLUDED

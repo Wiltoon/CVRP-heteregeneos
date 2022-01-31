@@ -1,5 +1,9 @@
 #include "KMeans.hpp"
 
+KMeans::KMeans(){
+    
+}
+
 KMeans::KMeans(int K, int total_points, int total_values, int max_iterations) {
     this->K = K;
     this->total_points = total_points;
@@ -50,12 +54,15 @@ Cluster KMeans::getCluster(int index){
     return this->clusters[index];
 }
 
+int KMeans::getK(){
+    return this->K;
+}
+
 void KMeans::run(std::vector<Point> & points) {
     if(K > total_points) {
         return;
     }
     std::vector<int> prohibited_indexes;
-
     // choose K distinct values for the centers of the clusters
     for(int i = 0; i < K; i++) {
         while(true) {
@@ -78,7 +85,6 @@ void KMeans::run(std::vector<Point> & points) {
         for(int i = 0; i < total_points; i++) {
             int id_old_cluster = points[i].getCluster();
             int id_nearest_center = getIDNearestCenter(points[i]);
-
             if(id_old_cluster != id_nearest_center) {
                 if(id_old_cluster != -1) {
                     clusters[id_old_cluster].removePoint(points[i].getID());
@@ -115,14 +121,12 @@ double KMeans::fractionPointClustering(){
     double overAverages = 0.0;
     double total = 0.0;
     for(Cluster c : getClusters()) {
-        for(Packet p : c.getPackets()){
-            if(p.id != 0){
-                si = silhouetteValue(p.pt);
-                if(si > this->silhouette){
-                    overAverages ++;
-                }
-                total++;
+        for(Point p : c.getPoints()){
+            si = silhouetteValue(p);
+            if(si > this->silhouette){
+                overAverages ++;
             }
+            total++;
         }
     }
     return overAverages/total;
@@ -132,11 +136,9 @@ double KMeans::avarageSilhouetteValue(){
     double si = 0.0;
     double total = 0.0;
     for(Cluster c : getClusters()) {
-        for(Packet p : c.getPackets()){
-            if(p.id != 0){
-                si += silhouetteValue(p.pt);
-                total++;
-            }
+        for(Point p : c.getPoints()){
+            si += silhouetteValue(p);
+            total++;
         }
     }
     if(total != 0){
@@ -148,8 +150,10 @@ double KMeans::avarageSilhouetteValue(){
 }
 
 double KMeans::silhouetteValue(Point point){
-    double a = computeAvarageDistance(point, point.getCluster());
-    double b = computeAvarageDistance(point, getClusterNearest(point));
+    Cluster current = this->getCluster(point.getCluster());
+    Cluster nearest = getClusterNearest(point);
+    double a = computeAvarageDistance(point, current);
+    double b = computeAvarageDistance(point, nearest);
     double den = (b > a) ? b : a;
     return (b-a)/den;
 }
@@ -159,8 +163,8 @@ Cluster KMeans::getClusterNearest(Point point){
     Cluster clusterNearest = Cluster();
     for(Cluster c : clusters){
         double distance = distanceEuclidian2D(
-            point.getTotalValues,
-            c.getTotalValues()
+            point.getValues(),
+            c.getCentralValues()
         );
         if(distance > distanceMax){
             distanceMax = distance;
@@ -175,19 +179,19 @@ double KMeans::distanceEuclidian2D(
     std::vector<double> destination
 ){
     double dx = (double)origin[0] - (double)destination[0];
-    double dx = (double)origin[1] - (double)destination[1];
+    double dy = (double)origin[1] - (double)destination[1];
     return sqrt(dx * dx + dy * dy);
 }
 
 double KMeans::computeAvarageDistance(Point point, Cluster & cluster){
     double totalDistance = 0.0;
     int total = 0;
-    for (Packet p : cluster.getPackets()){
-        if(p.pt.getID() != point.getID){
+    for (Point p : cluster.getPoints()){
+        if(p.getID() != point.getID()){
             total++;
             totalDistance += distanceEuclidian2D(
-                p.pt.getTotalValues,
-                point.getTotalValues
+                p.getValues(),
+                point.getValues()
             );
         }
     }
