@@ -160,10 +160,247 @@ Solution VRP::solve(int timeLimite) {
     return sol;
 }
 
-void VRP::relax_and_fix(){
+void VRP::relax_and_fix(int time){
     // construção do modelo relax and fix para resolver
-    IloArray <IloArray<IloExtractableArray>> relaxa = relaxAll();
+    IloArray <IloArray <IloExtractableArray>> relaxa = relaxAll();
+    IloArray <IloArray <IloNumArray>> xSol = buildXSol();
+    IloArray <IloNumArray> uSol = buildUSol();
+
+    std::vector <int> to_visit;
+    std::vector <int> visited;
+    to_visit.push_back(DEPOSIT);
+    for(int t = 0; t < pathsToFix(); t++){
+        removeRelaxationToVisit(relaxa, to_visit);
+        IloBool result = solveIteration(t, time);
+        if(result){
+            assignTheSolutions(xSol,uSol,to_visit);
+            // Partial solution?
+            fixVariables(xSol,to_visit,visited);
+        } else {
+            if (time < TIME_MAX){
+                std::cout << "Aumentar tempo do solve "<< time << "+"<< SOMADOR_TIME << std::endl;
+                time += SOMADOR_TIME;
+            }
+        }
+    }   
+}
+
+void VRP::fixXYZ(std::vector <int> visitar, int check, int k, int i){
+    x[k][visitar[check]][i].setBounds(1, 1);
+    z[k][visitar[check]].setBounds(1, 1);
+    y[i].setBounds(0, 0);
+}
+
+
+void VRP::buildNewConstraint(int entrega){
+    for (int veiculo = 0; veiculo < K; veiculo++) {
+        char* namevarD;
+        string name(
+            "fluxo_veiculo_" + to_string(veiculo) + "_da_entrega_" + to_string(entrega)
+        );
+        namevarD = &name[0];
+        IloConstraint consVeiculoUnico = (
+            z[veiculo][entrega] + y[entrega] == w[veiculo][entrega]
+        );
+        consVeiculoUnico.setName(namevarD);
+        model.add(consVeiculoUnico);
+    }
+}
+
+void VRP::fixedColumn(
+    IloArray <IloArray <IloNumArray>> sol,
+    std::vector <int> visitar,
+    int check, 
+    int i, int k    
+){
+    for (int row = 0; row < N; row++) {	//PERCORRER A COLUNA
+        if (row != visitar[check]) {
+            x[k][row][i].setBounds(0, 0);
+            for (int kar = 0; kar < K; kar++) { // INUTILIZAR VEICULOS PARA ATENDER OS PEDIDOS DA COLUNA
+                if (sol[kar][visitar[check]][i] >= 0.8) {
+                    x[kar][visitar[check]][i].setBounds(1, 1);
+                }
+                else {
+                    if (k != kar) {
+                        x[kar][visitar[check]][i].setBounds(0, 0);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void VRP::fixedRow(
+    IloArray <IloArray <IloNumArray>> sol,
+    std::vector <int> visitar,
+    int check, 
+    int i, int k   
+){
+    for (int col = 0; col < N; col++) {//PERCORRENDO A LINHA
+        if (col != i) {
+            x[k][visitar[check]][col].setBounds(0, 0);
+            for (int kar = 0; kar < K; kar++) { // INUTILIZAR VEICULOS PARA ATENDER OS PEDIDOS DA LINHA
+                if (sol[kar][visitar[check]][col] >= 0.8) {
+                    x[kar][visitar[check]][col].setBounds(1, 1);
+                }
+                else {
+                    if (k != kar) {
+                        x[kar][visitar[check]][col].setBounds(0, 0);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void VRP::fixedSimetrics(
+    IloArray <IloArray <IloNumArray>> sol,
+    std::vector <int> visitar,
+    int check, int i
+){
+    for (int kar = 0; kar < K; kar++) { // INUTILIZAR VEICULOS PARA ATENDER OS PEDIDOS DOS SIMETRICOS
+        x[kar][i][visitar[check]].setBounds(0, 0);
+    }
+}
+
+bool VRP::findElementInVector(
+        std::vector <int> vector,
+        int i
+) {
+    bool encontrado = false;
+    for (int it = 0; it < vector.size(); it++) {
+        //cout << "VISITADO[" << it << "] = \t" << visitado[it] << endl;
+        if (visitado[it] == i) {
+            encontrado = true;
+        }
+    }
+    return encontrado;
+}
+
+void VRP::calculateWhoToFix(
+        IloArray <IloArray <IloNumArray>> xSol,
+        std::vector <int> visitar,
+        std::vector <int> visitado,
+        std::vector<int> auxvisitar,
+        int check, int k
+){  
+    for (int i = 1; i < N; i++) {
+        // std::cout << "sol [" << check << "][" << i << ']' << "=" << sol[check][i] << endl;
+        if (xSol[k][visitar[check]][i] >= 0.8) {
+            // std::cout << "sol [" << visitar[check] << "][" << i << ']' << "=" << sol[k][visitar[check]][i] << endl;
+            // FIXA VALOR DE X[i][j] ja resolvido
+            fixXYZ(visitar,check,k,i);
+            buildNewConstraint(i);
+            fixedColumn(xSol,visitar,check,i,k);
+            fixedRow(xSol,visitar,check,i,k);
+            fixedSimetrics(xSol,visitar,check,i);
+            if (i != 0) {
+                auxvisitar.push_back(i);
+            }
+            if (!findElementInVector(i,visitado)) {
+                if (i != 0) {
+                    visitado.push_back(i);
+                }
+            }
+        }
+        // Não fazer nada caso não tenha solução concreta
+    }
+}
+
+void VRP::fixVariables(
+        IloArray <IloArray <IloNumArray>> xSol,
+        std::vector <int> visitar,
+        std::vector <int> visitado
+){
+    std::vector<int> auxvisitar;
+    //Fixa a parte inteira da solução
+    for (int check = 0; check < visitar.size(); check++) {
+        for (int k = 0; k < K; k++) {
+            calculateWhoToFix(xSol,visitar,visitado,auxvisitar,check,k);
+        }
+    }
+    // Apagar a memoria do visitar e colocar o valor do auxvisitar
+    visitar.clear();
+    // CASO NAO TENHA MAIS NINGUEM PARA VISITAR (AUXVISITAR == 0) (O AUXVISITAR VIRA O VISITAR)
+    for (int i = 0; i < auxvisitar.size(); i++) {
+        //std::cout << "AUXVISITAR[" << i << "] = \t" << auxvisitar[i] << std::endl;
+        if (auxvisitar[i] != 0) {
+            visitar.push_back(auxvisitar[i]);
+        }
+    }
+}
+
+void VRP::assignTheSolutions(
+    IloArray <IloArray <IloNumArray>> xSol,
+    IloArray <IloNumArray> uSol,
+    std::vector<int> visitar
+){
+    for (int k = 0; k < K; k++) {
+        cplex.getValues(u[k], uSol[k]);
+        for (int i = 0; i < visitar.size(); i++) {
+            cplex.getValues(x[k][visitar[i]], xSol[k][visitar[i]]);
+        }
+    }
+}
+
+IloBool VRP::solveIteration(int iteration, int tempo){
+    cplex.setParam(IloCplex::TiLim, tempo);
+    cplex.extract(model);
+    if (!LOOPINFINITO) {
+        char* outputer;
+        string saida("saida_" + to_string(iteration)+ ".lp");
+        outputer = &saida[0];
+        cplex.exportModel(outputer);
+    }
     
+    return cplex.solve();
+}
+
+void VRP::removeRelaxationToVisit(
+        IloArray <IloArray<IloExtractableArray>> relaxa,
+        std::vector<int> visitar
+){
+    for (int k = 0; k < K; k++) {
+        for (int i = 0; i < visitar.size(); i++) {
+            for (int j = 0; j < N; j++) {
+                model.remove(relaxa[k][visitar[i]][j]);
+            }
+        }
+    }
+}
+
+int VRP::pathsToFix(){
+    return K;
+}
+
+void printerVector(std::string name, std::vector<int> elements){
+    std::cout << name << " -> " << std::endl << "\t[";
+    for(int i = 0; i < elements.size(); i++){
+        if(i == elements.size()-1){
+            std::cout << elements[i] << "]" << std::endl;
+        } else {
+            std::cout << elements[i] << ", ";
+        }
+    }
+}
+
+IloArray <IloNumArray> VRP::buildUsol(){
+    IloArray <IloNumArray> uSol(env, K);
+    for (int k = 0; k < K; k++) {
+        uSol[k] = IloNumArray(env, N);
+    }
+    return uSol;
+}
+
+IloArray <IloArray <IloNumArray>> VRP::buildXSol(){
+    IloArray <IloArray <IloNumArray>> xSol(env, K);
+    for (int k = 0; k < K; k++) {
+        xSol[k] = IloArray <IloNumArray>(env, N);
+        for (int i = 0; i < N; i++) {
+            xSol[k][i] = IloNumArray(env, N);
+        }
+    }
+    return xSol;
 }
 
 IloArray <IloArray<IloExtractableArray>> VRP::relaxAll(){

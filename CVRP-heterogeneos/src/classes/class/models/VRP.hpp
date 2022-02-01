@@ -4,6 +4,10 @@
 #pragma once
 
 #include "Model.hpp"
+
+int DEPOSIT = 0;
+int TIME_MAX = 30;
+int SOMADOR_TIME = 6;
 class VRP final : public Model{
 public:
     int N = 0;
@@ -35,7 +39,7 @@ public:
 
     void renameVars();
 
-    void relax_and_fix();
+    void relax_and_fix(int time);
     void constraintDestiny();
     void constraintDriverGoToDestiny();
     void constraintBecame();
@@ -48,6 +52,55 @@ public:
     void constraintTotalVehicles();
 
     double distance_euclidian(Packet origin, Packet destiny);
+    IloArray <IloNumArray> buildUsol();
+    IloArray <IloArray <IloNumArray>> buildXSol();
+    IloArray <IloArray <IloExtractableArray>> relaxAll();
+    int pathsToFix();
+    void printerVector(std::string name, std::vector<int> elements);
+    void removeRelaxationToVisit(
+        IloArray <IloArray<IloExtractableArray>> relaxa,
+        std::vector<int> visitar
+    );
+    void VRP::assignTheSolutions(
+        IloArray <IloArray <IloNumArray>> xSol,
+        IloArray <IloNumArray> uSol
+    )
+    IloBool solveIteration(int iteration, int tempo);
+    void fixVariables(
+        IloArray <IloArray <IloNumArray>> xSol,
+        std::vector <int> visitar,
+        std::vector <int> visitado
+    );
+    void fixXYZ(std::vector <int> visitar, int check, int k, int i);
+    void buildNewConstraint(int entrega);
+    void fixedColumn(
+        IloArray <IloArray <IloNumArray>> sol,
+        std::vector <int> visitar,
+        int check, 
+        int i, int k    
+    );
+    void fixedRow(
+        IloArray <IloArray <IloNumArray>> sol,
+        std::vector <int> visitar,
+        int check, 
+        int i, int k 
+    );
+    void fixedSimetrics(
+        IloArray <IloArray <IloNumArray>> sol,
+        std::vector <int> visitar,
+        int check,int i
+    );
+    bool findElementInVector(
+        std::vector <int> vector,
+        int i
+    );
+    void calculateWhoToFix(
+        IloArray <IloArray <IloNumArray>> xSol,
+        std::vector <int> visitar,
+        std::vector <int> visitado,
+        std::vector<int> auxvisitar,
+        int check, int k
+    );
 };
 
 #endif // VRP_H_INCLUDED
