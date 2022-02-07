@@ -17,6 +17,7 @@ public:
     double loc_y;
     int charge;
     double price = 0.0;
+    Packet();
     Packet(int id, double loc_x, double loc_y, int charge);
 };
 

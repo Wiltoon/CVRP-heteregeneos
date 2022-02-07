@@ -1,5 +1,9 @@
 #include "Packet.hpp"
 
+Packet::Packet(){
+	
+}
+
 Packet::Packet(int id, double loc_x, double loc_y, int charge) {
 	this->id = id;
 	this->loc_x = loc_x;

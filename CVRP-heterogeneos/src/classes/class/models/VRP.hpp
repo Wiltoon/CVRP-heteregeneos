@@ -5,15 +5,17 @@
 
 #include "Model.hpp"
 
-int DEPOSIT = 0;
-int TIME_MAX = 30;
-int SOMADOR_TIME = 6;
 class VRP final : public Model{
 public:
+
+    int DEPOSIT = 0;
+    int TIME_MAX = 30;
+    int SOMADOR_TIME = 6;
     int N = 0;
     int K = 0;
-    std::vector<Packet> packets;
+    std::vector<Packet> packets;                // DEPOSITO INCLUIDO
     std::vector<Vehicle> vehicles;
+    IloArray <IloNumArray> output;
     
     IloNumArray p;                              // pedidos
     IloArray <IloNumArray> d;                   // matrix_distance
@@ -21,7 +23,7 @@ public:
     IloBoolArray v;                             // veiculo ativado
     IloArray<IloBoolArray> w;                   // packet visited per vehicle
     IloNumArray Q;                              // carga maxima de um veiculo
-    IloNumVarArray u;                           // aux_carga
+    IloArray<IloNumVarArray> u;                 // aux_carga
     IloBoolVarArray y;                          // aux_dont return
     IloArray<IloBoolVarArray> z;                // vehicle leave packet
     IloArray <IloArray <IloBoolVarArray>> x;    // variavel de decisao
@@ -39,7 +41,7 @@ public:
 
     void renameVars();
 
-    void relax_and_fix(int time);
+    VRPSolution relax_and_fix(int time, IloCplex cplex);
     void constraintDestiny();
     void constraintDriverGoToDestiny();
     void constraintBecame();
@@ -52,20 +54,26 @@ public:
     void constraintTotalVehicles();
 
     double distance_euclidian(Packet origin, Packet destiny);
-    IloArray <IloNumArray> buildUsol();
+    IloArray <IloNumArray> buildUSol();
     IloArray <IloArray <IloNumArray>> buildXSol();
     IloArray <IloArray <IloExtractableArray>> relaxAll();
-    int pathsToFix();
+    bool pathsToFix(std::vector<int> visited);
     void printerVector(std::string name, std::vector<int> elements);
     void removeRelaxationToVisit(
         IloArray <IloArray<IloExtractableArray>> relaxa,
         std::vector<int> visitar
     );
-    void VRP::assignTheSolutions(
+    void assignTheSolutions(
         IloArray <IloArray <IloNumArray>> xSol,
-        IloArray <IloNumArray> uSol
-    )
-    IloBool solveIteration(int iteration, int tempo);
+        IloArray <IloNumArray> uSol,
+        std::vector <int> visitar,
+        IloCplex cplex
+    );
+    IloBool solveIteration(
+        int iteration, 
+        int tempo,
+        IloCplex cplex
+    );
     void fixVariables(
         IloArray <IloArray <IloNumArray>> xSol,
         std::vector <int> visitar,
@@ -91,8 +99,8 @@ public:
         int check,int i
     );
     bool findElementInVector(
-        std::vector <int> vector,
-        int i
+        int i,
+        std::vector <int> vetor
     );
     void calculateWhoToFix(
         IloArray <IloArray <IloNumArray>> xSol,

@@ -14,10 +14,11 @@ public:
     int charge_max = 200;
     int current_charge = 0;
     int cust = 20;
-    std::vector<Packet> packets_order;
+    Packet origin;
+    std::vector<Packet> deliveries;
     bool used = false;
 
-    Vehicle(int id, int charge, int cust);
+    Vehicle(int id, int charge, int cust, Packet deposit);
     void addPacket(Packet packet);
     void useVehicle(bool use);
 };

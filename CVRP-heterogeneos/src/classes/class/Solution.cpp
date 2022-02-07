@@ -1,5 +1,9 @@
 #include "Solution.hpp"
 
+Solution::Solution() {
+
+}
+
 Solution::Solution(
     VehiclePerRegionSolution whichvehicles, 
     OrderSolution partial_, 
@@ -12,6 +16,10 @@ Solution::Solution(
 
 Solution::Solution(OrderSolution partial_, VRPSolution result_){
     this->partial = partial_;
+    this->result = result_;
+}
+
+Solution::Solution(VRPSolution result_){
     this->result = result_;
 }
 

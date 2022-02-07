@@ -64,20 +64,10 @@ Solution CVRP::solveWithKmeans(
         );
         clusters_solved.push_back(sol);
     }
-
     std::cout << "PARTE PRINT 3" << std::endl;
-    for(int k = 0; k < this->bestK.getClusters().size(); k++){
-        std::vector<Vehicle> vehicles_used = mapRegion.vehiclePerRegion.at(k);
-        std::vector<Packet> p_visited_region = 
-            this->bestK.getCluster(k).getPackets(packets);
-        clusters_solved[k].partial.printerOrderSolutionGlobal(
-            vehicles_used,
-            this->bestK.getCluster(k).getPackets(packets)
-        );
-
+    for(Solution s : clusters_solved){
+        s.result.printerSolution();
     }
-    // Devera unir todas as solutions obtidas para printar corretamente
-    // cada veiculo possui sua rota determinada em ordem {JSON?}
 }
 
 void CVRP::printerPackets(std::vector<Packet> packs){
@@ -108,7 +98,8 @@ KMeans CVRP::avaliateBestKmeans(std::vector<KMeans> possiblesKs){
 
 Solution CVRP::solve(
     int timeOrder, int timeVRP, 
-    std::vector<Vehicle> vehicles_used, std::vector<Packet> packs, double alpha
+    std::vector<Vehicle> vehicles_used, 
+    std::vector<Packet> packs, double alpha
 ){
     int Nsub = packs.size();
     int Ksub = vehicles_used.size();    
@@ -119,9 +110,10 @@ Solution CVRP::solve(
         alpha
     );
     // resolver o problema da "mochila multipla"
-    Solution sol = organizePackets.solve(timeOrder);
-    
-    VRP vrpRelaxFix = VRP(sol.partial.output, vehicles_used, packs);
+    Solution solOrder = organizePackets.solve(timeOrder);
+    VRP vrpRelaxFix = VRP(solOrder.partial.output, packs, vehicles_used);
+    Solution solVRP = vrpRelaxFix.solve(timeVRP);
+    Solution sol = Solution(solOrder.partial, solVRP.result);
     return sol;
 }
 

@@ -106,7 +106,8 @@ void SolomonInstance::parseVehicles(CVRP& problem, std::string filevehicles){
                 }
                 element++;
             }
-            Vehicle vehicle = Vehicle(id, cap, custo);
+            Packet dep = problem.packets[0];
+            Vehicle vehicle = Vehicle(id, cap, custo, dep);
             problem.vehicles.push_back(vehicle);
         }
         num_lim++;

@@ -14,12 +14,14 @@ public:
     OrderSolution partial;
     VRPSolution result;
     
+    Solution();
     Solution(
         VehiclePerRegionSolution whichvehicles, 
         OrderSolution partial, 
         VRPSolution result
     );
     Solution(OrderSolution partial, VRPSolution result);
+    Solution(VRPSolution result);
     Solution(OrderSolution partail);
     Solution(VehiclePerRegionSolution whichvehicles);
 };

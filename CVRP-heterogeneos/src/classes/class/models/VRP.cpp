@@ -11,6 +11,7 @@ VRP::VRP(
 ){
     this->packets = packets;
     this->vehicles = vehicles;
+    this->output = output;
     this->N = packets.size();
     this->K = vehicles.size();
     IloModel model(env);
@@ -52,7 +53,7 @@ void VRP::createParams() {
     this->w = w;
     for(int k = 0; k < K; k++){
         for (int j = 0; j < N; j++){
-            this->w[k][j] = (output[k][j] > 0.9);
+            this->w[k][j] = (this->output[k][j] > 0.9);
         }
     }
 }   
@@ -75,6 +76,10 @@ void VRP::createVariables() {
     for (int k = 0; k < K; k++) {
         u[k] = IloNumVarArray(env, N, 0, vehicles[k].charge_max);// Variavel auxiliar para eliminicao de rota
     }
+    this->x = x;
+    this->y = y;
+    this->z = z;
+    this->u = u;
     renameVars();
 }
 
@@ -154,35 +159,45 @@ Solution VRP::solve(int timeLimite) {
     createVariables();
     createFunctionObjetive();
     createConstraints();
-    OrderSolution in = OrderSolution();
-    VRPSolution o = VRPSolution();
-    Solution sol = Solution(in, o);
+    VRPSolution o = relax_and_fix(timeLimite, cplex);
+    Solution sol = Solution(o);
     return sol;
 }
 
-void VRP::relax_and_fix(int time){
+VRPSolution VRP::relax_and_fix(int time, IloCplex cplex) {
     // construção do modelo relax and fix para resolver
     IloArray <IloArray <IloExtractableArray>> relaxa = relaxAll();
     IloArray <IloArray <IloNumArray>> xSol = buildXSol();
     IloArray <IloNumArray> uSol = buildUSol();
-
+    bool LOOPINFINITO = false;
     std::vector <int> to_visit;
     std::vector <int> visited;
     to_visit.push_back(DEPOSIT);
-    for(int t = 0; t < pathsToFix(); t++){
+    for(int t = 0; t < N && pathsToFix(visited); t++){
+        printerVector("TO VISIT ", to_visit);
         removeRelaxationToVisit(relaxa, to_visit);
-        IloBool result = solveIteration(t, time);
-        if(result){
-            assignTheSolutions(xSol,uSol,to_visit);
-            // Partial solution?
-            fixVariables(xSol,to_visit,visited);
-        } else {
-            if (time < TIME_MAX){
-                std::cout << "Aumentar tempo do solve "<< time << "+"<< SOMADOR_TIME << std::endl;
-                time += SOMADOR_TIME;
+        if(!LOOPINFINITO){
+            std::cout << "t: " << std::to_string(t) << std::endl;
+            IloBool result = solveIteration(t, time, cplex);
+            if(result){
+                assignTheSolutions(xSol,uSol,to_visit, cplex);
+                fixVariables(xSol,to_visit,visited);
+            } else {
+                if (time < TIME_MAX){
+                    std::cout << "Aumentar tempo do solve "<< time << "+"<< SOMADOR_TIME << std::endl;
+                    time += SOMADOR_TIME;
+                }
+                LOOPINFINITO = true;
             }
         }
-    }   
+    }
+    VRPSolution vrp = VRPSolution(
+        xSol,
+        uSol, 
+        vehicles,
+        packets
+    );
+    return vrp;   
 }
 
 void VRP::fixXYZ(std::vector <int> visitar, int check, int k, int i){
@@ -195,8 +210,8 @@ void VRP::fixXYZ(std::vector <int> visitar, int check, int k, int i){
 void VRP::buildNewConstraint(int entrega){
     for (int veiculo = 0; veiculo < K; veiculo++) {
         char* namevarD;
-        string name(
-            "fluxo_veiculo_" + to_string(veiculo) + "_da_entrega_" + to_string(entrega)
+        std::string name(
+            "fluxo_veiculo_" + std::to_string(veiculo) + "_da_entrega_" + std::to_string(entrega)
         );
         namevarD = &name[0];
         IloConstraint consVeiculoUnico = (
@@ -264,13 +279,13 @@ void VRP::fixedSimetrics(
 }
 
 bool VRP::findElementInVector(
-        std::vector <int> vector,
-        int i
+        int i,
+        std::vector <int> vetor
 ) {
     bool encontrado = false;
-    for (int it = 0; it < vector.size(); it++) {
+    for (int it = 0; it < vetor.size(); it++) {
         //cout << "VISITADO[" << it << "] = \t" << visitado[it] << endl;
-        if (visitado[it] == i) {
+        if (vetor[it] == i) {
             encontrado = true;
         }
     }
@@ -333,7 +348,8 @@ void VRP::fixVariables(
 void VRP::assignTheSolutions(
     IloArray <IloArray <IloNumArray>> xSol,
     IloArray <IloNumArray> uSol,
-    std::vector<int> visitar
+    std::vector <int> visitar,
+    IloCplex cplex
 ){
     for (int k = 0; k < K; k++) {
         cplex.getValues(u[k], uSol[k]);
@@ -343,15 +359,17 @@ void VRP::assignTheSolutions(
     }
 }
 
-IloBool VRP::solveIteration(int iteration, int tempo){
+IloBool VRP::solveIteration(
+    int iteration,
+    int tempo,
+    IloCplex cplex
+){
     cplex.setParam(IloCplex::TiLim, tempo);
     cplex.extract(model);
-    if (!LOOPINFINITO) {
-        char* outputer;
-        string saida("saida_" + to_string(iteration)+ ".lp");
-        outputer = &saida[0];
-        cplex.exportModel(outputer);
-    }
+    char* outputer;
+    std::string saida("saida_" + std::to_string(iteration)+ ".lp");
+    outputer = &saida[0];
+    cplex.exportModel(outputer);
     
     return cplex.solve();
 }
@@ -369,11 +387,12 @@ void VRP::removeRelaxationToVisit(
     }
 }
 
-int VRP::pathsToFix(){
-    return K;
+bool VRP::pathsToFix(std::vector<int> visited){
+    int packets_exclude_deposit = packets.size()-1;
+    return (packets_exclude_deposit > visited.size());
 }
 
-void printerVector(std::string name, std::vector<int> elements){
+void VRP::printerVector(std::string name, std::vector<int> elements){
     std::cout << name << " -> " << std::endl << "\t[";
     for(int i = 0; i < elements.size(); i++){
         if(i == elements.size()-1){
@@ -384,7 +403,7 @@ void printerVector(std::string name, std::vector<int> elements){
     }
 }
 
-IloArray <IloNumArray> VRP::buildUsol(){
+IloArray <IloNumArray> VRP::buildUSol(){
     IloArray <IloNumArray> uSol(env, K);
     for (int k = 0; k < K; k++) {
         uSol[k] = IloNumArray(env, N);
@@ -605,10 +624,6 @@ void VRP::constraintWarrantNoReturnDeposit(){
 void VRP::constraintTotalVehicles(){
     IloExpr sumVeiculos(env);
     for (int k = 0; k < K; k++) {
-        char* namevarV;
-        std::string nameV("v_" + std::to_string(k));
-        namevarV = &nameV[0];
-        v[k].setName(namevarV);
         sumVeiculos += v[k];
     }
     IloConstraint sumDrivers = (sumVeiculos >= 0); // total de veiculos utilizado?
