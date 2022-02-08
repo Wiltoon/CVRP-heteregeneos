@@ -43,6 +43,7 @@ public:
         Packet& packet, Vehicle& vehicle, double alpha
     );
     void printerPackets(std::vector<Packet> packs);
+    void printerVehicles(std::vector<Vehicle> vehicles);
     KMeans avaliateBestKmeans(std::vector<KMeans> possiblesKs);
     VehiclePerRegionSolution optimizeVehicles(KMeans kmeans);
 };

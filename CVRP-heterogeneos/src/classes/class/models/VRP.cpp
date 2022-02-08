@@ -46,6 +46,9 @@ void VRP::createParams() {
         w[k] = IloBoolArray(env, N);
     }
     IloBoolArray v(env, K);
+    for (int k = 0; k < K; k++) {
+        v[k] = 1;
+    }
     this->d = d;
     this->p = p;
     this->e = e;
@@ -139,8 +142,8 @@ void VRP::createFunctionObjetive() {
 
 void VRP::createConstraints() {
     // criar as constraints
-    constraintDestiny();
-    constraintDriverGoToDestiny();
+    // w is param constraintDestiny();
+    // w is param constraintDriverGoToDestiny();
     constraintBecame();
     constraintDriverBecame();
     constraintPacketSendByVehicle();
@@ -180,7 +183,14 @@ VRPSolution VRP::relax_and_fix(int time, IloCplex cplex) {
             std::cout << "t: " << std::to_string(t) << std::endl;
             IloBool result = solveIteration(t, time, cplex);
             if(result){
-                assignTheSolutions(xSol,uSol,to_visit, cplex);
+                for (int k = 0; k < K; k++) {
+                    std::cout << "t: " << std::to_string(t) << std::endl;
+                    for (int i = 0; i < to_visit.size(); i++) {
+                        cplex.getValues(x[k][to_visit[i]], xSol[k][to_visit[i]]);
+                    }
+                }
+                // assignTheSolutions(xSol,uSol,to_visit, cplex);
+                std::cout << "result: " << result << std::endl;
                 fixVariables(xSol,to_visit,visited);
             } else {
                 if (time < TIME_MAX){
@@ -201,6 +211,9 @@ VRPSolution VRP::relax_and_fix(int time, IloCplex cplex) {
 }
 
 void VRP::fixXYZ(std::vector <int> visitar, int check, int k, int i){
+    std::cout << "visitar[" << check << "]: \t" << visitar[check] << std::endl;
+    std::cout << "i: \t" << i << std::endl;
+    std::cout << "k: \t" << k << std::endl;
     x[k][visitar[check]][i].setBounds(1, 1);
     z[k][visitar[check]].setBounds(1, 1);
     y[i].setBounds(0, 0);
@@ -299,8 +312,8 @@ void VRP::calculateWhoToFix(
         std::vector<int> auxvisitar,
         int check, int k
 ){  
-    for (int i = 1; i < N; i++) {
-        // std::cout << "sol [" << check << "][" << i << ']' << "=" << sol[check][i] << endl;
+    for (int i = 0; i < N; i++) {
+        std::cout << "sol [" << k << "][" << visitar[check] << "][" << i << ']' << "=" << xSol[k][visitar[check]][i] << std::endl;
         if (xSol[k][visitar[check]][i] >= 0.8) {
             // std::cout << "sol [" << visitar[check] << "][" << i << ']' << "=" << sol[k][visitar[check]][i] << endl;
             // FIXA VALOR DE X[i][j] ja resolvido
@@ -352,6 +365,7 @@ void VRP::assignTheSolutions(
     IloCplex cplex
 ){
     for (int k = 0; k < K; k++) {
+        std::cout << "AQUI" << std::endl;
         cplex.getValues(u[k], uSol[k]);
         for (int i = 0; i < visitar.size(); i++) {
             cplex.getValues(x[k][visitar[i]], xSol[k][visitar[i]]);
@@ -586,20 +600,22 @@ void VRP::constraintUseVehicles(){
 void VRP::constraintWarrantOutflowDeposit(){
     IloConstraintArray cons_deposit(env);
     IloExpr depCli(env);
-    IloExpr depClient(env);
-    int qntMinVei = 0;	
     for (int k = 0; k < K; k++) {
+        IloExpr depClient(env);	
         depClient += z[k][0];
         for (int i = 1; i < N; i++) {
             depCli += x[k][0][i];
         }
+        std::cout << "z[k] => " << v[k] << std::endl;
+        IloConstraint depositToClient = (depCli == v[k]);
+        IloConstraint depositToClient2 = (depClient == v[k]);
+        depositToClient.setName("saida_Deposito");
+        depositToClient2.setName("saida_Deposito2");
+        model.add(depositToClient);
+        model.add(depositToClient2);
+        depCli.end();
+        depClient.end();
     }
-    IloConstraint depositToClient = (depCli == qntMinVei);
-    IloConstraint depositToClient2 = (depClient == qntMinVei);
-    depositToClient.setName("saida_Deposito");
-    depositToClient2.setName("saida_Deposito2");
-    depCli.end();
-    depClient.end();
 }
 
 void VRP::constraintWarrantNoReturnDeposit(){
@@ -626,7 +642,7 @@ void VRP::constraintTotalVehicles(){
     for (int k = 0; k < K; k++) {
         sumVeiculos += v[k];
     }
-    IloConstraint sumDrivers = (sumVeiculos >= 0); // total de veiculos utilizado?
+    IloConstraint sumDrivers = (sumVeiculos > 0); // total de veiculos utilizado?
     sumDrivers.setName("SumDrivers");
     model.add(sumDrivers);
     sumVeiculos.end();

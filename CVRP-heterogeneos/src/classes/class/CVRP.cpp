@@ -71,9 +71,17 @@ Solution CVRP::solveWithKmeans(
 }
 
 void CVRP::printerPackets(std::vector<Packet> packs){
-    std::cout << "vet = [ ";
+    std::cout << "packs = [ ";
     for(Packet p : packs){
         std::cout << p.id << " "; 
+    }
+    std::cout << "]!" << std::endl;
+}
+
+void CVRP::printerVehicles(std::vector<Vehicle> vehicles){
+    std::cout << "vehicles = [ ";
+    for(Vehicle v : vehicles){
+        std::cout << v.id << " "; 
     }
     std::cout << "]!" << std::endl;
 }
@@ -104,6 +112,8 @@ Solution CVRP::solve(
     int Nsub = packs.size();
     int Ksub = vehicles_used.size();    
     //A resolução desse problema retorna os packets organizados por veículos
+    printerPackets(packs);
+    printerVehicles(vehicles_used);
     Order organizePackets = Order(
         packs,
         vehicles_used,
