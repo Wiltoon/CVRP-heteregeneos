@@ -35,7 +35,7 @@ public:
     Solution solveWithKmeans(
         int timeOrder, int timeVRP, int N, int K, double alpha);
     Solution solve(
-        int timeOrder, int timeVRP, 
+        int timeOrder, int timeVRP, int regiao,
         std::vector<Vehicle> vehicles_used, 
         std::vector<Packet> packs, double alpha
     );

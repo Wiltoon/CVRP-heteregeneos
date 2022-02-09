@@ -7,8 +7,10 @@
 VRP::VRP(
     IloArray <IloNumArray> output,
     std::vector<Packet> packets, 
-    std::vector<Vehicle> vehicles
+    std::vector<Vehicle> vehicles, 
+    int region
 ){
+    this->region = region;
     this->packets = packets;
     this->vehicles = vehicles;
     this->output = output;
@@ -49,11 +51,16 @@ void VRP::createParams() {
     for (int k = 0; k < K; k++) {
         v[k] = 1;
     }
+    IloNumArray Q(env, K);
+    for (int k = 0; k < K; k++){
+        Q[k] = vehicles[k].charge_max;
+    }
     this->d = d;
     this->p = p;
     this->e = e;
     this->v = v;
     this->w = w;
+    this->Q = Q;
     for(int k = 0; k < K; k++){
         for (int j = 0; j < N; j++){
             this->w[k][j] = (this->output[k][j] > 0.9);
@@ -152,6 +159,7 @@ void VRP::createConstraints() {
     constraintWarrantOutflowDeposit();
     constraintWarrantNoReturnDeposit();
     constraintTotalVehicles();
+    constraintMTZ();
 }
 
 Solution VRP::solve(int timeLimite) {
@@ -163,11 +171,12 @@ Solution VRP::solve(int timeLimite) {
     createFunctionObjetive();
     createConstraints();
     VRPSolution o = relax_and_fix(timeLimite, cplex);
+    std::cout << "RF" << std::endl;
     Solution sol = Solution(o);
     return sol;
 }
 
-VRPSolution VRP::relax_and_fix(int time, IloCplex cplex) {
+VRPSolution VRP::relax_and_fix(int time, IloCplex & cplex) {
     // construção do modelo relax and fix para resolver
     IloArray <IloArray <IloExtractableArray>> relaxa = relaxAll();
     IloArray <IloArray <IloNumArray>> xSol = buildXSol();
@@ -183,15 +192,8 @@ VRPSolution VRP::relax_and_fix(int time, IloCplex cplex) {
             std::cout << "t: " << std::to_string(t) << std::endl;
             IloBool result = solveIteration(t, time, cplex);
             if(result){
-                for (int k = 0; k < K; k++) {
-                    std::cout << "t: " << std::to_string(t) << std::endl;
-                    for (int i = 0; i < to_visit.size(); i++) {
-                        cplex.getValues(x[k][to_visit[i]], xSol[k][to_visit[i]]);
-                    }
-                }
-                // assignTheSolutions(xSol,uSol,to_visit, cplex);
-                std::cout << "result: " << result << std::endl;
-                fixVariables(xSol,to_visit,visited);
+                assignTheSolutions(xSol, uSol, to_visit, cplex);
+                fixVariables(xSol, to_visit, visited);
             } else {
                 if (time < TIME_MAX){
                     std::cout << "Aumentar tempo do solve "<< time << "+"<< SOMADOR_TIME << std::endl;
@@ -211,9 +213,6 @@ VRPSolution VRP::relax_and_fix(int time, IloCplex cplex) {
 }
 
 void VRP::fixXYZ(std::vector <int> visitar, int check, int k, int i){
-    std::cout << "visitar[" << check << "]: \t" << visitar[check] << std::endl;
-    std::cout << "i: \t" << i << std::endl;
-    std::cout << "k: \t" << k << std::endl;
     x[k][visitar[check]][i].setBounds(1, 1);
     z[k][visitar[check]].setBounds(1, 1);
     y[i].setBounds(0, 0);
@@ -245,12 +244,12 @@ void VRP::fixedColumn(
         if (row != visitar[check]) {
             x[k][row][i].setBounds(0, 0);
             for (int kar = 0; kar < K; kar++) { // INUTILIZAR VEICULOS PARA ATENDER OS PEDIDOS DA COLUNA
-                if (sol[kar][visitar[check]][i] >= 0.8) {
-                    x[kar][visitar[check]][i].setBounds(1, 1);
+                if (sol[kar][row][i] >= 0.8) {
+                    x[kar][row][i].setBounds(1, 1);
                 }
                 else {
-                    if (k != kar) {
-                        x[kar][visitar[check]][i].setBounds(0, 0);
+                    if (k != kar) { // DEPOSITO EXCEPTION?
+                        x[kar][row][i].setBounds(0, 0);
                     }
                 }
             }
@@ -307,15 +306,14 @@ bool VRP::findElementInVector(
 
 void VRP::calculateWhoToFix(
         IloArray <IloArray <IloNumArray>> xSol,
-        std::vector <int> visitar,
-        std::vector <int> visitado,
-        std::vector<int> auxvisitar,
+        std::vector <int> & visitar,
+        std::vector <int> & visitado,
+        std::vector <int> & auxvisitar,
         int check, int k
 ){  
     for (int i = 0; i < N; i++) {
-        std::cout << "sol [" << k << "][" << visitar[check] << "][" << i << ']' << "=" << xSol[k][visitar[check]][i] << std::endl;
         if (xSol[k][visitar[check]][i] >= 0.8) {
-            // std::cout << "sol [" << visitar[check] << "][" << i << ']' << "=" << sol[k][visitar[check]][i] << endl;
+            std::cout << "sol [" << k << "][" << visitar[check] << "][" << i << ']' << "=" << xSol[k][visitar[check]][i] << std::endl;
             // FIXA VALOR DE X[i][j] ja resolvido
             fixXYZ(visitar,check,k,i);
             buildNewConstraint(i);
@@ -337,8 +335,8 @@ void VRP::calculateWhoToFix(
 
 void VRP::fixVariables(
         IloArray <IloArray <IloNumArray>> xSol,
-        std::vector <int> visitar,
-        std::vector <int> visitado
+        std::vector <int> & visitar,
+        std::vector <int> & visitado
 ){
     std::vector<int> auxvisitar;
     //Fixa a parte inteira da solução
@@ -350,6 +348,8 @@ void VRP::fixVariables(
     // Apagar a memoria do visitar e colocar o valor do auxvisitar
     visitar.clear();
     // CASO NAO TENHA MAIS NINGUEM PARA VISITAR (AUXVISITAR == 0) (O AUXVISITAR VIRA O VISITAR)
+    printerVector("AUXVISITAR ==> ", auxvisitar);
+    std::cout << std::endl;
     for (int i = 0; i < auxvisitar.size(); i++) {
         //std::cout << "AUXVISITAR[" << i << "] = \t" << auxvisitar[i] << std::endl;
         if (auxvisitar[i] != 0) {
@@ -359,13 +359,12 @@ void VRP::fixVariables(
 }
 
 void VRP::assignTheSolutions(
-    IloArray <IloArray <IloNumArray>> xSol,
-    IloArray <IloNumArray> uSol,
+    IloArray <IloArray <IloNumArray>> & xSol,
+    IloArray <IloNumArray> & uSol,
     std::vector <int> visitar,
     IloCplex cplex
 ){
     for (int k = 0; k < K; k++) {
-        std::cout << "AQUI" << std::endl;
         cplex.getValues(u[k], uSol[k]);
         for (int i = 0; i < visitar.size(); i++) {
             cplex.getValues(x[k][visitar[i]], xSol[k][visitar[i]]);
@@ -376,15 +375,15 @@ void VRP::assignTheSolutions(
 IloBool VRP::solveIteration(
     int iteration,
     int tempo,
-    IloCplex cplex
+    IloCplex & cplex
 ){
     cplex.setParam(IloCplex::TiLim, tempo);
     cplex.extract(model);
     char* outputer;
-    std::string saida("saida_" + std::to_string(iteration)+ ".lp");
+    std::string saida("saida_R" + std::to_string(region) + "_I" + std::to_string(iteration)+ ".lp");
     outputer = &saida[0];
+    // cplex.setOut(env.getNullStream());
     cplex.exportModel(outputer);
-    
     return cplex.solve();
 }
 
@@ -563,7 +562,7 @@ void VRP::constraintPacketSolvedByVehicle(){
             char* namevar;
             std::string name("saidaDoCliente_" + std::to_string(i) + "_peloVehicle_" + std::to_string(k));
             namevar = &name[0];
-            for (int j = 0; j < N; j++) {
+            for (int j = 1; j < N; j++) {
                 if (j != i) {
                     restSaida += x[k][i][j];
                 }
@@ -599,14 +598,13 @@ void VRP::constraintUseVehicles(){
 
 void VRP::constraintWarrantOutflowDeposit(){
     IloConstraintArray cons_deposit(env);
-    IloExpr depCli(env);
     for (int k = 0; k < K; k++) {
+        IloExpr depCli(env);
         IloExpr depClient(env);	
         depClient += z[k][0];
         for (int i = 1; i < N; i++) {
             depCli += x[k][0][i];
         }
-        std::cout << "z[k] => " << v[k] << std::endl;
         IloConstraint depositToClient = (depCli == v[k]);
         IloConstraint depositToClient2 = (depClient == v[k]);
         depositToClient.setName("saida_Deposito");
@@ -633,6 +631,8 @@ void VRP::constraintWarrantNoReturnDeposit(){
     IloConstraint clienToDeposit2 = (clientDep == 0);
     clienToDeposit.setName("retorno_Deposito");
     clienToDeposit2.setName("retorno_Deposito2");
+    model.add(clienToDeposit);
+    model.add(clienToDeposit2);
     cliDep.end();
     clientDep.end();
 }
@@ -646,6 +646,43 @@ void VRP::constraintTotalVehicles(){
     sumDrivers.setName("SumDrivers");
     model.add(sumDrivers);
     sumVeiculos.end();
+}
+
+void VRP::constraintMTZ(){
+    IloConstraintArray cons_MTZ(env);
+    for (int k = 0; k < K; k++) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (i != j) {
+                    IloConstraint mtz = (u[k][i] >= u[k][j] + p[i] - Q[k] * (1 - x[k][i][j]));
+                    char* char_arr;
+                    std::string name("GETOUT_" + std::to_string(k) + "_"+ std::to_string(i) +"_" + std::to_string(j));
+                    char_arr = &name[0];
+                    mtz.setName(char_arr);
+                    cons_MTZ.add(mtz);
+                    model.add(mtz);
+                }
+            }
+        }
+    }
+}
+
+void VRP::constraintLimitMTZ(){
+    for (int k = 0; k < K; k++) {
+        for (int i = 0; i < N; i++) {
+            char* char_arr;
+            std::string name("u_" + std::to_string(k) + "_" + std::to_string(i));
+            char_arr = &name[0];
+            u[k][i].setName(char_arr);
+            if (i == 0) {
+                model.add(u[k][i] >= 0);
+            }
+            else {
+                model.add(u[k][i] >= p[i]);
+            }
+            model.add(u[k][i] <= Q[k]);
+        }
+    }
 }
 
 double VRP::distance_euclidian(Packet origin, Packet destiny){

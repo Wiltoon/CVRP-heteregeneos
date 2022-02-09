@@ -18,6 +18,7 @@ private:
     std::vector<Vehicle> vehicles;
     int N;
     int K;
+    int region;
 
     static bool crescentePackets(
         const NeighborPacket& p1, const NeighborPacket& p2);
@@ -34,7 +35,7 @@ public:
     Order(
         std::vector<Packet> packets_order_,
         std::vector<Vehicle> vehicles_,
-        double alpha
+        double alpha, int region
     );
 
     void createParams() override;

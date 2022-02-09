@@ -3,12 +3,13 @@
 Order::Order(
     std::vector<Packet> packets_order_,
     std::vector<Vehicle> vehicles_,
-    double alpha
+    double alpha, int region
 ) {  
     this->packets_order = packets_order_;
     this->vehicles = vehicles_;
     this->N = packets_order_.size();
     this->K = vehicles_.size();
+    this->region = region;
     this->matrix_prices = calculate_matrix_price(alpha, N, K);
     IloModel model(env);
     this->model = model;
@@ -181,9 +182,10 @@ Solution Order::solve(int tempoLimite){
     createConstraints();
     std::cout << "Solution Order::solve2" << std::endl;
     cplex.setParam(IloCplex::TiLim, tempoLimite);
+    cplex.setOut(env.getNullStream());
 	cplex.extract(model);
     char* output;
-    std::string saida("saida_order.lp");
+    std::string saida("saida_R" + std::to_string(region) + "_order.lp");
     output = &saida[0];
     cplex.exportModel(output);
     IloBool result = cplex.solve();

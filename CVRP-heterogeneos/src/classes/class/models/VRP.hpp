@@ -11,14 +11,15 @@ public:
     int DEPOSIT = 0;
     int TIME_MAX = 30;
     int SOMADOR_TIME = 6;
+    int region = -1;
     int N = 0;
     int K = 0;
     std::vector<Packet> packets;                // DEPOSITO INCLUIDO
     std::vector<Vehicle> vehicles;
     IloArray <IloNumArray> output;
     
-    IloNumArray p;                              // pedidos
     IloArray <IloNumArray> d;                   // matrix_distance
+    IloNumArray p;                              // pedidos
     IloNumArray e;                              // custo veiculo
     IloBoolArray v;                             // veiculo ativado
     IloArray<IloBoolArray> w;                   // packet visited per vehicle
@@ -31,7 +32,8 @@ public:
     VRP(
         IloArray <IloNumArray> output,
         std::vector<Packet> packets, 
-        std::vector<Vehicle> vehicles
+        std::vector<Vehicle> vehicles, 
+        int region
     );
     void createParams() override;
     void createVariables() override;
@@ -41,7 +43,7 @@ public:
 
     void renameVars();
 
-    VRPSolution relax_and_fix(int time, IloCplex cplex);
+    VRPSolution relax_and_fix(int time, IloCplex & cplex);
     void constraintDestiny();
     void constraintDriverGoToDestiny();
     void constraintBecame();
@@ -52,6 +54,8 @@ public:
     void constraintWarrantOutflowDeposit();
     void constraintWarrantNoReturnDeposit();
     void constraintTotalVehicles();
+    void constraintMTZ();
+    void constraintLimitMTZ();
 
     double distance_euclidian(Packet origin, Packet destiny);
     IloArray <IloNumArray> buildUSol();
@@ -64,20 +68,20 @@ public:
         std::vector<int> visitar
     );
     void assignTheSolutions(
-        IloArray <IloArray <IloNumArray>> xSol,
-        IloArray <IloNumArray> uSol,
+        IloArray <IloArray <IloNumArray>> & xSol,
+        IloArray <IloNumArray> & uSol,
         std::vector <int> visitar,
         IloCplex cplex
     );
     IloBool solveIteration(
         int iteration, 
         int tempo,
-        IloCplex cplex
+        IloCplex & cplex
     );
     void fixVariables(
         IloArray <IloArray <IloNumArray>> xSol,
-        std::vector <int> visitar,
-        std::vector <int> visitado
+        std::vector <int> & visitar,
+        std::vector <int> & visitado
     );
     void fixXYZ(std::vector <int> visitar, int check, int k, int i);
     void buildNewConstraint(int entrega);
@@ -104,9 +108,9 @@ public:
     );
     void calculateWhoToFix(
         IloArray <IloArray <IloNumArray>> xSol,
-        std::vector <int> visitar,
-        std::vector <int> visitado,
-        std::vector<int> auxvisitar,
+        std::vector <int> & visitar,
+        std::vector <int> & visitado,
+        std::vector <int> & auxvisitar,
         int check, int k
     );
 };
