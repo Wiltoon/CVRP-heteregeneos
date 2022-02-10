@@ -25,7 +25,7 @@ public:
     IloArray<IloBoolArray> w;                   // packet visited per vehicle
     IloNumArray Q;                              // carga maxima de um veiculo
     IloArray<IloNumVarArray> u;                 // aux_carga
-    IloBoolVarArray y;                          // aux_dont return
+    IloArray<IloBoolVarArray> y;                // aux_dont return
     IloArray<IloBoolVarArray> z;                // vehicle leave packet
     IloArray <IloArray <IloBoolVarArray>> x;    // variavel de decisao
     
@@ -71,7 +71,7 @@ public:
         IloArray <IloArray <IloNumArray>> & xSol,
         IloArray <IloNumArray> & uSol,
         std::vector <int> visitar,
-        IloCplex cplex
+        IloCplex & cplex
     );
     IloBool solveIteration(
         int iteration, 
@@ -83,7 +83,12 @@ public:
         std::vector <int> & visitar,
         std::vector <int> & visitado
     );
-    void fixXYZ(std::vector <int> visitar, int check, int k, int i);
+    void fixXYZ(
+        std::vector <int> visitados,
+        std::vector <int> visitar, 
+        int check, int k, int i
+    );
+    void toFixY(std::vector <int> visitados, int k, int l);
     void buildNewConstraint(int entrega);
     void fixedColumn(
         IloArray <IloArray <IloNumArray>> sol,

@@ -5,8 +5,8 @@ VRPSolution::VRPSolution() {
 }
 
 VRPSolution::VRPSolution(
-	IloArray <IloArray <IloNumArray>> x,
-	IloArray <IloNumArray> u,
+	IloArray <IloArray <IloNumArray>> & x,
+	IloArray <IloNumArray> & u,
 	std::vector<Vehicle> vehicles,
 	std::vector<Packet> deliveries
 ) {
@@ -21,13 +21,18 @@ void VRPSolution::buildSolution() {
 	std::cout << "Build Solution" << std::endl;
 	int origin = DEPOSIT;
 	for(int k = 0; k < vehicles.size(); k++) {
+		origin = DEPOSIT;
+		// std::cout << "k: " << std::to_string(k) << std::endl;
 		for(int dest = 0; dest < deliveries.size(); dest++) {
-			if(this->xSol[k][origin][dest] >= 0.9) {
+			// std::cout << xSol[k][origin][dest] << ",\t";
+			if(xSol[k][origin][dest] >= 0.9) {
 				vehicles[k].addPacket(deliveries[dest]);
 				origin = dest;
-				dest = DEPOSIT;
+				dest = DEPOSIT-1;
+				// std::cout << std::endl;
 			}
 		}
+		// std::cout << std::endl;
 	}
 }
 

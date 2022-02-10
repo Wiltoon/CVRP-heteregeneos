@@ -185,7 +185,7 @@ Solution Order::solve(int tempoLimite){
     cplex.setOut(env.getNullStream());
 	cplex.extract(model);
     char* output;
-    std::string saida("saida_R" + std::to_string(region) + "_order.lp");
+    std::string saida("out/saida_R" + std::to_string(region) + "_order.lp");
     output = &saida[0];
     cplex.exportModel(output);
     IloBool result = cplex.solve();

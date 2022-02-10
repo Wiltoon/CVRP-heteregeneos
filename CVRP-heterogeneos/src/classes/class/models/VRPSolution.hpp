@@ -23,8 +23,8 @@ public:
 
 	VRPSolution();
 	VRPSolution(
-		IloArray <IloArray <IloNumArray>> x,
-		IloArray <IloNumArray> u,
+		IloArray <IloArray <IloNumArray>> & x,
+		IloArray <IloNumArray> & u,
 		std::vector<Vehicle> vehicles,
 		std::vector<Packet> deliveries
 	);

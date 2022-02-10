@@ -90,7 +90,7 @@ Solution WhichVehicleProblem::solve(int timeLimite){
     cplex.setParam(IloCplex::TiLim, timeLimite);
     cplex.extract(model);
     char* output;
-    std::string saida("saida_veiculos_qntd_per_region.lp");
+    std::string saida("out/saida_veiculos_qntd_per_region.lp");
     output = &saida[0];
     cplex.exportModel(output);
     IloBool result = cplex.solve();

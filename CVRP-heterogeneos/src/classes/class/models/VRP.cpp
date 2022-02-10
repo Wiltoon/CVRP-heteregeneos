@@ -77,7 +77,10 @@ void VRP::createVariables() {
             x[k][i] = IloBoolVarArray(env, N);
         }
     }
-    IloBoolVarArray y(env, N);
+    IloArray<IloBoolVarArray> y(env, K);
+    for (int k = 0; k < K; k++){
+        y[k] = IloBoolVarArray(env, N);
+    }
     IloArray<IloBoolVarArray> z(env, K); // ORIGENS (index i)
     for (int k = 0; k < K; k++) {
         z[k] = IloBoolVarArray(env, N);
@@ -95,20 +98,20 @@ void VRP::createVariables() {
 
 void VRP::renameVars(){
     char* char_u;
+    char* char_y;
     for(int k = 0; k < K; k++){
         for(int i = 0; i < N; i++) {
             std::string nameu("u_" + std::to_string(k) + "_" + std::to_string(i));
             char_u = &nameu[0];
             u[k][i].setName(char_u);
         }
+        for(int i = 0; i < N; i++){
+            std::string namey("y_" + std::to_string(k) + "_" + std::to_string(i));
+            char_y = &namey[0];
+            y[k][i].setName(char_y);
+        }
     }
 
-    char* char_y;
-    for(int i = 0; i < N; i++){
-        std::string namey("y_" + std::to_string(i));
-        char_y = &namey[0];
-        y[i].setName(char_y);
-    }
 
     char* char_z;
     for(int k = 0; k < K; k++){
@@ -189,11 +192,12 @@ VRPSolution VRP::relax_and_fix(int time, IloCplex & cplex) {
         printerVector("TO VISIT ", to_visit);
         removeRelaxationToVisit(relaxa, to_visit);
         if(!LOOPINFINITO){
-            std::cout << "t: " << std::to_string(t) << std::endl;
+            // std::cout << "t: " << std::to_string(t) << std::endl;
             IloBool result = solveIteration(t, time, cplex);
             if(result){
                 assignTheSolutions(xSol, uSol, to_visit, cplex);
                 fixVariables(xSol, to_visit, visited);
+
             } else {
                 if (time < TIME_MAX){
                     std::cout << "Aumentar tempo do solve "<< time << "+"<< SOMADOR_TIME << std::endl;
@@ -203,6 +207,17 @@ VRPSolution VRP::relax_and_fix(int time, IloCplex & cplex) {
             }
         }
     }
+    // for(int vei = 0; vei < K; vei++){
+    //     std::cout << "k <" << std::to_string(vei) << ">" << std::endl;
+    //     for(int lin = 0; lin < N; lin++){
+    //         std::cout << std::to_string(lin) << ":";
+    //         for(int col = 0; col < N; col++){
+    //             std::cout << xSol[vei][lin][col] << ",  ";
+    //         }
+    //         std::cout << std::endl;
+    //     }
+    //     std::cout << std::endl;
+    // }
     VRPSolution vrp = VRPSolution(
         xSol,
         uSol, 
@@ -212,10 +227,40 @@ VRPSolution VRP::relax_and_fix(int time, IloCplex & cplex) {
     return vrp;   
 }
 
-void VRP::fixXYZ(std::vector <int> visitar, int check, int k, int i){
+void VRP::fixXYZ(
+    std::vector <int> visitados,
+    std::vector <int> visitar, 
+    int check, int k, int i
+){
     x[k][visitar[check]][i].setBounds(1, 1);
     z[k][visitar[check]].setBounds(1, 1);
-    y[i].setBounds(0, 0);
+    // std::cout << "fixar indice => " << std::to_string(i) << " fixar!" << std::endl;
+    toFixY(visitados, k, i);
+}
+
+void VRP::toFixY(std::vector <int> visitados, int k, int l){
+    int totalToVisit = 0;
+    int totalVisit = 0;
+    int lastVisit = l;
+    for(int j = 0; j < N; j++){
+        if (w[k][j]) {
+            totalToVisit++;
+        }
+    }
+    if (!visitados.empty()) {
+        for(int i : visitados){
+            if(w[k][i]){
+                std::cout << "w[" << std::to_string(k) << "][" << std::to_string(i) << "]" << std::endl;
+                totalVisit++;
+            }
+        }
+    }
+    std::cout << std::to_string(totalToVisit) << "==" << std::to_string(totalVisit) << std::endl;
+    if(totalToVisit == (totalVisit+1)){
+        y[k][lastVisit].setBounds(1, 1);
+    } else {
+        y[k][lastVisit].setBounds(0, 0);
+    }
 }
 
 
@@ -227,7 +272,7 @@ void VRP::buildNewConstraint(int entrega){
         );
         namevarD = &name[0];
         IloConstraint consVeiculoUnico = (
-            z[veiculo][entrega] + y[entrega] == w[veiculo][entrega]
+            z[veiculo][entrega] + y[veiculo][entrega] == w[veiculo][entrega]
         );
         consVeiculoUnico.setName(namevarD);
         model.add(consVeiculoUnico);
@@ -315,7 +360,7 @@ void VRP::calculateWhoToFix(
         if (xSol[k][visitar[check]][i] >= 0.8) {
             std::cout << "sol [" << k << "][" << visitar[check] << "][" << i << ']' << "=" << xSol[k][visitar[check]][i] << std::endl;
             // FIXA VALOR DE X[i][j] ja resolvido
-            fixXYZ(visitar,check,k,i);
+            fixXYZ(visitado, visitar, check, k, i);
             buildNewConstraint(i);
             fixedColumn(xSol,visitar,check,i,k);
             fixedRow(xSol,visitar,check,i,k);
@@ -343,11 +388,11 @@ void VRP::fixVariables(
     for (int check = 0; check < visitar.size(); check++) {
         for (int k = 0; k < K; k++) {
             calculateWhoToFix(xSol,visitar,visitado,auxvisitar,check,k);
+            // Se a capacidade do veículo [k] (estiver limitada) 
         }
     }
     // Apagar a memoria do visitar e colocar o valor do auxvisitar
     visitar.clear();
-    // CASO NAO TENHA MAIS NINGUEM PARA VISITAR (AUXVISITAR == 0) (O AUXVISITAR VIRA O VISITAR)
     printerVector("AUXVISITAR ==> ", auxvisitar);
     std::cout << std::endl;
     for (int i = 0; i < auxvisitar.size(); i++) {
@@ -362,7 +407,7 @@ void VRP::assignTheSolutions(
     IloArray <IloArray <IloNumArray>> & xSol,
     IloArray <IloNumArray> & uSol,
     std::vector <int> visitar,
-    IloCplex cplex
+    IloCplex & cplex
 ){
     for (int k = 0; k < K; k++) {
         cplex.getValues(u[k], uSol[k]);
@@ -380,9 +425,9 @@ IloBool VRP::solveIteration(
     cplex.setParam(IloCplex::TiLim, tempo);
     cplex.extract(model);
     char* outputer;
-    std::string saida("saida_R" + std::to_string(region) + "_I" + std::to_string(iteration)+ ".lp");
+    std::string saida("out/saida_R" + std::to_string(region) + "_I" + std::to_string(iteration)+ ".lp");
     outputer = &saida[0];
-    // cplex.setOut(env.getNullStream());
+    cplex.setOut(env.getNullStream());
     cplex.exportModel(outputer);
     return cplex.solve();
 }
@@ -500,13 +545,15 @@ void VRP::constraintBecame(){
     IloConstraintArray cons_chegada(env);
     for (int i = 1; i < N; i++) {
         IloExpr restOrig(env);
+        IloExpr restY(env);
         char* namevar;
         std::string name("alguemSaiDoCliente[" + std::to_string(i) + "]");
         namevar = &name[0];
         for (int k = 0; k < K; k++) {
             restOrig += z[k][i];
+            restY += y[k][i];
         }
-        IloConstraint consRestOrigin = (restOrig + y[i] == 1);
+        IloConstraint consRestOrigin = (restOrig + restY == 1);
         consRestOrigin.setName(namevar);
         model.add(consRestOrigin);
         cons_chegada.add(consRestOrigin);
