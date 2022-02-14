@@ -4,21 +4,27 @@
 #pragma once
 
 #include <iostream>
-#include <jsoncpp/json/value.h>
-#include <jsoncpp/json/json.h>
 #include <fstream>
 #include <string>
 #include <vector>
 
-#include "..\classes\class\CVRP.hpp"
+#include "../src/classes/class/CVRP.hpp"
 #include "Instance.hpp"
 
-class LoggibudInstance final : public Instance{
+class LoggibudInstance : public Instance{
 public:
     std::vector<Packet> packets;
     LoggibudInstance();
-    CVRP readInput(std::string filename, double alpha);
-    void parse(std::ifstream* arquivo, CVRP* problem);
+    CVRP readInput(
+        std::string filename, 
+        std::string filevehicle, 
+        int N, int K
+    ) override;
+    void parse(
+        std::ifstream& arquivo, 
+        std::string filevehicle, 
+        CVRP& problem
+    ) override;
     std::vector<std::string> split(const std::string& text, char sep);
 };
 

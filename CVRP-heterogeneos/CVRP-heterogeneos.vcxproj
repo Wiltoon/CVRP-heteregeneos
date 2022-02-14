@@ -160,6 +160,7 @@
     <ClCompile Include="src\Cluster.cpp" />
     <ClCompile Include="src\KMeans.cpp" />
     <ClCompile Include="src\Point.cpp" />
+    <ClCompile Include="utils\LoggibudInstance.cpp" />
     <ClCompile Include="utils\SolomonInstance.cpp" />
   </ItemGroup>
   <ItemGroup>

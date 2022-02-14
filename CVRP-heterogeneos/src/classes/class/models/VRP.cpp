@@ -189,7 +189,7 @@ VRPSolution VRP::relax_and_fix(int time, IloCplex & cplex) {
     std::vector <int> visited;
     to_visit.push_back(DEPOSIT);
     for(int t = 0; t < N && pathsToFix(visited); t++){
-        printerVector("TO VISIT ", to_visit);
+        // printerVector("TO VISIT ", to_visit);
         removeRelaxationToVisit(relaxa, to_visit);
         if(!LOOPINFINITO){
             // std::cout << "t: " << std::to_string(t) << std::endl;
@@ -250,12 +250,12 @@ void VRP::toFixY(std::vector <int> visitados, int k, int l){
     if (!visitados.empty()) {
         for(int i : visitados){
             if(w[k][i]){
-                std::cout << "w[" << std::to_string(k) << "][" << std::to_string(i) << "]" << std::endl;
+                // std::cout << "w[" << std::to_string(k) << "][" << std::to_string(i) << "]" << std::endl;
                 totalVisit++;
             }
         }
     }
-    std::cout << std::to_string(totalToVisit) << "==" << std::to_string(totalVisit) << std::endl;
+    // std::cout << std::to_string(totalToVisit) << "==" << std::to_string(totalVisit) << std::endl;
     if(totalToVisit == (totalVisit+1)){
         y[k][lastVisit].setBounds(1, 1);
     } else {
@@ -358,7 +358,7 @@ void VRP::calculateWhoToFix(
 ){  
     for (int i = 0; i < N; i++) {
         if (xSol[k][visitar[check]][i] >= 0.8) {
-            std::cout << "sol [" << k << "][" << visitar[check] << "][" << i << ']' << "=" << xSol[k][visitar[check]][i] << std::endl;
+            // std::cout << "sol [" << k << "][" << visitar[check] << "][" << i << ']' << "=" << xSol[k][visitar[check]][i] << std::endl;
             // FIXA VALOR DE X[i][j] ja resolvido
             fixXYZ(visitado, visitar, check, k, i);
             buildNewConstraint(i);
@@ -393,8 +393,8 @@ void VRP::fixVariables(
     }
     // Apagar a memoria do visitar e colocar o valor do auxvisitar
     visitar.clear();
-    printerVector("AUXVISITAR ==> ", auxvisitar);
-    std::cout << std::endl;
+    // printerVector("AUXVISITAR ==> ", auxvisitar);
+    // std::cout << std::endl;
     for (int i = 0; i < auxvisitar.size(); i++) {
         //std::cout << "AUXVISITAR[" << i << "] = \t" << auxvisitar[i] << std::endl;
         if (auxvisitar[i] != 0) {

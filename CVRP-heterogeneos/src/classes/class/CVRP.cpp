@@ -64,7 +64,7 @@ Solution CVRP::solveWithKmeans(
             alpha
         );
         clusters_solved.push_back(sol);
-        sol.result.printerSolution();
+        // sol.result.printerSolution();
     }
     std::cout << "PARTE PRINT 3" << std::endl;
     for(Solution s : clusters_solved){
