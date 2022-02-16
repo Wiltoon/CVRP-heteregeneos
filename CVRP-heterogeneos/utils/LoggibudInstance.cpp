@@ -26,11 +26,16 @@ void LoggibudInstance::parse(
         std::string filevehicle, 
         CVRP& problem){
     std::string line;
+    std::string textJson;
     int cont = 0;
     while(!arquivo.eof()){
         getline(arquivo,line);
-        std::cout << std::to_string(cont++) << line << std::endl; 
+        textJson += line; 
     }
+    Json::Value root;
+    Json::Reader reader;
+    reader.parse(textJson, root);
+
 }
 
 std::vector<std::string> LoggibudInstance::split(const std::string& text, char sep){

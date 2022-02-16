@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include <json/json.h>
+
 #include "../src/classes/class/CVRP.hpp"
 #include "Instance.hpp"
 
