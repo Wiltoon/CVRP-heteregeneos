@@ -29,9 +29,7 @@ void WhichVehicleProblem::createParams(){
     int K = getVehicles().size();
 
     IloNumArray R(env, regions_size);
-    std::cout << "Creating parameters ==>" << regions_size << std::endl;
     for(int r = 0; r<regions_size; r++){
-        std::cout << "TOTAL CAPACITY = " << capacityTotalRegion(getKmeans().getCluster(r)) << std::endl;
         R[r] = capacityTotalRegion(getKmeans().getCluster(r));
     }
     IloNumArray d(env, regions_size);
@@ -169,10 +167,6 @@ void WhichVehicleProblem::constraintJustAVehicleIntoRegion(){
 
 int WhichVehicleProblem::capacityTotalRegion(Cluster region){
     int cap_total = 0;
-    std::cout << "Packets >>>" << std::endl;
-    for (Point p : region.getPoints()) {
-        std::cout << "P" << p.getID() << std::endl; 
-    }
     for(Packet pac : region.getPackets(getPacketsTotal())){
         cap_total += pac.charge;
     }

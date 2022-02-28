@@ -50,8 +50,7 @@ public:
         int timeOrder,
         int timeVRP,
         double alpha,
-        std::string nameInstance,
-        Packet DEPOT
+        std::string nameInstance
     );
     void solveWithKmeans(
         int timeOrder, int timeVRP, int N, int K, double alpha);
@@ -78,7 +77,7 @@ public:
         std::vector<Solution> solutions,
         std::string nameInstance
     );
-    KMeans parseKmeans(std::string fileKmeans, Packet DEPOT);
+    KMeans parseKmeans(std::string fileKmeans);
     KMeans avaliateBestKmeans(std::vector<KMeans> possiblesKs);
     VehiclePerRegionSolution optimizeVehicles(KMeans kmeans);
 };

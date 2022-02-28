@@ -103,7 +103,7 @@ double CVRP::distance_euclidian(Packet origin, Packet destiny){
     return sqrt(dx * dx + dy * dy);
 }
 
-KMeans CVRP::parseKmeans(std::string fileKmeans, Packet DEPOT){
+KMeans CVRP::parseKmeans(std::string fileKmeans){
     std::ifstream stream(fileKmeans);
     std::string line;
     std::string textJson;
@@ -185,30 +185,29 @@ void CVRP::solveKmeansParallel(
     int timeOrder,
     int timeVRP,
     double alpha, 
-    std::string nameInstance,
-    Packet DEPOT
+    std::string nameInstance
     ){
     // Ler o arquivo pre compilado
     // Extrair as informações de quais pacotes estão em determinado clusters
-    this->bestK = parseKmeans(fileKmeans, DEPOT);
+    this->bestK = parseKmeans(fileKmeans);
     // Resolver de forma paralela cada cluster
     VehiclePerRegionSolution mapRegion = optimizeVehicles(bestK);
     // std::vector<std::thread> threads(this->bestK.getK());
-    printerVehicles(mapRegion.vehiclePerRegion.at(0));
+    // printerVehicles(mapRegion.vehiclePerRegion.at(0));
     for(int region = 0; region < this->bestK.getK(); region++){
         // std::cout << "region:\t" << region << std::endl;
         solveRegion(mapRegion, region, timeOrder, timeVRP, alpha);
-        /*threads[region] = std::thread(
-            solveRegion,
-            mapRegion, region,
-            timeOrder, timeVRP, alpha
-        );*/
+        // threads[region] = std::thread(
+        //     solveRegion,
+        //     mapRegion, region,
+        //     timeOrder, timeVRP, alpha
+        // );
     }
-    /*for (std::thread& t : threads) {
-        if(t.joinable()){
-            t.join();
-        }
-    }*/
+    // for (std::thread& t : threads) {
+    //     if(t.joinable()){
+    //         t.join();
+    //     }
+    // }
     std::cout << "PARTE PRINT 3" << std::endl;
     for(Solution s : this->clusters_solved){
         s.result.printerSolution();
@@ -385,8 +384,8 @@ Solution CVRP::solve(
     int Nsub = packs.size();
     int Ksub = vehicles_used.size();    
     //A resolução desse problema retorna os packets organizados por veículos
-    printerPackets(packs);
-    printerVehicles(vehicles_used);
+    // printerPackets(packs);
+    // printerVehicles(vehicles_used);
     Order organizePackets = Order(
         packs,
         vehicles_used,
@@ -408,8 +407,8 @@ Solution CVRP::solve(
     int Nsub = packs.size();
     int Ksub = vehicles_used.size();    
     //A resolução desse problema retorna os packets organizados por veículos
-    printerPackets(packs);
-    printerVehicles(vehicles_used);
+    // printerPackets(packs);
+    // printerVehicles(vehicles_used);
     Order organizePackets = Order(
         packs,
         vehicles_used,
@@ -425,8 +424,8 @@ Solution CVRP::solve(
 
 VehiclePerRegionSolution CVRP::optimizeVehicles(KMeans kmeans){
     // Construir uma lista de PacketCentroid
-    printerVehicles(vehicles);
-    printerPackets(packets);
+    // printerVehicles(vehicles);
+    // printerPackets(packets);
     WhichVehicleProblem pk = WhichVehicleProblem(
         kmeans, packets, vehicles
     );

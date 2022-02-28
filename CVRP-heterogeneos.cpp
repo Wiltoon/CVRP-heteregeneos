@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <iostream>
+#include <filesystem>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -27,6 +28,10 @@ int main()
     int timeOrder = 20;     // Tempo para resolver ORDER
     int timeVRP = 20;       // Tempo para resolver o VRP
     
+    for(auto& p : filesystem::directory_iterator("resource\\Loggibud\\KMeans")){
+        cout << p << endl; 
+    }
+
     string nameInstance("cvrp-0-pa-0");
     string filekmeans(
         "resource\\Loggibud\\KMeans\\"+nameInstance+"-kmeans.json"
@@ -48,20 +53,12 @@ int main()
     LoggibudInstance reader = LoggibudInstance();
     N = deliveries.size()+1;
     CVRP problem = reader.readInput(filename, filevehicle, N, K);
-    Packet DEPOT = Packet(
-        0,
-        "DEPOT",
-        root["origin"]["lng"].asDouble(),
-        root["origin"]["lat"].asDouble(),
-        0
-    );
     problem.solveKmeansParallel(
         filekmeans, 
         timeOrder,
         timeVRP,
         ALPHA,
-        nameInstance,
-        DEPOT
+        nameInstance
     );
     // Solution solution = problem.solveWithKmeans(
     //     timeOrder,timeVRP, N, K, ALPHA, root["name"].asString()
