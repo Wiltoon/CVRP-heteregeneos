@@ -13,7 +13,13 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 # Gerar o arquivo compilado que será utilizado pelo C++
 
 
-def readInstance(instance: str, K: int, type: bool, mode: str):
+def readInstance(
+    instance: str, 
+    Kinit: int, 
+    K: int, 
+    type: bool, 
+    mode: str
+    ):
     if(type):
         df = open(instance)
         data = json.load(df)
@@ -26,24 +32,25 @@ def readInstance(instance: str, K: int, type: bool, mode: str):
             'lng': lngs,
             'lat': lats
         })
-        bestKmeans = findToBestK(dataframe, K, mode, 300)
+        bestKmeans = findToBestK(dataframe, Kinit, K, mode, 300)
         return bestKmeans, data
     else:
         df = pd.read_csv(instance)
         df_variables2 = df.drop(['CUSTOMER CUST NO.', ' DEMAND', 'READY TIME',
                                 'SERVICE TIME', 'AVAIL. TIME', 'DUE DATE'], axis=1)
         df_variables = df_variables2.drop([0], axis=0)
-        bestKmeans = findToBestK(df_variables, K, mode, 300)
+        bestKmeans = findToBestK(df_variables, Kinit, K, mode, 300)
         return bestKmeans, df_variables
 
 
 def findToBestK(
     dataframe: pd.DataFrame,
+    Kinit: int,
     K: int,
     initializer: str,
     iterations: int
 ) -> KMeans:
-    range_n_clusters = [cluster for cluster in range(2, K)]
+    range_n_clusters = [cluster for cluster in range(Kinit, K)]
     score_max = -999
     for n_clusters in range_n_clusters:
         clusteres = KMeans(
@@ -102,25 +109,25 @@ def generateJson(
     with open(nameInstance, "w") as outfile:
         outfile.write(jstr)
 
-def main():
-    nameOutput = "cvrp-0-pa-0-kmeans.json"
-    n_veiculos = 50
-    bestK, data = readInstance(
-        "..\\resource\\Loggibud\\cvrp-0-pa-0.json",
-        K = n_veiculos,
-        type = True,
-        mode = "k-means++"
-    )
-    generateJson(
-        nameOutput, 
-        bestK,
-        data, 
-        n_veiculos
-    )
+# def main():
+#     nameOutput = "cvrp-0-pa-0-kmeans.json"
+#     n_veiculos = 50
+#     bestK, data = readInstance(
+#         "..\\resource\\Loggibud\\cvrp-0-pa-0.json",
+#         K = n_veiculos,
+#         type = True,
+#         mode = "k-means++"
+#     )
+#     generateJson(
+#         nameOutput, 
+#         bestK,
+#         data, 
+#         n_veiculos
+#     )
 
 
-if __name__ == '__main__':
-   main()
+# if __name__ == '__main__':
+#    main()
 # Criar um arquivo contendo a informação
 # {
 #       "num_veiculos": K,

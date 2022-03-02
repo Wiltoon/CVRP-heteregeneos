@@ -414,6 +414,7 @@ FodyWeavers.xsd
 # VS Code files for those working on multiple tools
 *.ipch
 *.lp
+*.json
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
