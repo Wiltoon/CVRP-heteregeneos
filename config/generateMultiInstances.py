@@ -11,16 +11,16 @@ def generates(paths_to_precompile: str):
     for instance in paths:
         it = instance.split("/")
         ext = it[len(it)-1].split('.')
-        nameOutput = "../resource/Loggibud/KMeans/"+ext[0]+"-kmeans"+ext[1]
-        timeStart = time.process_time()
+        nameOutput = "../resource/Loggibud/KMeans/"+ext[0]+"-kmeans."+ext[1]
+        timeStart = time.time()
         bestK, data = readInstance(
             instance, 
-            Kinit = int(n_veiculos/2),
+            Kinit = int(n_veiculos/4),
             K = n_veiculos,
             type = True,
             mode = 'k-means++'
         )
-        timeEnd = time.process_time()
+        timeEnd = time.time()
         timeExecution = timeEnd - timeStart
         generateJson(
             nameOutput,

@@ -4,11 +4,11 @@
 #pragma once
 
 #include <iostream>
+#include <thread>
 #include <vector>
 #include <cmath>
 #include <algorithm>
 #include <time.h>
-#include <thread>
 #include <utility>
 
 #include <ilcplex/ilocplex.h>
@@ -32,18 +32,18 @@ public:
     std::vector<Vehicle> vehicles;
     double** matrix_distance;
     double** matrix_price;
-
+    typedef struct Arguments {
+        VehiclePerRegionSolution mapRegion;
+        int region;
+        int timeOrder;
+        int timeVRP;
+        double alpha;
+    } Arg;
     CVRP();
     CVRP(int N);
     void calculate_matrix_distance(int N);
     void calculate_matrix_distance(int N, bool loggibud);
-    void solveRegion(
-        VehiclePerRegionSolution mapRegion,
-        int region, 
-        int timeOrder, 
-        int timeVRP, 
-        double alpha
-    );
+    void solveRegion(Arg args);
     double distance_euclidian(Packet origin, Packet destiny);
     void solveKmeansParallel(
         std::string fileKmeans,

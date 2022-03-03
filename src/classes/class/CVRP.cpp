@@ -159,23 +159,17 @@ KMeans CVRP::parseKmeans(std::string fileKmeans){
     return kmeansSelect;
 }
 
-void CVRP::solveRegion(
-    VehiclePerRegionSolution mapRegion,
-    int region, 
-    int timeOrder, 
-    int timeVRP, 
-    double alpha
-){
-    std::vector<Vehicle> vehicles_used = mapRegion.vehiclePerRegion.at(region);
+void CVRP::solveRegion(Arg args){
+    std::vector<Vehicle> vehicles_used = args.mapRegion.vehiclePerRegion.at(args.region);
     std::vector<Packet> p_visited_region = 
-        this->bestK.getCluster(region).getPackets(packets);
+        this->bestK.getCluster(args.region).getPackets(packets);
     Solution sol = solve(
-        timeOrder,
-        timeVRP,
-        region,
+        args.timeOrder,
+        args.timeVRP,
+        args.region,
         vehicles_used,
         p_visited_region,
-        alpha
+        args.alpha
     );
     this->clusters_solved.push_back(sol);
 }
@@ -192,27 +186,26 @@ void CVRP::solveKmeansParallel(
     this->bestK = parseKmeans(fileKmeans);
     // Resolver de forma paralela cada cluster
     VehiclePerRegionSolution mapRegion = optimizeVehicles(bestK);
-    // std::vector<std::thread> threads(this->bestK.getK());
-    // printerVehicles(mapRegion.vehiclePerRegion.at(0));
-    for(int region = 0; region < this->bestK.getK(); region++){
-        // std::cout << "region:\t" << region << std::endl;
-        solveRegion(mapRegion, region, timeOrder, timeVRP, alpha);
-        // threads[region] = std::thread(
-        //     solveRegion,
-        //     mapRegion, region,
-        //     timeOrder, timeVRP, alpha
-        // );
+    std::vector<std::thread> threads(this->bestK.getK());
+    Arguments arguments;
+    arguments.alpha = alpha;
+    arguments.mapRegion = mapRegion;
+    arguments.timeOrder = timeOrder;
+    arguments.timeVRP = timeVRP;
+    clock_t start, end;
+    for (int region = 0; region < this->bestK.getK(); region++) {
+        arguments.region = region;
+        threads.push_back(
+            std::thread([&]() {solveRegion(arguments); })
+        );
     }
-    // for (std::thread& t : threads) {
-    //     if(t.joinable()){
-    //         t.join();
-    //     }
-    // }
-    std::cout << "PARTE PRINT 3" << std::endl;
-    for(Solution s : this->clusters_solved){
-        s.result.printerSolution();
+    for (std::thread& t : threads) {
+        if(t.joinable()){
+            t.join();
+        }
     }
-    outputJson(this->clusters_solved,nameInstance);
+    threads.clear();
+
 }
 
 void CVRP::solveWithKmeans(
@@ -315,12 +308,14 @@ void CVRP::outputJson(
             Json::Value route;
             Json::Value deliveries_json(Json::arrayValue);
             for(Packet p : v.deliveries){
-                Json::Value delivery;
-                delivery["id"] = p.id_s;
-                delivery["point"]["lng"] = p.loc_x;
-                delivery["point"]["lat"] = p.loc_y;
-                delivery["size"] = p.charge;
-                deliveries_json.append(delivery);
+                if(delivery["id"] != ""){
+                    Json::Value delivery;
+                    delivery["id"] = p.id_s;
+                    delivery["point"]["lng"] = p.loc_x;
+                    delivery["point"]["lat"] = p.loc_y;
+                    delivery["size"] = p.charge;
+                    deliveries_json.append(delivery);
+                }
             }
             route["origin"]["lng"] = v.origin.loc_x;
             route["origin"]["lat"] = v.origin.loc_y;

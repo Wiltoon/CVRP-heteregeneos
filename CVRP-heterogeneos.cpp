@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <iostream>
 #include <filesystem>
 #include <string>
@@ -27,7 +28,7 @@ int main()
     int K = 50;             // Número de veículos
     int timeOrder = 20;     // Tempo para resolver ORDER
     int timeVRP = 20;       // Tempo para resolver o VRP
-    
+    time_t start, end;
     for(auto& p : filesystem::directory_iterator("resource\\Loggibud\\KMeans")){
         cout << p << endl; 
     }
@@ -60,6 +61,7 @@ int main()
         ALPHA,
         nameInstance
     );
+    problem.outputJson(problem.clusters_solved, nameInstance);
     // Solution solution = problem.solveWithKmeans(
     //     timeOrder,timeVRP, N, K, ALPHA, root["name"].asString()
     // );

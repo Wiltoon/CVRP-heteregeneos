@@ -107,7 +107,7 @@ def generateJson(
         cluster['centroid'] = coordanates
         content['clusteres'].append(cluster)
     jstr = json.dumps(content, ensure_ascii=False, indent=4)
-    print(jstr)
+    # print(jstr)
     with open(nameInstance, "w") as outfile:
         outfile.write(jstr)
 
