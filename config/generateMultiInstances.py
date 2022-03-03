@@ -1,4 +1,5 @@
 import os
+import time
 from precompilerKMeans import *
 
 def generates(paths_to_precompile: str):
@@ -9,7 +10,9 @@ def generates(paths_to_precompile: str):
     n_veiculos = 20
     for instance in paths:
         it = instance.split("/")
-        nameOutput = "../resource/Loggibud/KMeans/"+it[len(it)-1]
+        ext = it[len(it)-1].split('.')
+        nameOutput = "../resource/Loggibud/KMeans/"+ext[0]+"-kmeans"+ext[1]
+        timeStart = time.process_time()
         bestK, data = readInstance(
             instance, 
             Kinit = int(n_veiculos/2),
@@ -17,11 +20,14 @@ def generates(paths_to_precompile: str):
             type = True,
             mode = 'k-means++'
         )
+        timeEnd = time.process_time()
+        timeExecution = timeEnd - timeStart
         generateJson(
             nameOutput,
             bestK,
             data,
-            n_veiculos
+            n_veiculos,
+            timeExecution
         )
 
 if __name__ == '__main__':

@@ -71,9 +71,11 @@ def generateJson(
         nameInstance: str,
         bestKmeans: KMeans,
         data,
-        K: int):
+        K: int,
+        timeExecution):
     content = dict()
     content['num_veiculos'] = K
+    content['time_execution'] = timeExecution 
     content['n_clusters'] = bestKmeans.n_clusters
     content['total_points'] = len(data['deliveries'])
     content['clusteres'] = []
