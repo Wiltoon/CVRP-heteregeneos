@@ -174,7 +174,6 @@ Solution VRP::solve(int timeLimite) {
     createFunctionObjetive();
     createConstraints();
     VRPSolution o = relax_and_fix(timeLimite, cplex);
-    std::cout << "RF" << std::endl;
     Solution sol = Solution(o);
     return sol;
 }

@@ -94,7 +94,7 @@ Solution WhichVehicleProblem::solve(int timeLimite){
     output = &saida[0];
     cplex.exportModel(output);
     IloBool result = cplex.solve();
-    std::cout << "result: " << result << std::endl;
+    // std::cout << "result: " << result << std::endl;
     if(result){
         // Criar o vetor de vehicles per region
         VehiclePerRegionSolution out = vehiclesPerRegion(cplex);

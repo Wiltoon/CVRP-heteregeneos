@@ -39,6 +39,7 @@ void CVRP::calculate_matrix_distance(int N, bool loggibud){
         Json::Reader reader;
         Json::CharReader *JsonReader(jsonBuilder.newCharReader());
         double distance;
+        // std::string tmp = "http://ec2-34-222-175-250.us-west-2.compute.amazonaws.com/table/v1/driving/";
         std::string tmp = "http://localhost:5000/table/v1/driving/";
         std::string errors;
         std::string readBuffer;
@@ -174,7 +175,7 @@ void CVRP::solveRegion(Arg args){
     this->clusters_solved.push_back(sol);
 }
 
-void CVRP::solveKmeansParallel(
+double CVRP::solveKmeansParallel(
     std::string fileKmeans,
     int timeOrder,
     int timeVRP,
@@ -192,7 +193,8 @@ void CVRP::solveKmeansParallel(
     arguments.mapRegion = mapRegion;
     arguments.timeOrder = timeOrder;
     arguments.timeVRP = timeVRP;
-    clock_t start, end;
+    std::clock_t start, end;
+    start = clock();
     for (int region = 0; region < this->bestK.getK(); region++) {
         arguments.region = region;
         threads.push_back(
@@ -205,7 +207,37 @@ void CVRP::solveKmeansParallel(
         }
     }
     threads.clear();
+    end = clock();
+    double timeExecution = (double)(end - start);
+    return timeExecution;
+}
 
+double CVRP::solveKmeansSeriable(
+    std::string fileKmeans,
+    int timeOrder,
+    int timeVRP,
+    double alpha, 
+    std::string nameInstance
+    ){
+    // Ler o arquivo pre compilado
+    // Extrair as informações de quais pacotes estão em determinado clusters
+    this->bestK = parseKmeans(fileKmeans);
+    // Resolver de forma paralela cada cluster
+    VehiclePerRegionSolution mapRegion = optimizeVehicles(bestK);
+    Arguments arguments;
+    arguments.alpha = alpha;
+    arguments.mapRegion = mapRegion;
+    arguments.timeOrder = timeOrder;
+    arguments.timeVRP = timeVRP;
+    std::clock_t start, end;
+    start = clock();
+    for (int region = 0; region < this->bestK.getK(); region++) {
+        arguments.region = region;
+        solveRegion(arguments);
+    }
+    end = clock();
+    double timeExecution = (double)(end - start)/CLOCKS_PER_SEC;
+    return timeExecution;
 }
 
 void CVRP::solveWithKmeans(
@@ -289,26 +321,29 @@ Solution CVRP::solveWithKmeans(
         );
         clusters_solved.push_back(sol);
     }
-    std::cout << "PARTE PRINT 3" << std::endl;
+    /*std::cout << "PARTE PRINT 3" << std::endl;
     for(Solution s : clusters_solved){
         s.result.printerSolution();
-    }
     outputJson(clusters_solved,nameInstance);
+    }*/
 }
 
 void CVRP::outputJson(
     std::vector<Solution> solutions,
-    std::string nameInstance
+    std::string nameInstance,
+    double time_execution
 ){
     Json::Value root;
 	root["name"] = nameInstance;
+    root["k-regions"] = solutions.size();
+    root["time_execution"] = time_execution;
 	Json::Value vehicles_json(Json::arrayValue);
     for(Solution s : solutions){
         for(Vehicle v : s.result.vehicles){
             Json::Value route;
             Json::Value deliveries_json(Json::arrayValue);
             for(Packet p : v.deliveries){
-                if(delivery["id"] != ""){
+                if(p.id_s != ""){
                     Json::Value delivery;
                     delivery["id"] = p.id_s;
                     delivery["point"]["lng"] = p.loc_x;
@@ -320,14 +355,17 @@ void CVRP::outputJson(
             route["origin"]["lng"] = v.origin.loc_x;
             route["origin"]["lat"] = v.origin.loc_y;
             route["deliveries"] = deliveries_json;
-            vehicles_json.append(route);
+            if (!deliveries_json.empty()) {
+                vehicles_json.append(route);
+            }
         }
     }
+    root["total_vehicles"] = vehicles_json.size();
 	root["vehicles"] = vehicles_json;
-
+    std::string dir_path_here("out/pa/");
 	Json::FastWriter writer;
 	const std::string json_file = writer.write(root);
-	std::string fileoutput(nameInstance + ".json");
+	std::string fileoutput(dir_path_here + nameInstance + ".json");
 	std::fstream output_fstream;
 	output_fstream.open(fileoutput, std::ios_base::out);
 	if(!output_fstream.is_open()){

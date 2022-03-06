@@ -45,7 +45,14 @@ public:
     void calculate_matrix_distance(int N, bool loggibud);
     void solveRegion(Arg args);
     double distance_euclidian(Packet origin, Packet destiny);
-    void solveKmeansParallel(
+    double solveKmeansParallel(
+        std::string fileKmeans,
+        int timeOrder,
+        int timeVRP,
+        double alpha,
+        std::string nameInstance
+    );
+    double solveKmeansSeriable(
         std::string fileKmeans,
         int timeOrder,
         int timeVRP,
@@ -75,7 +82,8 @@ public:
     void printerVehicles(std::vector<Vehicle> vehicles);
     void outputJson(
         std::vector<Solution> solutions,
-        std::string nameInstance
+        std::string nameInstance,
+        double time_execution
     );
     KMeans parseKmeans(std::string fileKmeans);
     KMeans avaliateBestKmeans(std::vector<KMeans> possiblesKs);

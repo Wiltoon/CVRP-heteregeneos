@@ -191,7 +191,7 @@ Solution Order::solve(int tempoLimite){
     IloBool result = cplex.solve();
     if(result){
         objFO = cplex.getObjValue();
-        std::cout << "objFO: " << objFO << std::endl;
+        // std::cout << "objFO: " << objFO << std::endl;
         OrderSolution out = outputOrder(cplex);
         Solution sol = Solution(out);
         return sol;
@@ -246,7 +246,7 @@ OrderSolution Order::outputOrder(IloCplex& cplex){
     for(int k = 0; k < K; k++){
         cplex.getValues(w[k], output[k]);
     }
-    std::cout << message << std::endl;
+    // std::cout << message << std::endl;
     OrderSolution solution = OrderSolution(output, message, packets_order, vehicles);
     return solution;
 } 
