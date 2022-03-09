@@ -5,7 +5,7 @@
 
 #include "Model.hpp"
 
-class VRP final : public Model{
+class VRP : public Model{
 public:
 
     int DEPOSIT = 0;
@@ -22,15 +22,20 @@ public:
     IloNumArray p;                              // pedidos
     IloNumArray e;                              // custo veiculo
     IloBoolArray v;                             // veiculo ativado
-    IloArray<IloBoolArray> w;                   // packet visited per vehicle
     IloNumArray Q;                              // carga maxima de um veiculo
     IloArray<IloNumVarArray> u;                 // aux_carga
+    IloArray<IloBoolVarArray> w;                   // packet visited per vehicle
     IloArray<IloBoolVarArray> y;                // aux_dont return
     IloArray<IloBoolVarArray> z;                // vehicle leave packet
     IloArray <IloArray <IloBoolVarArray>> x;    // variavel de decisao
     
     VRP(
         IloArray <IloNumArray> output,
+        std::vector<Packet> packets, 
+        std::vector<Vehicle> vehicles, 
+        int region
+    );
+    VRP(
         std::vector<Packet> packets, 
         std::vector<Vehicle> vehicles, 
         int region
@@ -90,7 +95,12 @@ public:
         std::vector <int> visitar, 
         int check, int k, int i
     );
-    void toFixY(std::vector <int> visitados, int k, int l);
+    void fixXYWZ(
+        std::vector <int> visitados,
+        std::vector <int> visitar, 
+        int check, int k, int i
+    );
+    void toFixY(std::vector <int> visitados, int k, int lastVisit);
     void buildNewConstraint(int entrega);
     void fixedColumn(
         IloArray <IloArray <IloNumArray>> sol,

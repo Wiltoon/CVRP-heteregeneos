@@ -59,8 +59,13 @@ public:
         double alpha,
         std::string nameInstance
     );
+    double solveRF(
+        std::string nameInstance,
+        int timeVRP
+    );
     void solveWithKmeans(
-        int timeOrder, int timeVRP, int N, int K, double alpha);
+        int timeOrder, int timeVRP, int N, int K, double alpha
+    );
     Solution solveWithKmeans(
         int timeOrder, int timeVRP, 
         int N, int K, double alpha,

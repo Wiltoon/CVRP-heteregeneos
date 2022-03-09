@@ -59,13 +59,14 @@ int main()
         LoggibudInstance reader = LoggibudInstance();
         N = deliveries.size()+1;
         CVRP problem = reader.readInput(filename, filevehicle, N, K);
-        double time_execution = problem.solveKmeansSeriable(
-            filekmeans, 
-            timeOrder,
-            timeVRP,
-            ALPHA,
-            nameInstance
-        );
+        double time_execution = problem.solveRF();
+        // double time_execution = problem.solveKmeansSeriable(
+        //     filekmeans, 
+        //     timeOrder,
+        //     timeVRP,
+        //     ALPHA,
+        //     nameInstance
+        // );
         problem.outputJson(problem.clusters_solved, nameInstance, time_execution);
     }
     // Solution solution = problem.solveWithKmeans(

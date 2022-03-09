@@ -5,6 +5,20 @@
 #include "../Vehicle.hpp"
 
 VRP::VRP(
+    std::vector<Packet> packets, 
+    std::vector<Vehicle> vehicles, 
+    int region
+){
+    this->region = region;
+    this->packets = packets;
+    this->vehicles = vehicles;
+    this->N = packets.size();
+    this->K = vehicles.size();
+    IloModel model(env);
+    this->model = model;
+}
+
+VRP::VRP(
     IloArray <IloNumArray> output,
     std::vector<Packet> packets, 
     std::vector<Vehicle> vehicles, 
@@ -59,13 +73,7 @@ void VRP::createParams() {
     this->p = p;
     this->e = e;
     this->v = v;
-    this->w = w;
     this->Q = Q;
-    for(int k = 0; k < K; k++){
-        for (int j = 0; j < N; j++){
-            this->w[k][j] = (this->output[k][j] > 0.9);
-        }
-    }
 }   
 
 void VRP::createVariables() {
@@ -80,6 +88,10 @@ void VRP::createVariables() {
     IloArray<IloBoolVarArray> y(env, K);
     for (int k = 0; k < K; k++){
         y[k] = IloBoolVarArray(env, N);
+    }
+    IloArray<IloBoolVarArray> w(env, K);
+    for (int k = 0; k < K; k++){
+        w[k] = IloBoolVarArray(env, N);
     }
     IloArray<IloBoolVarArray> z(env, K); // ORIGENS (index i)
     for (int k = 0; k < K; k++) {
@@ -121,6 +133,15 @@ void VRP::renameVars(){
             z[k][i].setName(char_z);
         }
     }
+    
+    char* char_w;
+    for(int k = 0; k < K; k++){
+        for(int j = 0; j < N; j++) {
+            std::string namew("w_" + std::to_string(k) + "_" + std::to_string(j));
+            char_w = &namew[0];
+            w[k][j].setName(char_w);
+        }
+    }
 
     char* char_x;
     for(int k = 0; k < K; k++){
@@ -152,8 +173,8 @@ void VRP::createFunctionObjetive() {
 
 void VRP::createConstraints() {
     // criar as constraints
-    // w is param constraintDestiny();
-    // w is param constraintDriverGoToDestiny();
+    constraintDestiny();
+    constraintDriverGoToDestiny();
     constraintBecame();
     constraintDriverBecame();
     constraintPacketSendByVehicle();
@@ -276,10 +297,22 @@ void VRP::fixXYZ(
     toFixY(visitados, k, i);
 }
 
-void VRP::toFixY(std::vector <int> visitados, int k, int l){
+void VRP::fixXYWZ(
+    std::vector <int> visitados,
+    std::vector <int> visitar, 
+    int check, int k, int i
+){
+    x[k][visitar[check]][i].setBounds(1, 1);
+    w[k][visitar[check]].setBounds(1, 1);
+    z[k][i].setBounds(1, 1);
+    // std::cout << "fixar indice => " << std::to_string(i) << " fixar!" << std::endl;
+    toFixY(visitados, k, i);
+}
+
+void VRP::toFixY(std::vector <int> visitados, int k, int lastVisit){
     int totalToVisit = 0;
     int totalVisit = 0;
-    int lastVisit = l;
+    // Verificar como fazer a verificação
     for(int j = 0; j < N; j++){
         if (w[k][j]) {
             totalToVisit++;
@@ -398,7 +431,8 @@ void VRP::calculateWhoToFix(
         if (xSol[k][visitar[check]][i] >= 0.8) {
             // std::cout << "sol [" << k << "][" << visitar[check] << "][" << i << ']' << "=" << xSol[k][visitar[check]][i] << std::endl;
             // FIXA VALOR DE X[i][j] ja resolvido
-            fixXYZ(visitado, visitar, check, k, i);
+            // fixXYZ(visitado, visitar, check, k, i);
+            fixXYWZ(visitado, visitar, check, k, i);
             buildNewConstraint(i);
             fixedColumn(xSol,visitar,check,i,k);
             fixedRow(xSol,visitar,check,i,k);

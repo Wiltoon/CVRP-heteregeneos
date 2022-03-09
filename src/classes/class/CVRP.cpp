@@ -240,6 +240,15 @@ double CVRP::solveKmeansSeriable(
     return timeExecution;
 }
 
+double solveRF(std::string nameInstance, int timeVRP){
+    std::clock_t start, end;
+    start = clock();
+    
+    end = clock();
+    double timeExecution = (double)(end - start)/CLOCKS_PER_SEC;
+    return time_execution;
+}
+
 void CVRP::solveWithKmeans(
     int timeOrder, int timeVRP, int N, int K, double alpha){
     // Aplicar o KMeans retornara um vector de clusteres.
