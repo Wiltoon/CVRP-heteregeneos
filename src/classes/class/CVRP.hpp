@@ -81,6 +81,7 @@ public:
     void printerPackets(std::vector<Packet> packs);
     void printerVehicles(std::vector<Vehicle> vehicles);
     void outputJson(
+        std::string city,
         std::vector<Solution> solutions,
         std::string nameInstance,
         double time_execution

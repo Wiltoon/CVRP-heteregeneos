@@ -26,8 +26,8 @@ int main()
     double ALPHA = 0.3;         // deve ser entre 0 e 1
     int N;                      // Número de Packets
     int K = 50;                 // Número de veículos
-    int timeOrder = 20;         // Tempo para resolver ORDER
-    int timeVRP = 20;           // Tempo para resolver o VRP
+    int timeOrder = 10;         // Tempo para resolver ORDER
+    int timeVRP = 10;           // Tempo para resolver o VRP
     int totalDays = 20;         // Dias percorridos
     vector<string> cities;
     time_t start, end;
@@ -42,10 +42,10 @@ int main()
         for (int day = 0; day < totalDays; day++) {
             string nameInstance(nameLocalInstance + to_string(day));
             string filekmeans(
-                "resource\\Loggibud\\KMeans\\"+nameInstance+"-kmeans.json"
+                "resource\\Loggibud\\KMeans\\"+city+"0\\"+nameInstance+"-kmeans.json"
             );
             // string filename("resource\\Solomon\\c101-0.0.txt");
-            string filename("resource\\Loggibud\\cvrp-instances-1.0\\train\\pa-0\\"+nameInstance+".json");
+            string filename("resource\\Loggibud\\cvrp-instances-1.0\\train\\"+city+"0\\"+nameInstance+".json");
             string filevehicle("resource\\Solomon\\vei-homo.txt");
             ifstream stream(filename);
             string line;
@@ -70,7 +70,12 @@ int main()
                 ALPHA,
                 nameInstance
             );
-            problem.outputJson(problem.clusters_solved, nameInstance, time_execution);
+            problem.outputJson(
+                city, 
+                problem.clusters_solved, 
+                nameInstance, 
+                time_execution
+            );
         }
     }
     // Solution solution = problem.solveWithKmeans(

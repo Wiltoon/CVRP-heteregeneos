@@ -329,6 +329,7 @@ Solution CVRP::solveWithKmeans(
 }
 
 void CVRP::outputJson(
+    std::string city,
     std::vector<Solution> solutions,
     std::string nameInstance,
     double time_execution
@@ -362,7 +363,7 @@ void CVRP::outputJson(
     }
     root["total_vehicles"] = vehicles_json.size();
 	root["vehicles"] = vehicles_json;
-    std::string dir_path_here("out/pa/");
+    std::string dir_path_here("out/"+city+"0/");
 	Json::FastWriter writer;
 	const std::string json_file = writer.write(root);
 	std::string fileoutput(dir_path_here + nameInstance + ".json");
