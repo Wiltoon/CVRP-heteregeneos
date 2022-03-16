@@ -19,6 +19,19 @@ VRP::VRP(
     IloModel model(env);
     this->model = model;
 }
+VRP::VRP(
+    std::vector<Packet> packets, 
+    std::vector<Vehicle> vehicles, 
+    double** m_distance
+){
+    this->packets = packets;
+    this->vehicles = vehicles;
+    this->N = packets.size();
+    this->K = vehicles.size();
+    this->matrix_distance = m_distance; // pode dar erro!
+    IloModel model(env);
+    this->model = model;
+}
 
 void VRP::createParams() {
     // nomear todas os parametros de entrada
@@ -26,12 +39,14 @@ void VRP::createParams() {
     for (int i = 0; i < N; i++) {
         d[i] = IloNumArray(env, N);
     }
+    // matriz distancia real!
     for(int i = 0; i < N; i++) {
         for(int j = 0; j < N; j++){
             if(i == j){
                 d[i][j] = 999999.0;
             } else {
-                d[i][j] = distance_euclidian(packets[i], packets[j]);
+                // d[i][j] = distance_real(packet[i], packet[j]);
+                d[i][j] = matrix_distance[i][j];
             }
         }
     }
@@ -43,14 +58,6 @@ void VRP::createParams() {
     for (int i = 0; i < K; i++){
         e[i] = vehicles[i].cust;
     }
-    IloArray<IloBoolArray> w(env, K); // DESTINOS (index j)
-    for (int k = 0; k < K; k++) {
-        w[k] = IloBoolArray(env, N);
-    }
-    IloBoolArray v(env, K);
-    for (int k = 0; k < K; k++) {
-        v[k] = 1;
-    }
     IloNumArray Q(env, K);
     for (int k = 0; k < K; k++){
         Q[k] = vehicles[k].charge_max;
@@ -58,14 +65,13 @@ void VRP::createParams() {
     this->d = d;
     this->p = p;
     this->e = e;
-    this->v = v;
-    this->w = w;
     this->Q = Q;
-    for(int k = 0; k < K; k++){
-        for (int j = 0; j < N; j++){
-            this->w[k][j] = (this->output[k][j] > 0.9);
-        }
-    }
+    // this->w = w;
+    // for(int k = 0; k < K; k++){
+    //     for (int j = 0; j < N; j++){
+    //         this->w[k][j] = (this->output[k][j] > 0.9);
+    //     }
+    // }
 }   
 
 void VRP::createVariables() {
@@ -77,9 +83,14 @@ void VRP::createVariables() {
             x[k][i] = IloBoolVarArray(env, N);
         }
     }
+    IloBoolVarArray v(env, K);
     IloArray<IloBoolVarArray> y(env, K);
     for (int k = 0; k < K; k++){
         y[k] = IloBoolVarArray(env, N);
+    }
+    IloArray<IloBoolVarArray> w(env, K); // DESTINOS (index j)
+    for (int k = 0; k < K; k++) {
+        w[k] = IloBoolVarArray(env, N);
     }
     IloArray<IloBoolVarArray> z(env, K); // ORIGENS (index i)
     for (int k = 0; k < K; k++) {
@@ -90,6 +101,8 @@ void VRP::createVariables() {
         u[k] = IloNumVarArray(env, N, 0, vehicles[k].charge_max);// Variavel auxiliar para eliminicao de rota
     }
     this->x = x;
+    this->v = v;
+    this->w = w;
     this->y = y;
     this->z = z;
     this->u = u;
@@ -112,6 +125,21 @@ void VRP::renameVars(){
         }
     }
 
+    for(int i = 0; i < N; i++) {
+        char* char_v;
+        std::string namev("v_" + std::to_string(k));
+        char_v = &namev[0];
+        v[k].setName(char_v);
+    }
+
+    char* char_w;
+    for(int k = 0; k < K; k++){
+        for(int i = 0; i < N; i++) {
+            std::string namew("w_" + std::to_string(k) + "_" + std::to_string(i));
+            char_w = &namew[0];
+            w[k][i].setName(char_w);
+        }
+    }
 
     char* char_z;
     for(int k = 0; k < K; k++){
@@ -152,8 +180,8 @@ void VRP::createFunctionObjetive() {
 
 void VRP::createConstraints() {
     // criar as constraints
-    // w is param constraintDestiny();
-    // w is param constraintDriverGoToDestiny();
+    constraintDestiny();
+    constraintDriverGoToDestiny();
     constraintBecame();
     constraintDriverBecame();
     constraintPacketSendByVehicle();
@@ -189,6 +217,19 @@ Solution VRP::solve(int timeLimite, std::string nameInstance) {
     Solution sol = Solution(o);
     return sol;
 }
+Solution VRP::solveLCR(int timeLimite, std::string nameInstance) {
+    // aqui deve resolver o problema VRP
+    IloCplex cplex(model);
+    IloNum objFO = IloInfinity;
+    createParams();
+    createVariables();
+    createFunctionObjetive();
+    createConstraints();
+    VRPSolution o = relax_and_fix(timeLimite, cplex, nameInstance);
+    Solution sol = Solution(o);
+    return sol;
+}
+
 
 VRPSolution VRP::relax_and_fix(int time, IloCplex & cplex) {
     // construção do modelo relax and fix para resolver
@@ -199,6 +240,7 @@ VRPSolution VRP::relax_and_fix(int time, IloCplex & cplex) {
     std::vector <int> to_visit;
     std::vector <int> visited;
     to_visit.push_back(DEPOSIT);
+    selectListCandidatesRestrict(xSol);
     for(int t = 0; t < N && pathsToFix(visited); t++){
         // printerVector("TO VISIT ", to_visit);
         removeRelaxationToVisit(relaxa, to_visit);
@@ -245,7 +287,6 @@ VRPSolution VRP::relax_and_fix(int time, IloCplex & cplex, std::string nameInsta
             if(result){
                 assignTheSolutions(xSol, uSol, to_visit, cplex);
                 fixVariables(xSol, to_visit, visited);
-
             } else {
                 if (time < TIME_MAX){
                     std::cout << "Aumentar tempo do solve "<< time << "+"<< SOMADOR_TIME << std::endl;
@@ -437,6 +478,25 @@ void VRP::fixVariables(
         //std::cout << "AUXVISITAR[" << i << "] = \t" << auxvisitar[i] << std::endl;
         if (auxvisitar[i] != 0) {
             visitar.push_back(auxvisitar[i]);
+        }
+    }
+}
+
+boolean VRP::packetIsNeighbor(int i, int j){
+    for(int neig : packets[i].neighbors){
+        if(neig == j){
+            return true;
+        }
+    }
+    return false;
+}
+
+void VRP::selectListCandidatesRestrict(){
+    for(int i = 1; i < N; i++){
+        for(int j = 1; j < N; j++){
+            if(!packetIsNeighbor(i,j)){
+                x[k][i][j].setBounds(0,0);
+            }
         }
     }
 }

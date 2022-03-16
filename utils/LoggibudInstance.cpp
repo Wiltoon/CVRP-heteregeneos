@@ -33,7 +33,8 @@ CVRP LoggibudInstance::readInput(
 
 void LoggibudInstance::parse(
         std::ifstream& arquivo, 
-        std::string filevehicle, 
+        std::string filevehicle,
+        int n_lcr, 
         CVRP& problem){
     std::string line;
     std::string textJson;
@@ -66,6 +67,28 @@ void LoggibudInstance::parse(
             deliveries[i]["size"].asInt() 
         );
         problem.packets.push_back(packet);
+    }
+    for(int i = 1; i <= N; i++){
+        calculate_neighbors(lcr, i, problem);
+    }
+}
+
+void LoggibudInstance::calculate_neighbors(
+    int n_neighbors,
+    int index_pac, 
+    CVRP& problem
+    ){
+    // calcular distancia do deposito até o pacote [0][index_pac]
+    distanceMax = matrix_distance[0][index_pac];
+    std::vector<int> neighbors;
+    for(int j = 1; j <= N; j++){
+        if(distanceMax >= matrix_distance[index_pac][j]){
+            neighbors.push_back(j);
+        }
+    }
+    std::sort(neighbors.begin(), neighbors.end());
+    for(int i = 0; i < n_neighbors && i < neighbors.size(); i++){
+        problem.packets[index_pac].neighbors.push_back(j);
     }
 }
 

@@ -52,6 +52,12 @@ public:
         double alpha,
         std::string nameInstance
     );
+    double solveLCRRF(
+        std::string filename,
+        int n_neighbors, 
+        int timeSolve,
+        std::string nameInstance
+    );
     double solveKmeansSeriable(
         std::string fileKmeans,
         int timeOrder,

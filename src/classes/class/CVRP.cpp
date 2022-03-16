@@ -212,6 +212,21 @@ double CVRP::solveKmeansParallel(
     return timeExecution;
 }
 
+double CVRP::solveLCRRF(
+    std::string filename,
+    int n_neighbors, 
+    int timeSolve,
+    std::string nameInstance
+    ){    
+    std::clock_t start, end;
+    start = clock();
+    VRP vrp = VRP(packets, vehicles, matrix_distance);
+    vrp.solveLCR(timeVRP);
+    end = clock();
+    double timeExecution = (double)(end - start)/CLOCKS_PER_SEC;
+    return timeExecution;
+}
+
 double CVRP::solveKmeansSeriable(
     std::string fileKmeans,
     int timeOrder,

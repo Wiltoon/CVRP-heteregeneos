@@ -25,6 +25,7 @@ int main()
 {
     double ALPHA = 0.3;         // deve ser entre 0 e 1
     int N;                      // Número de Packets
+    int KNN = 4;                // Número de vizinhos máximo   
     int K = 50;                 // Número de veículos
     int timeOrder = 10;         // Tempo para resolver ORDER
     int timeVRP = 10;           // Tempo para resolver o VRP
@@ -63,13 +64,20 @@ int main()
             LoggibudInstance reader = LoggibudInstance();
             N = deliveries.size()+1;
             CVRP problem = reader.readInput(filename, filevehicle, N, K);
-            double time_execution = problem.solveKmeansSeriable(
-                filekmeans, 
-                timeOrder,
+            // problem com matriz distance
+            double time_execution = problem.solveLCRRF(
+                filename,
+                KNN,
                 timeVRP,
-                ALPHA,
                 nameInstance
-            );
+                );
+            // double time_execution = problem.solveKmeansSeriable(
+            //     filekmeans, 
+            //     timeOrder,
+            //     timeVRP,
+            //     ALPHA,
+            //     nameInstance
+            // );
             problem.outputJson(
                 city, 
                 problem.clusters_solved, 

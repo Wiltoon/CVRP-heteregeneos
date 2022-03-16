@@ -27,6 +27,10 @@ public:
         std::string filevehicle, 
         int N, int K
     ) override;
+    void calculate_neighbors(
+        int index_pac, 
+        CVRP& problem
+    )
     void parse(
         std::ifstream& arquivo, 
         std::string filevehicle, 
