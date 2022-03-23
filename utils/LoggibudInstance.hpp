@@ -27,15 +27,26 @@ public:
         std::string filevehicle, 
         int N, int K
     ) override;
+    CVRP readInput(
+        std::string filename, 
+        std::string filevehicle, 
+        int N, int K, int KNN
+    );
     void calculate_neighbors(
-        int index_pac, 
+        int n_neighbors,
+        int index_pac,
         CVRP& problem
-    )
+    );
     void parse(
         std::ifstream& arquivo, 
         std::string filevehicle, 
         CVRP& problem
     ) override;
+    void parse(
+        std::ifstream& arquivo, 
+        int n_lcr, 
+        CVRP& problem
+    );
     std::vector<std::string> split(const std::string& text, char sep);
 };
 

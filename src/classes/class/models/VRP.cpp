@@ -45,7 +45,6 @@ void VRP::createParams() {
             if(i == j){
                 d[i][j] = 999999.0;
             } else {
-                // d[i][j] = distance_real(packet[i], packet[j]);
                 d[i][j] = matrix_distance[i][j];
             }
         }
@@ -66,12 +65,6 @@ void VRP::createParams() {
     this->p = p;
     this->e = e;
     this->Q = Q;
-    // this->w = w;
-    // for(int k = 0; k < K; k++){
-    //     for (int j = 0; j < N; j++){
-    //         this->w[k][j] = (this->output[k][j] > 0.9);
-    //     }
-    // }
 }   
 
 void VRP::createVariables() {
@@ -125,7 +118,7 @@ void VRP::renameVars(){
         }
     }
 
-    for(int i = 0; i < N; i++) {
+    for(int k = 0; k < K; k++) {
         char* char_v;
         std::string namev("v_" + std::to_string(k));
         char_v = &namev[0];
@@ -213,19 +206,19 @@ Solution VRP::solve(int timeLimite, std::string nameInstance) {
     createVariables();
     createFunctionObjetive();
     createConstraints();
-    VRPSolution o = relax_and_fix(timeLimite, cplex, nameInstance);
+    VRPSolution o = relax_and_fix(timeLimite, cplex);
     Solution sol = Solution(o);
     return sol;
 }
-Solution VRP::solveLCR(int timeLimite, std::string nameInstance) {
+Solution VRP::solveLCR(int timeLimite) {
     // aqui deve resolver o problema VRP
     IloCplex cplex(model);
-    IloNum objFO = IloInfinity;
+    IloNum objFO = IloInfinity; 
     createParams();
     createVariables();
     createFunctionObjetive();
     createConstraints();
-    VRPSolution o = relax_and_fix(timeLimite, cplex, nameInstance);
+    VRPSolution o = relax_and_fix(timeLimite, cplex);
     Solution sol = Solution(o);
     return sol;
 }
@@ -240,12 +233,12 @@ VRPSolution VRP::relax_and_fix(int time, IloCplex & cplex) {
     std::vector <int> to_visit;
     std::vector <int> visited;
     to_visit.push_back(DEPOSIT);
-    selectListCandidatesRestrict(xSol);
+    selectListCandidatesRestrict();
     for(int t = 0; t < N && pathsToFix(visited); t++){
-        // printerVector("TO VISIT ", to_visit);
+        printerVector("TO VISIT ", to_visit);
         removeRelaxationToVisit(relaxa, to_visit);
         if(!LOOPINFINITO){
-            // std::cout << "t: " << std::to_string(t) << std::endl;
+            std::cout << "t: " << std::to_string(t) << std::endl;
             IloBool result = solveIteration(t, time, cplex);
             if(result){
                 assignTheSolutions(xSol, uSol, to_visit, cplex);
@@ -312,28 +305,30 @@ void VRP::fixXYZ(
     int check, int k, int i
 ){
     x[k][visitar[check]][i].setBounds(1, 1);
+    w[k][i].setBounds(1, 1);
     z[k][visitar[check]].setBounds(1, 1);
+    y[k][i].setBounds(0, 0);
     // std::cout << "fixar indice => " << std::to_string(i) << " fixar!" << std::endl;
-    toFixY(visitados, k, i);
+    //toFixY(visitados, k, i);
 }
 
 void VRP::toFixY(std::vector <int> visitados, int k, int l){
     int totalToVisit = 0;
     int totalVisit = 0;
     int lastVisit = l;
-    for(int j = 0; j < N; j++){
-        if (w[k][j]) {
-            totalToVisit++;
-        }
-    }
-    if (!visitados.empty()) {
-        for(int i : visitados){
-            if(w[k][i]){
-                // std::cout << "w[" << std::to_string(k) << "][" << std::to_string(i) << "]" << std::endl;
-                totalVisit++;
-            }
-        }
-    }
+    //for(int j = 0; j < N; j++){
+    //    if (w[k][j]) {
+    //        totalToVisit++;
+    //    }
+    //}
+    //if (!visitados.empty()) {
+    //    for(int i : visitados){
+    //        if(w[k][i]){
+    //            // std::cout << "w[" << std::to_string(k) << "][" << std::to_string(i) << "]" << std::endl;
+    //            totalVisit++;
+    //        }
+    //    }
+    //}
     // std::cout << std::to_string(totalToVisit) << "==" << std::to_string(totalVisit) << std::endl;
     if(totalToVisit == (totalVisit+1)){
         y[k][lastVisit].setBounds(1, 1);
@@ -482,7 +477,7 @@ void VRP::fixVariables(
     }
 }
 
-boolean VRP::packetIsNeighbor(int i, int j){
+bool VRP::packetIsNeighbor(int i, int j){
     for(int neig : packets[i].neighbors){
         if(neig == j){
             return true;
@@ -491,11 +486,13 @@ boolean VRP::packetIsNeighbor(int i, int j){
     return false;
 }
 
-void VRP::selectListCandidatesRestrict(){
-    for(int i = 1; i < N; i++){
-        for(int j = 1; j < N; j++){
-            if(!packetIsNeighbor(i,j)){
-                x[k][i][j].setBounds(0,0);
+void VRP::selectListCandidatesRestrict() {
+    for (int k = 0; k < K; k++) {
+        for (int i = 1; i < N; i++) {
+            for (int j = 1; j < N; j++) {
+                if (!packetIsNeighbor(i, j)) {
+                    x[k][i][j].setBounds(0, 0);
+                }
             }
         }
     }
@@ -535,6 +532,7 @@ void VRP::removeRelaxationToVisit(
         std::vector<int> visitar
 ){
     for (int k = 0; k < K; k++) {
+        std::cout << "vehicle " << k << std::endl;
         for (int i = 0; i < visitar.size(); i++) {
             for (int j = 0; j < N; j++) {
                 model.remove(relaxa[k][visitar[i]][j]);
@@ -683,7 +681,10 @@ void VRP::constraintPacketSendByVehicle(){
         for (int j = 1; j < N; j++) {
             IloExpr restChegada(env); 
             char* namevar;
-            std::string name("chegadaNoCliente_" + std::to_string(j) + "_peloVehicle_" + std::to_string(k));
+            std::string name(
+                "chegadaNoCliente_" + std::to_string(j) + 
+                "_peloVehicle_" + std::to_string(k)
+            );
             namevar = &name[0];
             for (int i = 0; i < N; i++) {
                 if (i != j) {
@@ -705,7 +706,10 @@ void VRP::constraintPacketSolvedByVehicle(){
         for (int i = 0; i < N; i++) {
             IloExpr restSaida(env);
             char* namevar;
-            std::string name("saidaDoCliente_" + std::to_string(i) + "_peloVehicle_" + std::to_string(k));
+            std::string name(
+                "saidaDoCliente_" + std::to_string(i) + 
+                "_peloVehicle_" + std::to_string(k)
+            );
             namevar = &name[0];
             for (int j = 1; j < N; j++) {
                 if (j != i) {

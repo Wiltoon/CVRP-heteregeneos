@@ -23,6 +23,7 @@ public:
     IloNumArray p;                              // pedidos
     IloNumArray e;                              // custo veiculo
     IloNumArray Q;                              // carga maxima de um veiculo
+
     IloBoolVarArray v;                             // veiculo ativado
     IloArray<IloNumVarArray> u;                 // aux_carga
     IloArray<IloBoolVarArray> y;                // aux_dont return
@@ -40,13 +41,18 @@ public:
         std::vector<Packet> packets, 
         std::vector<Vehicle> vehicles
     );
+    VRP(
+        std::vector<Packet> packets, 
+        std::vector<Vehicle> vehicles, 
+        double** matrix_distance
+    );
     void createParams() override;
     void createVariables() override;
     void createFunctionObjetive() override;
     void createConstraints() override;
     Solution solve(int timeLimite) override;
     Solution solve(int timeLimite, std::string nameInstance);
-    Solution solveLCR(int timeLimite, std::string nameInstance);
+    Solution solveLCR(int timeLimite);
 
     void renameVars();
 
@@ -75,9 +81,8 @@ public:
         IloArray <IloArray<IloExtractableArray>> relaxa,
         std::vector<int> visitar
     );
-    void selectListCandidatesRestrict(
-        IloArray <IloArray <IloNumArray>> & xSol
-    );
+    bool packetIsNeighbor(int i, int j);
+    void selectListCandidatesRestrict();
     void assignTheSolutions(
         IloArray <IloArray <IloNumArray>> & xSol,
         IloArray <IloNumArray> & uSol,

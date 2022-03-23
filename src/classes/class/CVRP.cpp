@@ -221,7 +221,7 @@ double CVRP::solveLCRRF(
     std::clock_t start, end;
     start = clock();
     VRP vrp = VRP(packets, vehicles, matrix_distance);
-    vrp.solveLCR(timeVRP);
+    Solution solution = vrp.solveLCR(timeSolve);
     end = clock();
     double timeExecution = (double)(end - start)/CLOCKS_PER_SEC;
     return timeExecution;

@@ -26,18 +26,18 @@ int main()
     double ALPHA = 0.3;         // deve ser entre 0 e 1
     int N;                      // Número de Packets
     int KNN = 4;                // Número de vizinhos máximo   
-    int K = 50;                 // Número de veículos
+    int K = 13;                 // Número de veículos
     int timeOrder = 10;         // Tempo para resolver ORDER
     int timeVRP = 10;           // Tempo para resolver o VRP
-    int totalDays = 20;         // Dias percorridos
+    int totalDays = 5;         // Dias percorridos
     vector<string> cities;
     time_t start, end;
     /*for(auto& p : filesystem::directory_iterator("resource\\Loggibud\\KMeans")){
         cout << p << endl; 
     }*/
-    // cities.push_back("pa-");
-    cities.push_back("df-");
-    cities.push_back("rj-");
+    cities.push_back("pa-");
+    // cities.push_back("df-");
+    // cities.push_back("rj-");
     for(string city : cities){
         string nameLocalInstance("cvrp-0-"+city);
         for (int day = 0; day < totalDays; day++) {
@@ -63,7 +63,7 @@ int main()
             const Json::Value deliveries = root["deliveries"];
             LoggibudInstance reader = LoggibudInstance();
             N = deliveries.size()+1;
-            CVRP problem = reader.readInput(filename, filevehicle, N, K);
+            CVRP problem = reader.readInput(filename, filevehicle, N, K, KNN);
             // problem com matriz distance
             double time_execution = problem.solveLCRRF(
                 filename,
@@ -71,13 +71,6 @@ int main()
                 timeVRP,
                 nameInstance
                 );
-            // double time_execution = problem.solveKmeansSeriable(
-            //     filekmeans, 
-            //     timeOrder,
-            //     timeVRP,
-            //     ALPHA,
-            //     nameInstance
-            // );
             problem.outputJson(
                 city, 
                 problem.clusters_solved, 
@@ -86,8 +79,5 @@ int main()
             );
         }
     }
-    // Solution solution = problem.solveWithKmeans(
-    //     timeOrder,timeVRP, N, K, ALPHA, root["name"].asString()
-    // );
     return 0;
 }
