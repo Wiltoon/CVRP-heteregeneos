@@ -14,6 +14,7 @@ public:
     int region = -1;
     int N = 0;
     int K = 0;
+    int knn = 0;
     std::vector<Packet> packets;                // DEPOSITO INCLUIDO
     std::vector<Vehicle> vehicles;
     double** matrix_distance;
@@ -44,7 +45,8 @@ public:
     VRP(
         std::vector<Packet> packets, 
         std::vector<Vehicle> vehicles, 
-        double** matrix_distance
+        double** matrix_distance,
+        int knn
     );
     void createParams() override;
     void createVariables() override;
@@ -83,6 +85,7 @@ public:
     );
     bool packetIsNeighbor(int i, int j);
     void selectListCandidatesRestrict();
+    void selectListCandidatesRestrict(std::vector <int> to_visit, std::vector <int> visited);
     void assignTheSolutions(
         IloArray <IloArray <IloNumArray>> & xSol,
         IloArray <IloNumArray> & uSol,

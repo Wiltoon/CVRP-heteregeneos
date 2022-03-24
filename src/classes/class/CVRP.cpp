@@ -39,8 +39,8 @@ void CVRP::calculate_matrix_distance(int N, bool loggibud){
         Json::Reader reader;
         Json::CharReader *JsonReader(jsonBuilder.newCharReader());
         double distance;
-        // std::string tmp = "http://ec2-34-222-175-250.us-west-2.compute.amazonaws.com/table/v1/driving/";
-        std::string tmp = "http://localhost:5000/table/v1/driving/";
+        std::string tmp = "http://ec2-34-222-175-250.us-west-2.compute.amazonaws.com/table/v1/driving/";
+        // std::string tmp = "http://localhost:5000/table/v1/driving/";
         std::string errors;
         std::string readBuffer;
         for(int i = 0; i < N; i++){
@@ -220,7 +220,7 @@ double CVRP::solveLCRRF(
     ){    
     std::clock_t start, end;
     start = clock();
-    VRP vrp = VRP(packets, vehicles, matrix_distance);
+    VRP vrp = VRP(packets, vehicles, matrix_distance, n_neighbors);
     Solution solution = vrp.solveLCR(timeSolve);
     end = clock();
     double timeExecution = (double)(end - start)/CLOCKS_PER_SEC;

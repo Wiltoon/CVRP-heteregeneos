@@ -22,13 +22,15 @@ VRP::VRP(
 VRP::VRP(
     std::vector<Packet> packets, 
     std::vector<Vehicle> vehicles, 
-    double** m_distance
+    double** m_distance,
+    int knn
 ){
     this->packets = packets;
     this->vehicles = vehicles;
     this->N = packets.size();
     this->K = vehicles.size();
     this->matrix_distance = m_distance; // pode dar erro!
+    this->knn = knn;
     IloModel model(env);
     this->model = model;
 }
@@ -223,6 +225,32 @@ Solution VRP::solveLCR(int timeLimite) {
     return sol;
 }
 
+void VRP::selectListCandidatesRestrict(std::vector <int> to_visit, std::vector <int> visited){
+    // Primeiro caso aberto
+    for(int visit : to_visit){
+        std::vector <std::pair<double, int>> dp;
+        if(visit != 0){
+            for(int j = 1; j < N; j++){
+                dp.push_back(std::make_pair(matrix_distance[visit][j], j));
+            }
+            std::sort(dp.begin(), dp.end());
+            std::vector<int> can_visit;
+            int aux = 0;
+            for(int p = 0; p < N && aux < knn; p++){
+                if(std::find(visited.begin(), visited.end(), dp[p].first) == -1){
+                    aux++;
+                    can_visit.push_back(dp[p].first);
+                } 
+            }
+            for(int neigs = 0; neigs < N; neigs++){
+                if(!std::find(can_visit.begin(), can_visit.end(), neigs) == -1){
+                    x[visit][neigs].s(0, 0);
+                }
+            }
+        }
+    }
+    //
+}
 
 VRPSolution VRP::relax_and_fix(int time, IloCplex & cplex) {
     // construção do modelo relax and fix para resolver
@@ -233,8 +261,8 @@ VRPSolution VRP::relax_and_fix(int time, IloCplex & cplex) {
     std::vector <int> to_visit;
     std::vector <int> visited;
     to_visit.push_back(DEPOSIT);
-    selectListCandidatesRestrict();
     for(int t = 0; t < N && pathsToFix(visited); t++){
+        selectListCandidatesRestrict(to_visit, visited);
         printerVector("TO VISIT ", to_visit);
         removeRelaxationToVisit(relaxa, to_visit);
         if(!LOOPINFINITO){
@@ -791,7 +819,7 @@ void VRP::constraintTotalVehicles(){
     for (int k = 0; k < K; k++) {
         sumVeiculos += v[k];
     }
-    IloConstraint sumDrivers = (sumVeiculos > 0); // total de veiculos utilizado?
+    IloConstraint sumDrivers = (sumVeiculos > 7); // total de veiculos utilizado?
     sumDrivers.setName("SumDrivers");
     model.add(sumDrivers);
     sumVeiculos.end();

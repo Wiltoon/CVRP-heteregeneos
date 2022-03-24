@@ -39,7 +39,7 @@ CVRP LoggibudInstance::readInput(
     std::ifstream stream(filename);
     CVRP problem = CVRP(N);
     if(!stream){ 
-        std::cout << "arquivo de entrada inválido" << std::endl;
+        std::cout << "arquivo de entrada inválido = " << filename << std::endl;
         exit(0);
     } else {
         this->parse(stream, filevehicle, problem);

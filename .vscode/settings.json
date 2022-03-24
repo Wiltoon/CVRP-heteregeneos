@@ -69,6 +69,8 @@
         "ratio": "cpp",
         "sstream": "cpp",
         "stop_token": "cpp",
-        "xlocbuf": "cpp"
+        "xlocbuf": "cpp",
+        "deque": "cpp",
+        "stack": "cpp"
     }
 }
