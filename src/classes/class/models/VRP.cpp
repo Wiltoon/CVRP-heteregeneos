@@ -3,6 +3,7 @@
 #include "VRP.hpp"
 #include "../Packet.hpp"
 #include "../Vehicle.hpp"
+#include <algorithm>
 
 VRP::VRP(
     IloArray <IloNumArray> output,
@@ -233,18 +234,24 @@ void VRP::selectListCandidatesRestrict(std::vector <int> to_visit, std::vector <
             for(int j = 1; j < N; j++){
                 dp.push_back(std::make_pair(matrix_distance[visit][j], j));
             }
-            std::sort(dp.begin(), dp.end());
+            sort(dp.begin(), dp.end());
             std::vector<int> can_visit;
             int aux = 0;
             for(int p = 0; p < N && aux < knn; p++){
-                if(std::find(visited.begin(), visited.end(), dp[p].first) == -1){
+                std::vector<int>::iterator it;
+                it = std::find(visited.begin(), visited.end(), dp[p].first);
+                if(it != visited.end()){
                     aux++;
                     can_visit.push_back(dp[p].first);
                 } 
             }
-            for(int neigs = 0; neigs < N; neigs++){
-                if(!std::find(can_visit.begin(), can_visit.end(), neigs) == -1){
-                    x[visit][neigs].s(0, 0);
+            for(int k = 0; k < K; k++){
+                for(int neigs = 0; neigs < N; neigs++){
+                    std::vector<int>::iterator it;
+                    it = std::find(can_visit.begin(), can_visit.end(), neigs);
+                    if (it != can_visit.end()) {
+                        x[k][visit][neigs].setBounds(0, 0);
+                    }
                 }
             }
         }

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Model.hpp"
+#include <vector>       // std::vector
 
 class VRP final : public Model{
 public:
