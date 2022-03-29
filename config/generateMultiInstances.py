@@ -9,11 +9,10 @@ def generates(paths_to_precompile: str, n_intances: int, city: str):
         instance = paths_to_precompile + name_instance + ".json"
         n_veiculos = extract_vehicles(instance)
         it = instance.split("/")
-        print(it)
         ext = it[len(it)-1].split('.')
         nameOutput = "../resource/Loggibud/KMeans/"+city+name_instance+"-kmeans."+ext[1]
         timeStart = time.time()
-        bestK, data = readInstance(
+        bestK, data = readInstanceConstrained(
             instance, 
             Kinit = 2,
             K = n_veiculos,
@@ -38,10 +37,11 @@ def extract_vehicles(instance: str):
         capacity_total.append(delivery["size"])
     capacity = sum(capacity_total)
     n_veiculos = capacity/data["vehicle_capacity"]
-    return (int)(n_veiculos+5)
+    return (int)(n_veiculos)
 
 if __name__ == '__main__':
     cities = ["pa-0/", "df-0/", "rj-0/"]
+    # cities = ["pa-0/"]
     n_intances = 20
     for city in cities:
         paths_to_precompile = "../resource/Loggibud/cvrp-instances-1.0/train/"+city

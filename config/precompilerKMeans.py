@@ -7,6 +7,7 @@ import pandas as pd
 
 from sklearn.datasets import make_blobs
 from sklearn.cluster import KMeans
+from k_means_constrained import KMeansConstrained
 from sklearn.metrics import silhouette_samples, silhouette_score
 
 # Read Instance inicial
@@ -33,6 +34,44 @@ def readInstance(
             'lat': lats
         })
         bestKmeans = findToBestK(dataframe, Kinit, K, mode, 300)
+        return bestKmeans, data
+    else:
+        df = pd.read_csv(instance)
+        df_variables2 = df.drop(['CUSTOMER CUST NO.', ' DEMAND', 'READY TIME',
+                                'SERVICE TIME', 'AVAIL. TIME', 'DUE DATE'], axis=1)
+        df_variables = df_variables2.drop([0], axis=0)
+        bestKmeans = findToBestK(df_variables, Kinit, K, mode, 300)
+        return bestKmeans, df_variables
+
+def readInstanceConstrained(
+    instance: str, 
+    Kinit: int, 
+    K: int, 
+    type: bool, 
+    mode: str
+    ):
+    if(type):
+        df = open(instance)
+        data = json.load(df)
+        lngs = []
+        lats = []
+        for delivery in data["deliveries"]:
+            lngs.append(delivery["point"]["lng"])
+            lats.append(delivery["point"]["lat"])
+        dataframe = pd.DataFrame({
+            'lng': lngs,
+            'lat': lats
+        })
+        sizeMax = int(len(data["deliveries"])/K)+1
+        sizeMin = 24
+        print(sizeMin, sizeMax)
+        bestKmeans = KMeansConstrained(
+            n_clusters=K, #verificar como selecionar o k
+            size_max=sizeMax,
+            size_min=sizeMin,
+            random_state=0
+        )
+        bestKmeans.fit_predict(dataframe)
         return bestKmeans, data
     else:
         df = pd.read_csv(instance)
