@@ -16,7 +16,7 @@ CVRP LoggibudInstance::readInput(
         exit(0);
     } else {
         this->parse(stream, filevehicle, problem);
-        problem.calculate_matrix_distance(N,true);
+        problem.calculate_matrix_distance(N, true);
         for(int k = 0; k < K; k++){
             Vehicle vehicle = Vehicle(
                 k,
@@ -49,6 +49,7 @@ void LoggibudInstance::parse(
     capacity_homogeneous = root["vehicle_capacity"].asInt();
     Packet deposit = Packet(
         0, 
+        "DEPOSITO",
         root["origin"]["lng"].asDouble(),
         root["origin"]["lat"].asDouble(),
         0

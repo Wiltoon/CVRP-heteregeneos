@@ -10,6 +10,7 @@ def generates(paths_to_precompile: str, n_intances: int, city: str):
         n_veiculos = extract_vehicles(instance)
         it = instance.split("/")
         ext = it[len(it)-1].split('.')
+        print(instance)
         nameOutput = "../resource/Loggibud/KMeans/"+city+name_instance+"-kmeans."+ext[1]
         timeStart = time.time()
         bestK, data = readInstanceConstrained(
