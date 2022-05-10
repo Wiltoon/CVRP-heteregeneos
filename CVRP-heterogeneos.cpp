@@ -36,7 +36,7 @@ int main()
     }*/
     cities.push_back("pa-");
     cities.push_back("df-");
-    cities.push_back("rj-");
+    // cities.push_back("rj-");
     for(string city : cities){
         string nameLocalInstance("cvrp-0-"+city);
         for (int day = 0; day < totalDays; day++) {
