@@ -3,7 +3,7 @@ import time
 from precompilerKMeans import *
 
 def generates(paths_to_precompile: str, n_intances: int, city: str):
-    for cont in range(n_intances):
+    for cont in range(90,90+n_intances):
         broke_city = city.split('-')
         name_instance = "cvrp-0-"+broke_city[0]+"-"+str(cont)
         instance = paths_to_precompile + name_instance + ".json"
@@ -43,8 +43,8 @@ def extract_vehicles(instance: str):
 if __name__ == '__main__':
     cities = ["pa-0/", "df-0/", "rj-0/"]
     # cities = ["pa-0/"]
-    n_intances = 20
+    n_intances = 30
     for city in cities:
-        paths_to_precompile = "../resource/Loggibud/cvrp-instances-1.0/train/"+city
+        paths_to_precompile = "../resource/Loggibud/cvrp-instances-1.0/dev/"+city
         generates(paths_to_precompile, n_intances, city)
         

@@ -120,6 +120,8 @@ public:
         std::vector <int> & auxvisitar,
         int check, int k
     );
+    Solution solveMIP(int timeLimite, std::string nameInstance);
+    VRPSolution mip(int timeLimite, IloCplex & cplex);
 };
 
 #endif // VRP_H_INCLUDED

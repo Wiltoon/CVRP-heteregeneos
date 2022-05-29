@@ -25,27 +25,28 @@ int main()
 {
     double ALPHA = 0.3;         // deve ser entre 0 e 1
     int N;                      // Número de Packets
-    int K = 50;                 // Número de veículos
+    int K = 250;                 // Número de veículos
     int timeOrder = 10;         // Tempo para resolver ORDER
     int timeVRP = 10;           // Tempo para resolver o VRP
-    int totalDays = 20;         // Dias percorridos
+    int totalDays = 30;         // Dias percorridos
     vector<string> cities;
     time_t start, end;
     /*for(auto& p : filesystem::directory_iterator("resource\\Loggibud\\KMeans")){
         cout << p << endl; 
     }*/
-    cities.push_back("pa-");
-    cities.push_back("df-");
-    // cities.push_back("rj-");
+    // cities.push_back("pa-");
+    // cities.push_back("df-");
+    cities.push_back("rj-");
     for(string city : cities){
         string nameLocalInstance("cvrp-0-"+city);
-        for (int day = 0; day < totalDays; day++) {
+        int DD = (90+totalDays);
+        for (int day = 90; day < DD; day++) {
             string nameInstance(nameLocalInstance + to_string(day));
             string filekmeans(
                 "resource\\Loggibud\\KMeans\\"+city+"0\\"+nameInstance+"-kmeans.json"
             );
             // string filename("resource\\Solomon\\c101-0.0.txt");
-            string filename("resource\\Loggibud\\cvrp-instances-1.0\\train\\"+city+"0\\"+nameInstance+".json");
+            string filename("resource\\Loggibud\\cvrp-instances-1.0\\dev\\"+city+"0\\"+nameInstance+".json");
             string filevehicle("resource\\Solomon\\vei-homo.txt");
             ifstream stream(filename);
             string line;

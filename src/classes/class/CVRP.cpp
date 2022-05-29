@@ -132,7 +132,7 @@ KMeans CVRP::parseKmeans(std::string fileKmeans){
         coordinates.push_back(root["clusteres"][i]["centroid"]["lat"].asDouble());
         std::string id_point = "Centroid_" + std::to_string(i);
         std::string name = "Centroid";
-        Point centroid = Point(id_point,coordinates,name);
+        Point centroid = Point(id_point, coordinates, name);
         centroid.id_point = 0;
         centroid.setCluster(idCluster);
         Cluster cluster = Cluster(idCluster, centroid);
@@ -165,6 +165,20 @@ void CVRP::solveRegion(Arg args){
     std::vector<Packet> p_visited_region = 
         this->bestK.getCluster(args.region).getPackets(packets);
     Solution sol = solve(
+        args.timeOrder,
+        args.timeVRP,
+        args.region,
+        vehicles_used,
+        p_visited_region,
+        args.alpha
+    );
+    this->clusters_solved.push_back(sol);
+}
+void CVRP::solveRegionMIP(Arg args){
+    std::vector<Vehicle> vehicles_used = args.mapRegion.vehiclePerRegion.at(args.region);
+    std::vector<Packet> p_visited_region = 
+        this->bestK.getCluster(args.region).getPackets(packets);
+    Solution sol = solveMIP(
         args.timeOrder,
         args.timeVRP,
         args.region,
@@ -234,6 +248,33 @@ double CVRP::solveKmeansSeriable(
     for (int region = 0; region < this->bestK.getK(); region++) {
         arguments.region = region;
         solveRegion(arguments);
+    }
+    end = clock();
+    double timeExecution = (double)(end - start)/CLOCKS_PER_SEC;
+    return timeExecution;
+}
+double CVRP::solveKmeansSeriableMIP(
+    std::string fileKmeans,
+    int timeOrder,
+    int timeVRP,
+    double alpha, 
+    std::string nameInstance
+    ){
+    // Ler o arquivo pre compilado
+    // Extrair as informações de quais pacotes estão em determinado clusters
+    this->bestK = parseKmeans(fileKmeans);
+    // Resolver de forma paralela cada cluster
+    VehiclePerRegionSolution mapRegion = optimizeVehicles(bestK);
+    Arguments arguments;
+    arguments.alpha = alpha;
+    arguments.mapRegion = mapRegion;
+    arguments.timeOrder = timeOrder;
+    arguments.timeVRP = timeVRP;
+    std::clock_t start, end;
+    start = clock();
+    for (int region = 0; region < this->bestK.getK(); region++) {
+        arguments.region = region;
+        solveRegionMIP(arguments);
     }
     end = clock();
     double timeExecution = (double)(end - start)/CLOCKS_PER_SEC;
@@ -411,6 +452,28 @@ KMeans CVRP::avaliateBestKmeans(std::vector<KMeans> possiblesKs){
 }
 
 Solution CVRP::solve(
+    int timeOrder, int timeVRP, int regiao,
+    std::vector<Vehicle> vehicles_used, 
+    std::vector<Packet> packs, double alpha
+){
+    int Nsub = packs.size();
+    int Ksub = vehicles_used.size();    
+    //A resolução desse problema retorna os packets organizados por veículos
+    // printerPackets(packs);
+    // printerVehicles(vehicles_used);
+    Order organizePackets = Order(
+        packs,
+        vehicles_used,
+        alpha, regiao
+    );
+    // resolver o problema da "mochila multipla"
+    Solution solOrder = organizePackets.solve(timeOrder);
+    VRP vrpRelaxFix = VRP(solOrder.partial.output, packs, vehicles_used, regiao);
+    Solution solVRP = vrpRelaxFix.solve(timeVRP);
+    Solution sol = Solution(solOrder.partial, solVRP.result);
+    return sol;
+}
+Solution CVRP::solveMIP(
     int timeOrder, int timeVRP, int regiao,
     std::vector<Vehicle> vehicles_used, 
     std::vector<Packet> packs, double alpha

@@ -189,6 +189,35 @@ Solution VRP::solve(int timeLimite, std::string nameInstance) {
     Solution sol = Solution(o);
     return sol;
 }
+Solution VRP::solveMIP(int timeLimite, std::string nameInstance) {
+    // aqui deve resolver o problema VRP
+    IloCplex cplex(model);
+    IloNum objFO = IloInfinity;
+    createParams();
+    createVariables();
+    createFunctionObjetive();
+    createConstraints();
+    // solve mip
+    VRPSolution o = mip(timeLimite, cplex);
+    Solution sol = Solution(o);
+    return sol;
+}
+
+VRPSolution mip(int timeLimite, IloCplex & cplex){
+    IloArray <IloArray <IloNumArray>> xSol = buildXSol();
+    IloArray <IloNumArray> uSol = buildUSol();
+
+    IloBool result = solveIteration(time, cplex);
+    
+    assignTheSolutions(xSol, uSol, cplex);
+    VRPSolution vrp = VRPSolution(
+        xSol,
+        uSol, 
+        vehicles,
+        packets
+    );
+    return vrp;
+}
 
 VRPSolution VRP::relax_and_fix(int time, IloCplex & cplex) {
     // construção do modelo relax and fix para resolver
