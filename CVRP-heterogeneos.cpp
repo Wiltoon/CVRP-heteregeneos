@@ -64,7 +64,7 @@ int main()
             LoggibudInstance reader = LoggibudInstance();
             N = deliveries.size()+1;
             CVRP problem = reader.readInput(filename, filevehicle, N, K);
-            double time_execution = problem.solveKmeansSeriable(
+            double time_execution = problem.solveKmeansSeriableMIP(
                 filekmeans, 
                 timeOrder,
                 timeVRP,
