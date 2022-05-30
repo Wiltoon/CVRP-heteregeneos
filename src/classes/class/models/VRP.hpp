@@ -80,6 +80,10 @@ public:
         int tempo,
         IloCplex & cplex
     );
+    IloBool VRP::solveIterationMIP(
+        int tempo,
+        IloCplex & cplex
+    );
     void fixVariables(
         IloArray <IloArray <IloNumArray>> xSol,
         std::vector <int> & visitar,

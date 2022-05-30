@@ -377,7 +377,7 @@ void CVRP::outputJson(
 ){
     Json::Value root;
 	root["name"] = nameInstance;
-    root["k-regions"] = solutions.size();
+    root["k_regions"] = solutions.size();
     root["time_execution"] = time_execution;
 	Json::Value vehicles_json(Json::arrayValue);
     for(Solution s : solutions){
@@ -481,8 +481,6 @@ Solution CVRP::solveMIP(
     int Nsub = packs.size();
     int Ksub = vehicles_used.size();    
     //A resolução desse problema retorna os packets organizados por veículos
-    // printerPackets(packs);
-    // printerVehicles(vehicles_used);
     Order organizePackets = Order(
         packs,
         vehicles_used,
@@ -490,8 +488,8 @@ Solution CVRP::solveMIP(
     );
     // resolver o problema da "mochila multipla"
     Solution solOrder = organizePackets.solve(timeOrder);
-    VRP vrpRelaxFix = VRP(solOrder.partial.output, packs, vehicles_used, regiao);
-    Solution solVRP = vrpRelaxFix.solve(timeVRP);
+    VRP vrp = VRP(solOrder.partial.output, packs, vehicles_used, regiao);
+    Solution solVRP = vrp.solveMIP(timeVRP);
     Solution sol = Solution(solOrder.partial, solVRP.result);
     return sol;
 }

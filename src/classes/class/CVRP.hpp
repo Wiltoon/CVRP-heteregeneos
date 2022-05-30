@@ -44,6 +44,7 @@ public:
     void calculate_matrix_distance(int N);
     void calculate_matrix_distance(int N, bool loggibud);
     void solveRegion(Arg args);
+    void solveRegionMIP(Arg args);
     double distance_euclidian(Packet origin, Packet destiny);
     double solveKmeansParallel(
         std::string fileKmeans,
@@ -59,6 +60,13 @@ public:
         double alpha,
         std::string nameInstance
     );
+    double solveKmeansSeriableMIP(
+        std::string fileKmeans,
+        int timeOrder,
+        int timeVRP,
+        double alpha,
+        std::string nameInstance
+    );
     void solveWithKmeans(
         int timeOrder, int timeVRP, int N, int K, double alpha);
     Solution solveWithKmeans(
@@ -66,6 +74,11 @@ public:
         int N, int K, double alpha,
         std::string nameInstance);
     Solution solve(
+        int timeOrder, int timeVRP, int regiao,
+        std::vector<Vehicle> vehicles_used, 
+        std::vector<Packet> packs, double alpha
+    );
+    Solution solveMIP(
         int timeOrder, int timeVRP, int regiao,
         std::vector<Vehicle> vehicles_used, 
         std::vector<Packet> packs, double alpha

@@ -207,15 +207,18 @@ VRPSolution mip(int timeLimite, IloCplex & cplex){
     IloArray <IloArray <IloNumArray>> xSol = buildXSol();
     IloArray <IloNumArray> uSol = buildUSol();
 
-    IloBool result = solveIteration(time, cplex);
-    
-    assignTheSolutions(xSol, uSol, cplex);
-    VRPSolution vrp = VRPSolution(
-        xSol,
-        uSol, 
-        vehicles,
-        packets
-    );
+    IloBool result = solveIterationMIP(timeLimite, cplex);
+    if(result){
+        assignTheSolutions(xSol, uSol, cplex);
+        VRPSolution vrp = VRPSolution(
+            xSol,
+            uSol, 
+            vehicles,
+            packets
+        );
+    } else {
+        cout << "Sem solução!";
+    }
     return vrp;
 }
 
@@ -493,6 +496,20 @@ IloBool VRP::solveIteration(
     cplex.extract(model);
     char* outputer;
     std::string saida("out/saida_R" + std::to_string(region) + "_I" + std::to_string(iteration)+ ".lp");
+    outputer = &saida[0];
+    cplex.setOut(env.getNullStream());
+    cplex.exportModel(outputer);
+    return cplex.solve();
+}
+
+IloBool VRP::solveIterationMIP(
+    int tempo,
+    IloCplex & cplex
+){
+    cplex.setParam(IloCplex::TiLim, tempo);
+    cplex.extract(model);
+    char* outputer;
+    std::string saida("out/saida_R" + std::to_string(region) + ".lp");
     outputer = &saida[0];
     cplex.setOut(env.getNullStream());
     cplex.exportModel(outputer);
