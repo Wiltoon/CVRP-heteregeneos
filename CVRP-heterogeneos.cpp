@@ -34,9 +34,9 @@ int main()
     /*for(auto& p : filesystem::directory_iterator("resource\\Loggibud\\KMeans")){
         cout << p << endl; 
     }*/
-    // cities.push_back("pa-");
+    cities.push_back("pa-");
     // cities.push_back("df-");
-    cities.push_back("rj-");
+    // cities.push_back("rj-");
     for(string city : cities){
         string nameLocalInstance("cvrp-0-"+city);
         int DD = (90+totalDays);

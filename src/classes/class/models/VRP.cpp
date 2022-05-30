@@ -189,7 +189,7 @@ Solution VRP::solve(int timeLimite, std::string nameInstance) {
     Solution sol = Solution(o);
     return sol;
 }
-Solution VRP::solveMIP(int timeLimite, std::string nameInstance) {
+Solution VRP::solveMIP(int timeLimite) {
     // aqui deve resolver o problema VRP
     IloCplex cplex(model);
     IloNum objFO = IloInfinity;
@@ -203,22 +203,21 @@ Solution VRP::solveMIP(int timeLimite, std::string nameInstance) {
     return sol;
 }
 
-VRPSolution mip(int timeLimite, IloCplex & cplex){
+VRPSolution VRP::mip(int timeLimite, IloCplex & cplex){
     IloArray <IloArray <IloNumArray>> xSol = buildXSol();
     IloArray <IloNumArray> uSol = buildUSol();
 
     IloBool result = solveIterationMIP(timeLimite, cplex);
     if(result){
-        assignTheSolutions(xSol, uSol, cplex);
-        VRPSolution vrp = VRPSolution(
-            xSol,
-            uSol, 
-            vehicles,
-            packets
-        );
-    } else {
-        cout << "Sem solução!";
+        assignTheSolutionsMIP(xSol, uSol, cplex);
+        
     }
+    else {
+        std::cout << "Sem solução!";
+    }
+    VRPSolution vrp = VRPSolution(
+        xSol, uSol, vehicles, packets
+    );
     return vrp;
 }
 
@@ -483,6 +482,19 @@ void VRP::assignTheSolutions(
         cplex.getValues(u[k], uSol[k]);
         for (int i = 0; i < visitar.size(); i++) {
             cplex.getValues(x[k][visitar[i]], xSol[k][visitar[i]]);
+        }
+    }
+}
+
+void VRP::assignTheSolutionsMIP(
+    IloArray <IloArray <IloNumArray>> & xSol,
+    IloArray <IloNumArray> & uSol,
+    IloCplex & cplex
+){
+    for (int k = 0; k < K; k++) {
+        cplex.getValues(u[k], uSol[k]);
+        for (int i = 0; i < N; i++) {
+            cplex.getValues(x[k][i], xSol[k][i]);
         }
     }
 }

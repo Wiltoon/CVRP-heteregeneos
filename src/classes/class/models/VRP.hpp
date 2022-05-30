@@ -75,12 +75,17 @@ public:
         std::vector <int> visitar,
         IloCplex & cplex
     );
+    void assignTheSolutionsMIP(
+        IloArray <IloArray <IloNumArray>> & xSol,
+        IloArray <IloNumArray> & uSol,
+        IloCplex & cplex
+    );
     IloBool solveIteration(
         int iteration, 
         int tempo,
         IloCplex & cplex
     );
-    IloBool VRP::solveIterationMIP(
+    IloBool solveIterationMIP(
         int tempo,
         IloCplex & cplex
     );
@@ -124,7 +129,7 @@ public:
         std::vector <int> & auxvisitar,
         int check, int k
     );
-    Solution solveMIP(int timeLimite, std::string nameInstance);
+    Solution solveMIP(int timeLimite);
     VRPSolution mip(int timeLimite, IloCplex & cplex);
 };
 
