@@ -5,15 +5,15 @@
 
 #include "Model.hpp"
 
-class VRPMIP final : public Model{
+class VRPMIP final : public Model {
 public:
     int region = -1;        // index region
     int N = 0;      // index pedidos
     int K = 0;      // index vehicles 
     std::vector<Packet> packets;
     std::vector<Vehicle> vehicles;
-    double **matriz;
-    
+    double** matriz;
+
     IloArray <IloNumArray> d;       // matrix_distance
     IloNumArray p;                  // pedidos
     IloNumArray e;                  // custo dos veiculos
@@ -30,9 +30,9 @@ public:
 
     VRPMIP(
         IloArray <IloNumArray> output,
-        std::vector<Packet> packets, 
-        std::vector<Vehicle> vehicles, 
-        double **matriz,
+        std::vector<Packet> packets,
+        std::vector<Vehicle> vehicles,
+        double** matriz,
         int region
     );
     void createParams() override;
@@ -43,26 +43,26 @@ public:
 
     void renameVars();
 
-    VRPSolution mip(int timeLimite, IloCplex & cplex);
+    VRPSolution mip(int timeLimite, IloCplex& cplex);
     void assignTheSolutionsMIP(
-        IloArray <IloArray <IloNumArray>> & xSol,
-        IloArray <IloNumArray> & uSol,
-        IloCplex & cplex
+        IloArray <IloArray <IloNumArray>>& xSol,
+        IloArray <IloNumArray>& uSol,
+        IloCplex& cplex
     );
     IloBool solveIterationMIP(
         int tempo,
-        IloCplex & cplex
+        IloCplex& cplex
     );
 
-    
+
     IloArray <IloNumArray> buildUSol();
     IloArray <IloArray <IloNumArray>> buildXSol();
-    
+
     void constraintLeaveCustomer();
     void constraintArriveCustomer();
     void constraintFlow();
     void constraintDeposit();
     void constraintMTZ();
-}
+};
 
 #endif // VRPMIP_H_INCLUDED

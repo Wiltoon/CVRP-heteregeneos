@@ -63,8 +63,13 @@ void VRPMIP::createParams(){
     this->w = w;
     this->Q = Q;
     for(int k = 0; k < K; k++){
+        int valuest = 0;
         for (int j = 0; j < N; j++){
+            valuest += managerPackets[k][j];
             this->w[k][j] = (this->managerPackets[k][j] > 0.9);
+        }
+        if(valuest > 0){
+            this->w[k][0] = 1;
         }
     }
 }
@@ -103,7 +108,7 @@ void VRPMIP::renameVars(){
             std::string nameu("u_" + std::to_string(k) + "_" + std::to_string(i));
             char_u = &nameu[0];
             u[k][i].setName(char_u);
-            u[k][i].setBounds(p[i], Q[k]);
+            u[k][i].setBounds(p[i+1], Q[k]);
         }
     }
 
@@ -114,6 +119,9 @@ void VRPMIP::renameVars(){
                 std::string namex("x_" + std::to_string(k) + "_" + std::to_string(i) + "_" + std::to_string(j));
                 char_x = &namex[0];
                 x[k][i][j].setName(char_x);
+                if (i == j){
+                    x[k][i][j].setBounds(0, 0);
+                }
             }
         }
     }
@@ -319,7 +327,7 @@ void VRPMIP::constraintMTZ(){
     IloConstraintArray cons_MTZ(env);
     for (int k = 0; k < K; k++) {
         for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
+            for (int j = 1; j < N; j++) {
                 if (i != j) {
                     IloConstraint mtz = (
                         u[k][i] >= u[k][j] + p[i] - Q[k] * (1 - x[k][i][j])

@@ -25,22 +25,25 @@ int main()
 {
     double ALPHA = 0.3;         // deve ser entre 0 e 1
     int N;                      // Número de Packets
-    int K = 250;                 // Número de veículos
+    int K = 70;                 // Número de veículos
     int timeOrder = 10;         // Tempo para resolver ORDER
     int timeVRP = 10;           // Tempo para resolver o VRP
-    int totalDays = 3;         // Dias percorridos
+    int totalDays = 24;         // Dias percorridos
+    int instanceInit = 90;
+    int instanceEnd = 119;
     vector<string> cities;
     time_t start, end;
     /*for(auto& p : filesystem::directory_iterator("resource\\Loggibud\\KMeans")){
         cout << p << endl; 
     }*/
-    cities.push_back("pa-");
-    // cities.push_back("df-");
+    // cities.push_back("pa-");
+    cities.push_back("df-");
     // cities.push_back("rj-");
     for(string city : cities){
         string nameLocalInstance("cvrp-0-"+city);
-        int DD = (90+totalDays);
-        for (int day = 90; day < DD; day++) {
+        // int DD = (instanceInit +totalDays);
+        int DD = instanceEnd;
+        for (int day = instanceInit; day < DD; day++) {
             string nameInstance(nameLocalInstance + to_string(day));
             string filekmeans(
                 "resource\\Loggibud\\KMeans\\"+city+"0\\"+nameInstance+"-kmeans.json"
