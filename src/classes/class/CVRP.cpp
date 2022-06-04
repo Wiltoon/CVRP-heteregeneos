@@ -174,7 +174,8 @@ void CVRP::solveRegion(Arg args){
     );
     this->clusters_solved.push_back(sol);
 }
-void CVRP::solveRegionMIP(Arg args){
+
+void CVRP::solveRegionMIP(Arg args, double **matrix_distance){
     std::vector<Vehicle> vehicles_used = args.mapRegion.vehiclePerRegion.at(args.region);
     std::vector<Packet> p_visited_region = 
         this->bestK.getCluster(args.region).getPackets(packets);
@@ -183,6 +184,7 @@ void CVRP::solveRegionMIP(Arg args){
         args.timeVRP,
         args.region,
         vehicles_used,
+        matrix_distance,
         p_visited_region,
         args.alpha
     );
@@ -258,7 +260,8 @@ double CVRP::solveKmeansSeriableMIP(
     int timeOrder,
     int timeVRP,
     double alpha, 
-    std::string nameInstance
+    std::string nameInstance,
+    double **matrix_distance
     ){
     // Ler o arquivo pre compilado
     // Extrair as informações de quais pacotes estão em determinado clusters
@@ -274,7 +277,7 @@ double CVRP::solveKmeansSeriableMIP(
     start = clock();
     for (int region = 0; region < this->bestK.getK(); region++) {
         arguments.region = region;
-        solveRegionMIP(arguments);
+        solveRegionMIP(arguments, matrix_distance);
     }
     end = clock();
     double timeExecution = (double)(end - start)/CLOCKS_PER_SEC;
@@ -475,7 +478,7 @@ Solution CVRP::solve(
 }
 Solution CVRP::solveMIP(
     int timeOrder, int timeVRP, int regiao,
-    std::vector<Vehicle> vehicles_used, 
+    std::vector<Vehicle> vehicles_used, double **matrix_distance, 
     std::vector<Packet> packs, double alpha
 ){
     int Nsub = packs.size();
@@ -488,8 +491,13 @@ Solution CVRP::solveMIP(
     );
     // resolver o problema da "mochila multipla"
     Solution solOrder = organizePackets.solve(timeOrder);
-    VRP vrp = VRP(solOrder.partial.output, packs, vehicles_used, regiao);
-    Solution solVRP = vrp.solveMIP(timeVRP);
+    VRPMIP vrp = VRPMIP(
+        solOrder.partial.output, 
+        packs, 
+        vehicles_used,
+        matrix_distance, 
+        regiao);
+    Solution solVRP = vrp.solve(timeVRP);
     Solution sol = Solution(solOrder.partial, solVRP.result);
     return sol;
 }

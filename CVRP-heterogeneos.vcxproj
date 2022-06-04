@@ -152,6 +152,7 @@
     <ClCompile Include="src\classes\class\models\OrderSolution.cpp" />
     <ClCompile Include="src\classes\class\models\VehiclePerRegionSolution.cpp" />
     <ClCompile Include="src\classes\class\models\VRP.cpp" />
+    <ClCompile Include="src\classes\class\models\VRPMIP.cpp" />
     <ClCompile Include="src\classes\class\models\VRPSolution.cpp" />
     <ClCompile Include="src\classes\class\models\WhichVehicleProblem.cpp" />
     <ClCompile Include="src\classes\class\NeighborPacket.cpp" />
@@ -176,6 +177,7 @@
     <ClInclude Include="src\classes\class\models\OrderSolution.hpp" />
     <ClInclude Include="src\classes\class\models\VehiclePerRegionSolution.hpp" />
     <ClInclude Include="src\classes\class\models\VRP.hpp" />
+    <ClInclude Include="src\classes\class\models\VRPMIP.hpp" />
     <ClInclude Include="src\classes\class\models\VRPSolution.hpp" />
     <ClInclude Include="src\classes\class\models\WhichVehicleProblem.hpp" />
     <ClInclude Include="src\classes\class\NeighborPacket.hpp" />

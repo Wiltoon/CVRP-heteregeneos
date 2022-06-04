@@ -16,8 +16,8 @@ public:
     
     IloArray <IloNumArray> d;       // matrix_distance
     IloNumArray p;                  // pedidos
-    IloNumArray e;
-    IloBoolArray v;
+    IloNumArray e;                  // custo dos veiculos
+    IloBoolArray v;                 // veiculos ativos
     IloArray<IloBoolArray> w;       // Pacote j atendido por k
     IloNumArray Q;                  // Carga maxima do veiculo K
 
@@ -44,5 +44,25 @@ public:
     void renameVars();
 
     VRPSolution mip(int timeLimite, IloCplex & cplex);
+    void assignTheSolutionsMIP(
+        IloArray <IloArray <IloNumArray>> & xSol,
+        IloArray <IloNumArray> & uSol,
+        IloCplex & cplex
+    );
+    IloBool solveIterationMIP(
+        int tempo,
+        IloCplex & cplex
+    );
 
+    
+    IloArray <IloNumArray> buildUSol();
+    IloArray <IloArray <IloNumArray>> buildXSol();
+    
+    void constraintLeaveCustomer();
+    void constraintArriveCustomer();
+    void constraintFlow();
+    void constraintDeposit();
+    void constraintMTZ();
 }
+
+#endif // VRPMIP_H_INCLUDED

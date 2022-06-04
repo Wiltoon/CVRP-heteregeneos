@@ -28,7 +28,7 @@ int main()
     int K = 250;                 // Número de veículos
     int timeOrder = 10;         // Tempo para resolver ORDER
     int timeVRP = 10;           // Tempo para resolver o VRP
-    int totalDays = 30;         // Dias percorridos
+    int totalDays = 3;         // Dias percorridos
     vector<string> cities;
     time_t start, end;
     /*for(auto& p : filesystem::directory_iterator("resource\\Loggibud\\KMeans")){
@@ -69,7 +69,8 @@ int main()
                 timeOrder,
                 timeVRP,
                 ALPHA,
-                nameInstance
+                nameInstance,
+                problem.matrix_distance
             );
             problem.outputJson(
                 city, 
