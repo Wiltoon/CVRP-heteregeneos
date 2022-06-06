@@ -25,11 +25,11 @@ int main()
 {
     double ALPHA = 0.3;         // deve ser entre 0 e 1
     int N;                      // Número de Packets
-    int K = 70;                 // Número de veículos
+    int K = 250;                 // Número de veículos
     int timeOrder = 10;         // Tempo para resolver ORDER
     int timeVRP = 10;           // Tempo para resolver o VRP
     int totalDays = 24;         // Dias percorridos
-    int instanceInit = 90;
+    int instanceInit = 99;
     int instanceEnd = 119;
     vector<string> cities;
     time_t start, end;
@@ -37,50 +37,55 @@ int main()
         cout << p << endl; 
     }*/
     // cities.push_back("pa-");
-    cities.push_back("df-");
-    // cities.push_back("rj-");
+    // cities.push_back("df-");
+    cities.push_back("rj-");
     for(string city : cities){
         string nameLocalInstance("cvrp-0-"+city);
         // int DD = (instanceInit +totalDays);
         int DD = instanceEnd;
         for (int day = instanceInit; day < DD; day++) {
-            string nameInstance(nameLocalInstance + to_string(day));
-            string filekmeans(
-                "resource\\Loggibud\\KMeans\\"+city+"0\\"+nameInstance+"-kmeans.json"
-            );
-            // string filename("resource\\Solomon\\c101-0.0.txt");
-            string filename("resource\\Loggibud\\cvrp-instances-1.0\\dev\\"+city+"0\\"+nameInstance+".json");
-            string filevehicle("resource\\Solomon\\vei-homo.txt");
-            ifstream stream(filename);
-            string line;
-            string textJson("");
-            int ittt = 0;
-            cout << filename << endl;
-            while(!stream.fail()){
-                getline(stream,line);
-                textJson += line; 
+            try {
+                string nameInstance(nameLocalInstance + to_string(day));
+                string filekmeans(
+                    "resource\\Loggibud\\KMeans\\" + city + "0\\" + nameInstance + "-kmeans.json"
+                );
+                // string filename("resource\\Solomon\\c101-0.0.txt");
+                string filename("resource\\Loggibud\\cvrp-instances-1.0\\dev\\" + city + "0\\" + nameInstance + ".json");
+                string filevehicle("resource\\Solomon\\vei-homo.txt");
+                ifstream stream(filename);
+                string line;
+                string textJson("");
+                int ittt = 0;
+                cout << filename << endl;
+                while (!stream.fail()) {
+                    getline(stream, line);
+                    textJson += line;
+                }
+                Json::Value root;
+                Json::Reader readerJson;
+                readerJson.parse(textJson, root);
+                const Json::Value deliveries = root["deliveries"];
+                LoggibudInstance reader = LoggibudInstance();
+                N = deliveries.size() + 1;
+                CVRP problem = reader.readInput(filename, filevehicle, N, K);
+                double time_execution = problem.solveKmeansSeriableMIP(
+                    filekmeans,
+                    timeOrder,
+                    timeVRP,
+                    ALPHA,
+                    nameInstance,
+                    problem.matrix_distance
+                );
+                problem.outputJson(
+                    city,
+                    problem.clusters_solved,
+                    nameInstance,
+                    time_execution
+                );
             }
-            Json::Value root;
-            Json::Reader readerJson;
-            readerJson.parse(textJson, root);
-            const Json::Value deliveries = root["deliveries"];
-            LoggibudInstance reader = LoggibudInstance();
-            N = deliveries.size()+1;
-            CVRP problem = reader.readInput(filename, filevehicle, N, K);
-            double time_execution = problem.solveKmeansSeriableMIP(
-                filekmeans, 
-                timeOrder,
-                timeVRP,
-                ALPHA,
-                nameInstance,
-                problem.matrix_distance
-            );
-            problem.outputJson(
-                city, 
-                problem.clusters_solved, 
-                nameInstance, 
-                time_execution
-            );
+            catch (exception& e) {
+                cout << e.what() << endl;
+            }
         }
     }
     // Solution solution = problem.solveWithKmeans(
