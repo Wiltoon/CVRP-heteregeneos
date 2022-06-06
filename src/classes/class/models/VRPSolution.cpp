@@ -35,12 +35,16 @@ VRPSolution::VRPSolution(
 void VRPSolution::buildSolution() {
 	std::cout << "Build Solution" << std::endl;
 	int origin = DEPOSIT;
+	// std::cout << "k: " << std::to_string(vehicles.size()) << std::endl;
 	for(int k = 0; k < vehicles.size(); k++) {
 		origin = DEPOSIT;
 		// std::cout << "k: " << std::to_string(k) << std::endl;
 		for(int dest = 0; dest < deliveries.size(); dest++) {
 			// std::cout << xSol[k][origin][dest] << ",\t";
 			if(xSol[k][origin][dest] >= 0.9) {
+				if(dest == 0){
+					break;
+				}
 				vehicles[k].addPacket(deliveries[dest]);
 				origin = dest;
 				dest = DEPOSIT-1;

@@ -22,6 +22,8 @@
 #include "models/VehiclePerRegionSolution.hpp"
 #include "models/Order.hpp"
 #include "models/VRP.hpp"
+#include "models/VRPMIP.hpp"
+
 
 class CVRP {
 private:
@@ -44,7 +46,7 @@ public:
     void calculate_matrix_distance(int N);
     void calculate_matrix_distance(int N, bool loggibud);
     void solveRegion(Arg args);
-    void solveRegionMIP(Arg args);
+    void solveRegionMIP(Arg args, double **matrix_distance);
     double distance_euclidian(Packet origin, Packet destiny);
     double solveKmeansParallel(
         std::string fileKmeans,
@@ -65,7 +67,8 @@ public:
         int timeOrder,
         int timeVRP,
         double alpha,
-        std::string nameInstance
+        std::string nameInstance,
+        double **matrix_distance
     );
     void solveWithKmeans(
         int timeOrder, int timeVRP, int N, int K, double alpha);
@@ -80,7 +83,7 @@ public:
     );
     Solution solveMIP(
         int timeOrder, int timeVRP, int regiao,
-        std::vector<Vehicle> vehicles_used, 
+        std::vector<Vehicle> vehicles_used, double **matrix_distance,
         std::vector<Packet> packs, double alpha
     );
     Solution solve(

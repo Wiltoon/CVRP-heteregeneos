@@ -680,7 +680,9 @@ void VRP::constraintPacketSendByVehicle(){
         for (int j = 1; j < N; j++) {
             IloExpr restChegada(env); 
             char* namevar;
-            std::string name("chegadaNoCliente_" + std::to_string(j) + "_peloVehicle_" + std::to_string(k));
+            std::string name(
+                "chegadaNoCliente_" + std::to_string(j) + "_peloVehicle_" + std::to_string(k)
+            );
             namevar = &name[0];
             for (int i = 0; i < N; i++) {
                 if (i != j) {
