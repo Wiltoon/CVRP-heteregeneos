@@ -210,7 +210,6 @@ VRPSolution VRP::mip(int timeLimite, IloCplex & cplex){
     IloBool result = solveIterationMIP(timeLimite, cplex);
     if(result){
         assignTheSolutionsMIP(xSol, uSol, cplex);
-        
     }
     else {
         std::cout << "Sem solução!";
