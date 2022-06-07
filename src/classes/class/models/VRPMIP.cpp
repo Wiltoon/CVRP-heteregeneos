@@ -44,8 +44,6 @@ void VRPMIP::createParams(){
     }
     // Custo dos veículos
     IloNumArray e(env, K);
-    // Pacote atendido pelo veiculo k w_kj
-    IloArray<IloBoolArray> w(env, K); // DESTINOS (index j)
     // Ativação do veiculo k
     IloBoolArray v(env, K);
     // Carga maxima do veículo k
@@ -60,18 +58,7 @@ void VRPMIP::createParams(){
     this->p = p;
     this->e = e;
     this->v = v;
-    this->w = w;
     this->Q = Q;
-    for(int k = 0; k < K; k++){
-        int valuest = 0;
-        for (int j = 0; j < N; j++){
-            valuest += managerPackets[k][j];
-            this->w[k][j] = (this->managerPackets[k][j] > 0.9);
-        }
-        if(valuest > 0){
-            this->w[k][0] = 1;
-        }
-    }
 }
 
 void VRPMIP::createVariables(){
@@ -83,6 +70,8 @@ void VRPMIP::createVariables(){
             x[k][i] = IloBoolVarArray(env, N);
         }
     }
+    // Pacote atendido pelo veiculo k w_kj
+    IloArray<IloBoolVarArray> w(env, K); // DESTINOS (index j)
     // Veículo K chega do ponto j
     IloArray<IloBoolVarArray> y(env, K);
     // Veículo K sai do ponto i
@@ -92,8 +81,10 @@ void VRPMIP::createVariables(){
     for (int k = 0; k < K; k++){
         y[k] = IloBoolVarArray(env, N);
         z[k] = IloBoolVarArray(env, N);
+        w[k] = IloBoolVarArray(env, N);
         u[k] = IloNumVarArray(env, N, 0, vehicles[k].charge_max);// Variavel auxiliar para eliminicao de rota
     }
+    this->w = w;
     this->x = x;
     this->y = y;
     this->z = z;
@@ -125,21 +116,32 @@ void VRPMIP::renameVars(){
             }
         }
     }
+    
+    char* char_w;
+    for(int k = 0; k < K; k++){
+        for(int i = 0; i < N; i++) {
+            std::string namew("w_" + std::to_string(k) + "_" + std::to_string(i));
+            char_w = &namex[0];
+            w[k][i].setName(char_w);
+        }
+    }
 }
 
 void VRPMIP::createFunctionObjetive() {
     // criar a funcao objetivo no ambiente env e_k pode ser custo por km
-    IloExpr fo(env);
+    IloExpr cust(env);
     for (int k = 0; k < K; k++) {
+        IloExpr fo(env);
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 fo += d[i][j] * x[k][i][j];
             }
         }
-        fo += e[k] * v[k];
+        cust += fo * e[k] * v[k];
+        fo.end();
     }
-    model.add(IloMinimize(env, fo));
-    fo.end();
+    model.add(IloMinimize(env, cust));
+    cust.end();
 }
 
 void VRPMIP::createConstraints(){
@@ -149,6 +151,7 @@ void VRPMIP::createConstraints(){
     constraintFlow();
     constraintDeposit();
     constraintMTZ();
+    constraintManagerPacket();
 }
 
 Solution VRPMIP::solve(int timeLimite) {
@@ -170,6 +173,14 @@ IloArray <IloNumArray> VRPMIP::buildUSol(){
         uSol[k] = IloNumArray(env, N);
     }
     return uSol;
+}
+
+IloArray <IloNumArray> VRPMIP::buildWSol(){
+    IloArray <IloNumArray> wSol(env, K);
+    for (int k = 0; k < K; k++) {
+        wSol[k] = IloNumArray(env, N);
+    }
+    return wSol;
 }
 
 IloArray <IloArray <IloNumArray>> VRPMIP::buildXSol(){
@@ -346,5 +357,27 @@ void VRPMIP::constraintMTZ(){
                 }
             }
         }
+    }
+}
+
+void VRPMIP::constraintManagerPacket(){
+    IloConstraintArray cons_mag(env);
+    for (int i = 1; i < N; i++) {
+        IloExpr manag(env);
+        for (int k = 0; k < K; k++) {
+            manag += w[k][i]
+        }
+        IloConstraint unicVehicle = (manag == 1)    
+        manag.end();
+        char* char_arr;
+        std::string name(
+            "manager_" + 
+            std::to_string(k) + "_"+ 
+            std::to_string(i)
+        );
+        char_arr = &name[0];
+        unicVehicle.setName(char_arr);
+        cons_mag.add(unicVehicle);
+        model.add(unicVehicle);
     }
 }

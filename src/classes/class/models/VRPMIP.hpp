@@ -56,6 +56,7 @@ public:
 
 
     IloArray <IloNumArray> buildUSol();
+    IloArray <IloNumArray> buildWSol();
     IloArray <IloArray <IloNumArray>> buildXSol();
 
     void constraintLeaveCustomer();
