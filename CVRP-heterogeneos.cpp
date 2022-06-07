@@ -28,13 +28,11 @@ int main()
     int K = 250;                 // Número de veículos
     int timeOrder = 10;         // Tempo para resolver ORDER
     int timeVRP = 10;           // Tempo para resolver o VRP
-<<<<<<< HEAD
     int totalDays = 3;         // Dias percorridos
-=======
     int totalDays = 24;         // Dias percorridos
     int instanceInit = 99;
     int instanceEnd = 119;
->>>>>>> 6cb12175e3ee7c5197b46c656e7c46a530d3fc07
+    
     vector<string> cities;
     time_t start, end;
     /*for(auto& p : filesystem::directory_iterator("resource\\Loggibud\\KMeans")){

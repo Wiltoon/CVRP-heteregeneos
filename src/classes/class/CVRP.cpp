@@ -483,16 +483,8 @@ Solution CVRP::solveMIP(
 ){
     int Nsub = packs.size();
     int Ksub = vehicles_used.size();    
-    //A resolução desse problema retorna os packets organizados por veículos
-    Order organizePackets = Order(
-        packs,
-        vehicles_used,
-        alpha, regiao
-    );
     // resolver o problema da "mochila multipla"
-    Solution solOrder = organizePackets.solve(timeOrder);
     VRPMIP vrp = VRPMIP(
-        solOrder.partial.output, 
         packs, 
         vehicles_used,
         matrix_distance, 
