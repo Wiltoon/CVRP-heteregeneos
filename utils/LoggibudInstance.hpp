@@ -20,18 +20,22 @@ public:
     std::string nameInstance;
     std::string region;
     std::vector<Packet> packets;
-    int capacity_homogeneous;
     LoggibudInstance();
     CVRP readInput(
         std::string filename, 
         std::string filevehicle, 
         int N, int K
     ) override;
+    CVRP readInput(
+        std::string filename, 
+        std::string filevehicle, 
+        int N
+    );
     void parse(
         std::ifstream& arquivo, 
         std::string filevehicle, 
         CVRP& problem
-    ) override;
+    ) override; 
     std::vector<std::string> split(const std::string& text, char sep);
 };
 

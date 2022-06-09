@@ -264,6 +264,9 @@ double CVRP::solveKmeansSeriableMIP(
     double **matrix_distance
     ){
     // Ler o arquivo pre compilado
+    // CCP ? 
+    //      entrada => deliveries e vehicles, 
+    //      saida => deliveries separados p/ vehicle
     // Extrair as informações de quais pacotes estão em determinado clusters
     this->bestK = parseKmeans(fileKmeans);
     // Resolver de forma paralela cada cluster
@@ -407,7 +410,7 @@ void CVRP::outputJson(
     }
     root["total_vehicles"] = vehicles_json.size();
 	root["vehicles"] = vehicles_json;
-    std::string dir_path_here("out/"+city+"0/");
+    std::string dir_path_here("out/hete/"+city+"0/");
 	Json::FastWriter writer;
 	const std::string json_file = writer.write(root);
 	std::string fileoutput(dir_path_here + nameInstance + ".json");
@@ -461,7 +464,7 @@ Solution CVRP::solve(
 ){
     int Nsub = packs.size();
     int Ksub = vehicles_used.size();    
-    //A resolução desse problema retorna os packets organizados por veículos
+    // A resolução desse problema retorna os packets organizados por veículos
     // printerPackets(packs);
     // printerVehicles(vehicles_used);
     Order organizePackets = Order(

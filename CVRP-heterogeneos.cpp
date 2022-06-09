@@ -30,17 +30,17 @@ int main()
     int timeVRP = 10;           // Tempo para resolver o VRP
     int totalDays = 3;         // Dias percorridos
     int totalDays = 24;         // Dias percorridos
-    int instanceInit = 99;
-    int instanceEnd = 119;
+    int instanceInit = 90;
+    int instanceEnd = 120;
     
     vector<string> cities;
     time_t start, end;
     /*for(auto& p : filesystem::directory_iterator("resource\\Loggibud\\KMeans")){
         cout << p << endl; 
     }*/
-    // cities.push_back("pa-");
+    cities.push_back("pa-");
     // cities.push_back("df-");
-    cities.push_back("rj-");
+    // cities.push_back("rj-");
     for(string city : cities){
         string nameLocalInstance("cvrp-0-"+city);
         // int DD = (instanceInit +totalDays);
