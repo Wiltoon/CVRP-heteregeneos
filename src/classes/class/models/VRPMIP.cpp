@@ -50,7 +50,6 @@ void VRPMIP::createParams(){
     IloNumArray Q(env, K);
     for (int k = 0; k < K; k++) {
         e[k] = vehicles[k].cust;
-        w[k] = IloBoolArray(env, N);
         v[k] = 1;
         Q[k] = vehicles[k].charge_max;
     }

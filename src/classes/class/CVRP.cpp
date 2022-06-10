@@ -266,7 +266,7 @@ double CVRP::solveKmeansSeriableMIP(
     // Ler o arquivo pre compilado
     // CCP ? 
     //      entrada => deliveries e vehicles, 
-    //      saida => deliveries separados p/ vehicle
+    //      saida => deliveries separados p/ regiao vehicles
     // Extrair as informações de quais pacotes estão em determinado clusters
     this->bestK = parseKmeans(fileKmeans);
     // Resolver de forma paralela cada cluster
