@@ -109,6 +109,25 @@ Solution CCP::solve(int timeLimite) {
     return sol;
 }
 
+OrderSolution CCP::mip(int timeLimite, IloCplex & cplex){
+    IloArray <IloNumArray> wSol = buildWSol();
+    IloBool result = solveMIP(timeLimite, cplex);
+    if(result){
+        as
+    }
+}
+
+IloBool CCP::solveMIP(int timeLimite, IloCplex & cplex){
+    cplex.setParam(IloCplex::TiLim, tempo);
+    cplex.extract(model);
+    char* outputer;
+    std::string saida("out/managerPack.lp");
+    outputer = &saida[0];
+    cplex.setOut(env.getNullStream());
+    cplex.exportModel(outputer);
+    return cplex.solve();
+}
+
 void CCP::constraintSeparatedPackets(){
     IloConstraintArray cons_sep(env);
     for(int i = 1; i < N; i++){
