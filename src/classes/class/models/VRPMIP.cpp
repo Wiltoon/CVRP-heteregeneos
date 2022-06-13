@@ -202,7 +202,7 @@ VRPSolution VRPMIP::mip(int timeLimite, IloCplex & cplex){
         assignTheSolutionsMIP(xSol, uSol, cplex);
     }
     else {
-        std::cout << "Sem solução!";
+        std::cout << "Sem solução!" << std::endl;
     }
     VRPSolution vrp = VRPSolution(
         xSol, uSol, vehicles, packets

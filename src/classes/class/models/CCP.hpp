@@ -3,9 +3,14 @@
 
 #pragma once
 
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
 #include "Model.hpp"
-#include "../Vehicle.hpp"
+#include "OrderSolution.hpp"
 #include "../Packet.hpp"
+#include "../Vehicle.hpp"
 
 class CCP final: public Model {
 private:
@@ -40,8 +45,10 @@ public:
     void constraintMaxCapacited();
     void constraintIncludedDeposit();
 
+    IloBool solveMIP(int timeLimite, IloCplex & cplex);
     IloArray <IloNumArray> buildWSol();
+    OrderSolution mip(int timeLimite, IloCplex & cplex);
 
-    static double euclidean(Point p1, Point p2);
-    void generate_solution(std::string nameFile);
+    // static double euclidean(Point p1, Point p2);
+    // void generate_solution(std::string nameFile);
 };

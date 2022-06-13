@@ -1,9 +1,6 @@
 #include <iostream>
 
 #include "CCP.hpp"
-#include "OrderSolution.hpp"
-#include "../Packet.hpp"
-#include "../Vehicle.hpp"
 
 CCP::CCP(
         std::vector<Packet> packets_,
@@ -109,12 +106,23 @@ Solution CCP::solve(int timeLimite) {
     return sol;
 }
 
-OrderSolution CCP::mip(int timeLimite, IloCplex & cplex){
+Solution CCP::mip(int timeLimite, IloCplex & cplex){
     IloArray <IloNumArray> wSol = buildWSol();
     IloBool result = solveMIP(timeLimite, cplex);
     if(result){
-        as
+        for (int k = 0; k < K; k++){
+            cplex.getValues(w[k], wSol[k]);
+        }
+        OrderSolution out = outputOrder(cplex);
+        Solution sol = Solution(out);
+        return sol;
+    } else {
+        OrderSolution out = OrderSolution(
+            "NOT Results feasible Order Solution");
+        Solution sol = Solution(out);
+        return sol;
     }
+
 }
 
 IloBool CCP::solveMIP(int timeLimite, IloCplex & cplex){
