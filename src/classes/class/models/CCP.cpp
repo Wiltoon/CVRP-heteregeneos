@@ -5,13 +5,13 @@
 CCP::CCP(
         std::vector<Packet> packets_,
         std::vector<Vehicle> vehicles_used_,
-        double** matrix,
+        double** matrix
     ){
-        this->packets = packets_;
+        this->deliveries = packets_;
         this->vehicles = vehicles_used_;
-        this->matrix_distance = matriz;
-        this->N = packets.size();
-        this->K = vehicles.size();
+        this->matrix_distance = matrix;
+        this->N = packets_.size();
+        this->K = vehicles_used_.size();
         IloModel model(env);
         this->model = model;
 }
@@ -34,7 +34,7 @@ void CCP::createParams(){
     // Carga dos Pacotes
     IloNumArray p(env, N);
     for(int i=0; i<N; i++){
-        p[i] = packets[i].charge;
+        p[i] = deliveries[i].charge;
     }
     // Custo dos veículos
     IloNumArray c(env, K);
@@ -47,7 +47,7 @@ void CCP::createParams(){
     this->d = d;
     this->p = p;
     this->c = c;
-    this->Q = Qr;
+    this->Qr = Qr;
 }
 
 void CCP::createVariables(){
@@ -65,7 +65,7 @@ void CCP::renameVars(){
     for(int k = 0; k < K; k++){
         for(int i = 0; i < N; i++) {
             std::string namew("w_" + std::to_string(k) + "_" + std::to_string(i));
-            char_w = &namex[0];
+            char_w = &namew[0];
             w[k][i].setName(char_w);
         }
     }
@@ -101,7 +101,7 @@ Solution CCP::solve(int timeLimite) {
     createVariables();
     createFunctionObjetive();
     createConstraints();
-    OrderSolution o = mip(timeLimite, cplex);
+    Solution sol = mip(timeLimite, cplex);
     // Solution sol = Solution(o);
     return sol;
 }
@@ -125,8 +125,22 @@ Solution CCP::mip(int timeLimite, IloCplex & cplex){
 
 }
 
+OrderSolution CCP::outputOrder(IloCplex& cplex) {
+    std::string message("CCP Sucess!");
+    IloArray <IloNumArray> output(env, K);
+    for (int k = 0; k < K; k++) {
+        output[k] = IloNumArray(env, N);
+    }
+    for (int k = 0; k < K; k++) {
+        cplex.getValues(w[k], output[k]);
+    }
+    // std::cout << message << std::endl;
+    OrderSolution solution = OrderSolution(output, message, deliveries, vehicles);
+    return solution;
+}
+
 IloBool CCP::solveMIP(int timeLimite, IloCplex & cplex){
-    cplex.setParam(IloCplex::TiLim, tempo);
+    cplex.setParam(IloCplex::TiLim, timeLimite);
     cplex.extract(model);
     char* outputer;
     std::string saida("out/managerPack.lp");
@@ -142,7 +156,7 @@ void CCP::constraintSeparatedPackets(){
         IloExpr sep(env);
         char* namevar;
         std::string name(
-            "vehicle_"+std::to_string(k) + "_ToPoint_" + std::to_string(i)
+            "vehiclPoint_" + std::to_string(i)
         );
         namevar = &name[0];
         for (int k = 0; k < K; k++){

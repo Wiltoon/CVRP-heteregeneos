@@ -35,6 +35,12 @@ public:
         double** matriz,
         int region
     );
+    VRPMIP(
+        std::vector<Packet> packets,
+        std::vector<Vehicle> vehicles,
+        double** matriz,
+        int region
+    );
     void createParams() override;
     void createVariables() override;
     void createFunctionObjetive() override;
@@ -64,6 +70,7 @@ public:
     void constraintFlow();
     void constraintDeposit();
     void constraintMTZ();
+    void constraintManagerPacket();
 };
 
 #endif // VRPMIP_H_INCLUDED

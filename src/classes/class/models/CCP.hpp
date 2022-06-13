@@ -9,6 +9,7 @@
 
 #include "Model.hpp"
 #include "OrderSolution.hpp"
+#include "../Solution.hpp"
 #include "../Packet.hpp"
 #include "../Vehicle.hpp"
 
@@ -32,7 +33,7 @@ public:
     CCP(
         std::vector<Packet> packets_,
         std::vector<Vehicle> vehicles_used_,
-        double** matrix_distance_,
+        double** matrix_distance_
     );        
     void createParams() override;
     void createVariables() override;
@@ -47,8 +48,10 @@ public:
 
     IloBool solveMIP(int timeLimite, IloCplex & cplex);
     IloArray <IloNumArray> buildWSol();
-    OrderSolution mip(int timeLimite, IloCplex & cplex);
-
+    Solution mip(int timeLimite, IloCplex & cplex);
+    OrderSolution outputOrder(IloCplex& cplex);
     // static double euclidean(Point p1, Point p2);
     // void generate_solution(std::string nameFile);
 };
+
+#endif // CCP_H_INCLUDED

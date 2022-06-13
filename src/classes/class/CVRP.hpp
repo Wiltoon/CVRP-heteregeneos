@@ -21,6 +21,7 @@
 #include "models/WhichVehicleProblem.hpp"
 #include "models/VehiclePerRegionSolution.hpp"
 #include "models/Order.hpp"
+#include "models/CCP.hpp"
 #include "models/VRP.hpp"
 #include "models/VRPMIP.hpp"
 
@@ -41,12 +42,20 @@ public:
         int timeVRP;
         double alpha;
     } Arg;
+    typedef struct ArgumentsSol {
+        OrderSolution mapW;
+        int region;
+        int timeOrder;
+        int timeVRP;
+        double alpha;
+    } ArgS;
     CVRP();
     CVRP(int N);
     void calculate_matrix_distance(int N);
     void calculate_matrix_distance(int N, bool loggibud);
     void solveRegion(Arg args);
     void solveRegionMIP(Arg args, double **matrix_distance);
+    void solveRegionMIP(ArgS args, double **matrix_distance);
     double distance_euclidian(Packet origin, Packet destiny);
     double solveKmeansParallel(
         std::string fileKmeans,
@@ -70,6 +79,16 @@ public:
         std::string nameInstance,
         double **matrix_distance
     );
+    double solveCCPSeriableMIP(
+        std::string fileKmeans,
+        int timeOrder,
+        int timeVRP,
+        double alpha, 
+        std::string nameInstance,
+        double **matrix_distance
+    );
+    std::vector<Vehicle> vehiclesUsed(ArgS args);
+    std::vector<Packet> packetsVisited(ArgS args);
     void solveWithKmeans(
         int timeOrder, int timeVRP, int N, int K, double alpha);
     Solution solveWithKmeans(
@@ -86,6 +105,7 @@ public:
         std::vector<Vehicle> vehicles_used, double **matrix_distance,
         std::vector<Packet> packs, double alpha
     );
+    Solution solveMIP(ArgS args, double **matrix_distance);
     Solution solve(
         int timeOrder, int timeVRP, int regiao,
         std::vector<Vehicle> vehicles_used, 

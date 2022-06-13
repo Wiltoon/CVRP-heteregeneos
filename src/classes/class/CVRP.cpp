@@ -190,6 +190,21 @@ void CVRP::solveRegionMIP(Arg args, double **matrix_distance){
     );
     this->clusters_solved.push_back(sol);
 }
+void CVRP::solveRegionMIP(ArgS args, double **matrix_distance){
+    Solution sol = solveMIP(args, matrix_distance);
+    this->clusters_solved.push_back(sol);
+}
+
+std::vector<Vehicle> CVRP::vehiclesUsed(ArgS args){
+    std::vector<Vehicle> vehicles;
+    vehicles.push_back(args.mapW.vehicles[args.region]);
+    return vehicles;
+}
+
+std::vector<Packet> CVRP::packetsVisited(ArgS args){
+    std::vector<Packet> packs = args.mapW.packets;
+    return packs;
+}
 
 double CVRP::solveKmeansParallel(
     std::string fileKmeans,
@@ -279,6 +294,36 @@ double CVRP::solveKmeansSeriableMIP(
     std::clock_t start, end;
     start = clock();
     for (int region = 0; region < this->bestK.getK(); region++) {
+        arguments.region = region;
+        solveRegionMIP(arguments, matrix_distance);
+    }
+    end = clock();
+    double timeExecution = (double)(end - start)/CLOCKS_PER_SEC;
+    return timeExecution;
+}
+
+double CVRP::solveCCPSeriableMIP(
+    std::string fileKmeans,
+    int timeOrder,
+    int timeVRP,
+    double alpha, 
+    std::string nameInstance,
+    double **matrix_distance
+    ){
+    // Ler o arquivo pre compilado
+    // CCP ? 
+    //      entrada => deliveries e vehicles, 
+    //      saida => deliveries separados p/ regiao vehicles
+    std::clock_t start, end;
+    start = clock();
+    CCP ccp = CCP(this->packets, this->vehicles, matrix_distance);
+    Solution outW = ccp.solve(timeOrder);
+    ArgumentsSol arguments;
+    arguments.alpha = alpha;
+    arguments.mapW = outW.partial;
+    arguments.timeOrder = timeOrder;
+    arguments.timeVRP = timeVRP;
+    for (int region = 0; region < this->vehicles.size(); region++) {
         arguments.region = region;
         solveRegionMIP(arguments, matrix_distance);
     }
@@ -486,14 +531,29 @@ Solution CVRP::solveMIP(
 ){
     int Nsub = packs.size();
     int Ksub = vehicles_used.size();    
-    // resolver o problema da "mochila multipla"
     VRPMIP vrp = VRPMIP(
         packs, 
         vehicles_used,
         matrix_distance, 
         regiao);
     Solution solVRP = vrp.solve(timeVRP);
-    Solution sol = Solution(solOrder.partial, solVRP.result);
+    Solution sol = Solution(solVRP.result);
+    return sol;
+}
+Solution CVRP::solveMIP(
+    ArgS args, double **matrix_distance
+){
+    // int Nsub = packs.size();
+    // int Ksub = vehicles_used.size();  
+    std::cout << "region\n" << std::to_string(args.region) << std::endl;
+    VRPMIP vrp = VRPMIP(
+        args.mapW.output,
+        packetsVisited(args), 
+        vehiclesUsed(args),
+        matrix_distance, 
+        args.region);
+    Solution solVRP = vrp.solve(args.timeVRP);
+    Solution sol = Solution(solVRP.result);
     return sol;
 }
 

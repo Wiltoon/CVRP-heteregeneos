@@ -25,11 +25,10 @@ int main()
 {
     double ALPHA = 0.3;         // deve ser entre 0 e 1
     int N;                      // Número de Packets
-    int K = 250;                 // Número de veículos
+    // int K = 250;                 // Número de veículos
     int timeOrder = 10;         // Tempo para resolver ORDER
     int timeVRP = 10;           // Tempo para resolver o VRP
-    int totalDays = 3;         // Dias percorridos
-    int totalDays = 24;         // Dias percorridos
+    int totalDays = 30;         // Dias percorridos
     int instanceInit = 90;
     int instanceEnd = 120;
     
@@ -52,8 +51,7 @@ int main()
                     "resource\\Loggibud\\KMeans\\" + city + "0\\" + nameInstance + "-kmeans.json"
                 );
                 // string filename("resource\\Solomon\\c101-0.0.txt");
-                string filename("resource\\Loggibud\\cvrp-instances-1.0\\dev\\" + city + "0\\" + nameInstance + ".json");
-                string filevehicle("resource\\Solomon\\vei-homo.txt");
+                string filename("resource\\Loggibud\\cvrp-instances-2.0\\dev\\" + city + "0\\" + nameInstance + ".json");
                 ifstream stream(filename);
                 string line;
                 string textJson("");
@@ -69,8 +67,8 @@ int main()
                 const Json::Value deliveries = root["deliveries"];
                 LoggibudInstance reader = LoggibudInstance();
                 N = deliveries.size() + 1;
-                CVRP problem = reader.readInput(filename, filevehicle, N, K);
-                double time_execution = problem.solveKmeansSeriableMIP(
+                CVRP problem = reader.readInput(filename, N);
+                double time_execution = problem.solveCCPSeriableMIP(
                     filekmeans,
                     timeOrder,
                     timeVRP,

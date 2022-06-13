@@ -26,6 +26,7 @@ public:
         std::string filevehicle, 
         int N, int K
     ) override;
+    CVRP readInput(std::string filename, int N);
     CVRP readInput(
         std::string filename, 
         std::string filevehicle, 
@@ -36,6 +37,7 @@ public:
         std::string filevehicle, 
         CVRP& problem
     ) override; 
+    void parseT(std::ifstream& arquivo, CVRP& problem);
     std::vector<std::string> split(const std::string& text, char sep);
 };
 

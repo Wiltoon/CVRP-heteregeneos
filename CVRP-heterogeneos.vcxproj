@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\classes\class\CVRP.cpp" />
+    <ClCompile Include="src\classes\class\models\CCP.cpp" />
     <ClCompile Include="src\classes\class\models\Model.cpp" />
     <ClCompile Include="src\classes\class\models\Order.cpp" />
     <ClCompile Include="src\classes\class\models\OrderSolution.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="src\classes\class\CVRP.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="src\classes\class\models\CCP.hpp" />
     <ClInclude Include="src\classes\class\models\Model.hpp" />
     <ClInclude Include="src\classes\class\models\Order.hpp" />
     <ClInclude Include="src\classes\class\models\OrderSolution.hpp" />
