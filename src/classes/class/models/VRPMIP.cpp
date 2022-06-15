@@ -92,7 +92,7 @@ void VRPMIP::createParams()
         Q[k] = vehicles[k].charge_max;
         w[k] = IloBoolArray(env, N);
         for (int i = 0; i < N; i++){
-            w[k][i] = (this->managerPackets[k][i] == 1);
+            w[k][i] = (this->managerPackets[k][i] > 0.9);
         }
     }
     this->d = d;

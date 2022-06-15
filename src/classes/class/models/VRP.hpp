@@ -14,6 +14,8 @@ public:
     int region = -1;
     int N = 0;
     int K = 0;
+    double **matriz;
+
     std::vector<Packet> packets;                // DEPOSITO INCLUIDO
     std::vector<Vehicle> vehicles;
     IloArray <IloNumArray> output;
@@ -33,6 +35,13 @@ public:
         IloArray <IloNumArray> output,
         std::vector<Packet> packets, 
         std::vector<Vehicle> vehicles, 
+        double **matriz,
+        int region
+    );
+    VRP(
+        IloArray <IloNumArray> output,
+        std::vector<Packet> packets,
+        std::vector<Vehicle> vehicles,
         int region
     );
     void createParams() override;

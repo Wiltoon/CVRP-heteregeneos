@@ -7,13 +7,32 @@
 VRP::VRP(
     IloArray <IloNumArray> output,
     std::vector<Packet> packets, 
-    std::vector<Vehicle> vehicles, 
+    std::vector<Vehicle> vehicles,
+    double** matriz, 
     int region
 ){
     this->region = region;
     this->packets = packets;
     this->vehicles = vehicles;
     this->output = output;
+    this->matriz = matriz;
+    this->N = packets.size();
+    this->K = vehicles.size();
+    IloModel model(env);
+    this->model = model;
+}
+
+VRP::VRP(
+    IloArray <IloNumArray> output,
+    std::vector<Packet> packets,
+    std::vector<Vehicle> vehicles,
+    int region
+) {
+    this->region = region;
+    this->packets = packets;
+    this->vehicles = vehicles;
+    this->output = output;
+    this->matriz = matriz;
     this->N = packets.size();
     this->K = vehicles.size();
     IloModel model(env);
@@ -31,7 +50,7 @@ void VRP::createParams() {
             if(i == j){
                 d[i][j] = 999999.0;
             } else {
-                d[i][j] = distance_euclidian(packets[i], packets[j]);
+                d[i][j] = matriz[i][j];
             }
         }
     }

@@ -29,9 +29,12 @@ int main()
     int timeOrder = 10;         // Tempo para resolver ORDER
     int timeVRP = 10;           // Tempo para resolver o VRP
     int totalDays = 30;         // Dias percorridos
-    int instanceInit = 90;
+    int instanceInit = 113;
     int instanceEnd = 120;
-    
+    string homo = "3.0";
+    string hete = "2.0";
+    string init = "1.0";
+
     vector<string> cities;
     time_t start, end;
     /*for(auto& p : filesystem::directory_iterator("resource\\Loggibud\\KMeans")){
@@ -51,7 +54,7 @@ int main()
                     "resource\\Loggibud\\KMeans\\" + city + "0\\" + nameInstance + "-kmeans.json"
                 );
                 // string filename("resource\\Solomon\\c101-0.0.txt");
-                string filename("resource\\Loggibud\\cvrp-instances-2.0\\dev\\" + city + "0\\" + nameInstance + ".json");
+                string filename("resource\\Loggibud\\cvrp-instances-"+homo+"\\dev\\" + city + "0\\" + nameInstance + ".json");
                 ifstream stream(filename);
                 string line;
                 string textJson("");

@@ -14,19 +14,19 @@ public:
     std::vector<Vehicle> vehicles;
     double** matriz;
 
-    IloArray <IloNumArray> d;       // matrix_distance
-    IloNumArray p;                  // pedidos
-    IloNumArray e;                  // custo dos veiculos
-    IloBoolArray v;                 // veiculos ativos
-    IloArray<IloBoolArray> w;       // Pacote j atendido por k
-    IloNumArray Q;                  // Carga maxima do veiculo K
+    IloArray <IloNumArray> d;  // matrix_distance
+    IloNumArray p;             // pedidos
+    IloNumArray e;             // custo dos veiculos
+    IloBoolArray v;            // veiculos ativos
+    IloArray <IloBoolArray> w; // Pacote j atendido por k
+    IloNumArray Q;             // Carga maxima do veiculo K
 
     IloArray <IloNumArray> managerPackets;
 
-    IloArray<IloNumVarArray> u;                 // aux_carga
-    IloArray<IloBoolVarArray> y;                // aux_dont return
-    IloArray<IloBoolVarArray> z;                // vehicle leave packet
-    IloArray <IloArray <IloBoolVarArray>> x;    // variavel de decisao
+    IloArray <IloNumVarArray> u;             // aux_carga
+    IloArray <IloBoolVarArray> y;            // aux_dont return
+    IloArray <IloBoolVarArray> z;            // vehicle leave packet
+    IloArray <IloArray <IloBoolVarArray>> x; // variavel de decisao
 
     VRPMIP(
         IloArray <IloNumArray> output,
