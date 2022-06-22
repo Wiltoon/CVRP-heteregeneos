@@ -25,11 +25,11 @@ int main()
 {
     double ALPHA = 0.3;         // deve ser entre 0 e 1
     int N;                      // Número de Packets
-    // int K = 250;                 // Número de veículos
+    // int K = 250;             // Número de veículos
     int timeOrder = 10;         // Tempo para resolver ORDER
     int timeVRP = 10;           // Tempo para resolver o VRP
     int totalDays = 30;         // Dias percorridos
-    int instanceInit = 113;
+    int instanceInit = 119;
     int instanceEnd = 120;
     string homo = "3.0";
     string hete = "2.0";
@@ -54,7 +54,7 @@ int main()
                     "resource\\Loggibud\\KMeans\\" + city + "0\\" + nameInstance + "-kmeans.json"
                 );
                 // string filename("resource\\Solomon\\c101-0.0.txt");
-                string filename("resource\\Loggibud\\cvrp-instances-"+homo+"\\dev\\" + city + "0\\" + nameInstance + ".json");
+                string filename("resource\\Loggibud\\cvrp-instances-"+ hete +"\\dev\\" + city + "0\\" + nameInstance + ".json");
                 ifstream stream(filename);
                 string line;
                 string textJson("");
@@ -85,6 +85,10 @@ int main()
                     nameInstance,
                     time_execution
                 );
+                for (int pos = 0; pos < N; pos++) {
+                    free(problem.matrix_distance[pos]);
+                }
+                free(problem.matrix_distance);
             }
             catch (exception& e) {
                 cout << e.what() << endl;
