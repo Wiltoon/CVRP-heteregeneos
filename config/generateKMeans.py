@@ -2,8 +2,8 @@ import os
 import time
 from precompilerKMeans import *
 
-def generates(paths_to_precompile: str, n_intances: int, city: str):
-    typeVehicles = "2.0"
+def generates(n_intances: int, city: str, typeVehicle: str):
+    paths_to_precompile = "../resource/Loggibud/cvrp-instances-"+typeVehicle+"/dev/"+city
     for cont in range(n_intances):
         broke_city = city.split('-')
         name_instance = "cvrp-0-"+broke_city[0]+"-"+str(cont)
@@ -12,7 +12,7 @@ def generates(paths_to_precompile: str, n_intances: int, city: str):
         it = instance.split("/")
         ext = it[len(it)-1].split('.')
         print(instance)
-        nameOutput = "../resource/Loggibud/KMeans-"+typeVehicles+"/"+city+name_instance+"-kmeans."+ext[1]
+        nameOutput = "../resource/Loggibud/KMeans-"+typeVehicle+"/"+city+name_instance+"-kmeans."+ext[1]
         timeStart = time.time()
         bestK, data = readInstanceConstrained(
             instance, 
@@ -31,21 +31,12 @@ def generates(paths_to_precompile: str, n_intances: int, city: str):
             timeExecution
         )
 
-def extract_vehicles(instance: str):
-    df = open(instance)
-    data = json.load(df)
-    capacity_total = []
-    for delivery in data["deliveries"]:
-        capacity_total.append(delivery["size"])
-    capacity = sum(capacity_total)
-    n_veiculos = capacity/data["vehicle_capacity"]
-    return (int)(n_veiculos)
-
+# Gerar KMEANS 2.0 de acordo com os veiculos existentes
 if __name__ == '__main__':
     cities = ["pa-0/", "df-0/", "rj-0/"]
+    typeVehicle = "2.0"
     # cities = ["pa-0/"]
     n_intances = 20
     for city in cities:
-        paths_to_precompile = "../resource/Loggibud/cvrp-instances-1.0/train/"+city
-        generates(paths_to_precompile, n_intances, city)
+        generates(paths_to_precompile, n_intances, city, typeVehicle)
         

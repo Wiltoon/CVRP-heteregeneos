@@ -25,10 +25,12 @@ int main()
 {
     double ALPHA = 0.3;         // deve ser entre 0 e 1
     int N;                      // Número de Packets
-    int K = 50;                 // Número de veículos
+    // int K = 50;                 // Número de veículos
     int timeOrder = 10;         // Tempo para resolver ORDER
     int timeVRP = 10;           // Tempo para resolver o VRP
-    int totalDays = 20;         // Dias percorridos
+    int instanceInit = 90;     // primeira instancia
+    int instanceEnd = 120;      // ultima instancia
+    string typeVehicles = "2.0";
     vector<string> cities;
     time_t start, end;
     /*for(auto& p : filesystem::directory_iterator("resource\\Loggibud\\KMeans")){
@@ -39,14 +41,14 @@ int main()
     // cities.push_back("rj-");
     for(string city : cities){
         string nameLocalInstance("cvrp-0-"+city);
-        for (int day = 0; day < totalDays; day++) {
+        for (int day = instanceInit; day < instanceEnd; day++) {
             string nameInstance(nameLocalInstance + to_string(day));
             string filekmeans(
-                "resource\\Loggibud\\KMeans\\"+city+"0\\"+nameInstance+"-kmeans.json"
+                "resource\\Loggibud\\KMeans-"+typeVehicles+"\\"+city+"0\\"+nameInstance+"-kmeans.json"
             );
             // string filename("resource\\Solomon\\c101-0.0.txt");
-            string filename("resource\\Loggibud\\cvrp-instances-1.0\\train\\"+city+"0\\"+nameInstance+".json");
-            string filevehicle("resource\\Solomon\\vei-homo.txt");
+            string filename("resource\\Loggibud\\cvrp-instances-"+typeVehicles+"\\train\\"+city+"0\\"+nameInstance+".json");
+            // string filevehicle("resource\\Solomon\\vei-homo.txt");
             ifstream stream(filename);
             string line;
             string textJson("");
@@ -62,7 +64,7 @@ int main()
             const Json::Value deliveries = root["deliveries"];
             LoggibudInstance reader = LoggibudInstance();
             N = deliveries.size()+1;
-            CVRP problem = reader.readInput(filename, filevehicle, N, K);
+            CVRP problem = reader.readInputT(filename, N);
             double time_execution = problem.solveKmeansSeriable(
                 filekmeans, 
                 timeOrder,

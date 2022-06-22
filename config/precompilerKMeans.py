@@ -62,7 +62,7 @@ def readInstanceConstrained(
             'lng': lngs,
             'lat': lats
         })
-        sizeMax = int(len(data["deliveries"])/K)+1
+        sizeMax = int(len(data["deliveries"])/K)+1 # vehicle_MAX/5 + 1
         sizeMin = 24
         print(sizeMin, sizeMax)
         bestKmeans = KMeansConstrained(
