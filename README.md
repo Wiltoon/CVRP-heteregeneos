@@ -58,4 +58,4 @@ Neste caso a ideia da heurística é particionar o problema através da variáve
 
 # Contato
 
-- https://www.linkedin.com/in/wilton-costa-27a3b2143/
+- https://www.linkedin.com/in/wilton-software-engineer/
